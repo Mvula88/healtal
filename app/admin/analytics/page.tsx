@@ -184,7 +184,7 @@ export default function AnalyticsPage() {
       ]
 
       // User retention (simplified)
-      const userRetention = []
+      const userRetention: any[] = []
       const cohortMonths = ['January', 'February', 'March', 'April', 'May']
       cohortMonths.forEach(month => {
         userRetention.push({

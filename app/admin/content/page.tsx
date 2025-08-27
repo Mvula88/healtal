@@ -239,7 +239,7 @@ export default function ContentManagementPage() {
             focus_areas: newJourney.focus_areas,
             steps: newJourney.steps,
             updated_at: new Date().toISOString()
-          })
+          } as any)
           .eq('id', editingJourney.id)
 
         if (!error) {
@@ -258,7 +258,7 @@ export default function ContentManagementPage() {
             ...newJourney,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          })
+          } as any)
           .select()
           .single()
 

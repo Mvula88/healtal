@@ -93,6 +93,10 @@ function ToolsContent() {
   const [meditationActive, setMeditationActive] = useState(false)
   const [selectedMeditation, setSelectedMeditation] = useState<string | null>(null)
   
+  // Journaling state
+  const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null)
+  const [journalEntry, setJournalEntry] = useState('')
+  
   const supabase = createClient()
 
   const tools: TherapeuticTool[] = [
@@ -690,9 +694,6 @@ function ToolsContent() {
   }
 
   const renderJournaling = () => {
-    const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null)
-    const [journalEntry, setJournalEntry] = useState('')
-    
     return (
       <div className="space-y-6">
         {!selectedPrompt ? (

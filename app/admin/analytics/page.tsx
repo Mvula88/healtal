@@ -112,7 +112,7 @@ export default function AnalyticsPage() {
         
         // Calculate average duration (if duration is tracked)
         const avgDuration = sessions?.length ? 
-          Math.round(sessions.reduce((acc, s) => acc + (s.duration_minutes || 15), 0) / sessions.length) : 15
+          Math.round(sessions.reduce((acc, s: any) => acc + (s.duration_minutes || 15), 0) / sessions.length) : 15
         
         sessionAnalytics.push({
           date: format(date, 'MMM d'),

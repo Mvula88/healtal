@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navigation/navbar'
+import { MiniReferralPrompt } from '@/components/professional-referral'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
 import { createClient } from '@/lib/supabase/client'
+import { APP_CONFIG } from '@/lib/config'
 import { 
   Brain, 
   Heart, 
@@ -17,7 +20,10 @@ import {
   ChevronRight,
   Sparkles,
   Activity,
-  Target
+  Target,
+  Lightbulb,
+  Search,
+  Shield
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -49,18 +55,30 @@ interface Journey {
 
 function DashboardContent() {
   const { user } = useAuth()
+  const router = useRouter()
   const [wellnessData, setWellnessData] = useState<WellnessEntry[]>([])
   const [recentConversations, setRecentConversations] = useState<Conversation[]>([])
   const [activeJourneys, setActiveJourneys] = useState<Journey[]>([])
   const [affirmation, setAffirmation] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
     if (user) {
       fetchDashboardData()
+      checkAdminStatus()
     }
   }, [user])
+
+  const checkAdminStatus = async () => {
+    // Simply check if the user email matches admin email
+    // Bypass database check to avoid infinite recursion error
+    console.log('Admin check for user:', user?.email)
+    const adminStatus = user?.email === 'ismaelmvula@gmail.com'
+    console.log('Is admin?', adminStatus)
+    setIsAdmin(adminStatus)
+  }
 
   const fetchDashboardData = async () => {
     try {
@@ -124,16 +142,16 @@ function DashboardContent() {
   }
 
   const quickActions = [
-    { title: 'Start AI Session', icon: Brain, href: '/coach', color: 'bg-blue-500' },
-    { title: 'Track Wellness', icon: Heart, href: '/wellness', color: 'bg-red-500' },
-    { title: 'Explore Journey', icon: Compass, href: '/journeys', color: 'bg-green-500' },
-    { title: 'View Insights', icon: BookOpen, href: '/insights', color: 'bg-purple-500' },
+    { title: 'Explore Patterns', icon: Brain, href: '/coach', color: 'bg-blue-500' },
+    { title: 'Track Progress', icon: Target, href: '/wellness', color: 'bg-green-500' },
+    { title: 'Growth Paths', icon: Compass, href: '/journeys', color: 'bg-purple-500' },
+    { title: 'Deep Insights', icon: Lightbulb, href: '/insights', color: 'bg-amber-500' },
   ]
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse">Loading your wellness dashboard...</div>
+        <div className="animate-pulse">Loading your pattern discovery dashboard...</div>
       </div>
     )
   }
@@ -145,12 +163,27 @@ function DashboardContent() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user?.user_metadata?.full_name || 'Friend'}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {format(new Date(), 'EEEE, MMMM d, yyyy')}
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Welcome back to {APP_CONFIG.name}, {user?.user_metadata?.full_name || 'Friend'}
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Let's continue understanding your deeper patterns • {format(new Date(), 'EEEE, MMMM d, yyyy')}
+              </p>
+            </div>
+            {(isAdmin || user?.email === 'ismaelmvula@gmail.com') && (
+              <a href="/admin">
+                <Button 
+                  variant="outline" 
+                  className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Admin Panel
+                </Button>
+              </a>
+            )}
+          </div>
         </div>
 
         {/* Daily Affirmation */}
@@ -161,7 +194,7 @@ function DashboardContent() {
                 <Sparkles className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-lg font-medium text-gray-900 italic">"{affirmation}"</p>
-                  <p className="text-sm text-gray-600 mt-2">Today's affirmation</p>
+                  <p className="text-sm text-gray-600 mt-2">Today's insight for growth</p>
                 </div>
               </div>
             </CardContent>
@@ -194,9 +227,9 @@ function DashboardContent() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Activity className="h-5 w-5 mr-2" />
-                Wellness Overview
+                Progress Overview
               </CardTitle>
-              <CardDescription>Your 7-day wellness trends</CardDescription>
+              <CardDescription>Your pattern discovery journey</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -236,7 +269,7 @@ function DashboardContent() {
 
                 <Link href="/wellness">
                   <Button className="w-full" variant="outline" size="sm">
-                    Track Today's Wellness
+                    Track Today's Progress
                     <ChevronRight className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
@@ -249,9 +282,9 @@ function DashboardContent() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Brain className="h-5 w-5 mr-2" />
-                Recent Sessions
+                Pattern Sessions
               </CardTitle>
-              <CardDescription>Your AI coaching conversations</CardDescription>
+              <CardDescription>Your root cause discovery conversations</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -277,7 +310,7 @@ function DashboardContent() {
                   <div className="text-center py-4">
                     <p className="text-sm text-gray-500 mb-3">No conversations yet</p>
                     <Link href="/coach">
-                      <Button size="sm">Start Your First Session</Button>
+                      <Button size="sm">Start Pattern Discovery</Button>
                     </Link>
                   </div>
                 )}
@@ -285,7 +318,7 @@ function DashboardContent() {
                 {recentConversations.length > 0 && (
                   <Link href="/coach">
                     <Button className="w-full" variant="outline" size="sm">
-                      New Conversation
+                      Explore New Pattern
                       <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
@@ -299,9 +332,9 @@ function DashboardContent() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Compass className="h-5 w-5 mr-2" />
-                Active Journeys
+                Growth Paths
               </CardTitle>
-              <CardDescription>Your growth programs</CardDescription>
+              <CardDescription>Your deep transformation programs</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -327,9 +360,9 @@ function DashboardContent() {
                   ))
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-sm text-gray-500 mb-3">No active journeys</p>
+                    <p className="text-sm text-gray-500 mb-3">No active growth paths</p>
                     <Link href="/journeys">
-                      <Button size="sm">Explore Journeys</Button>
+                      <Button size="sm">Start Growth Path</Button>
                     </Link>
                   </div>
                 )}
@@ -337,7 +370,7 @@ function DashboardContent() {
                 {activeJourneys.length > 0 && (
                   <Link href="/journeys">
                     <Button className="w-full" variant="outline" size="sm">
-                      View All Journeys
+                      View All Growth Paths
                       <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
@@ -353,7 +386,7 @@ function DashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Sessions</p>
+                  <p className="text-sm text-gray-600">Pattern Sessions</p>
                   <p className="text-2xl font-bold">{recentConversations.length}</p>
                 </div>
                 <Brain className="h-8 w-8 text-gray-400" />
@@ -365,7 +398,7 @@ function DashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Wellness Streak</p>
+                  <p className="text-sm text-gray-600">Discovery Streak</p>
                   <p className="text-2xl font-bold">{wellnessData.length} days</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-gray-400" />
@@ -377,7 +410,7 @@ function DashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Active Journeys</p>
+                  <p className="text-sm text-gray-600">Growth Paths</p>
                   <p className="text-2xl font-bold">{activeJourneys.length}</p>
                 </div>
                 <Target className="h-8 w-8 text-gray-400" />
@@ -398,6 +431,11 @@ function DashboardContent() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Professional Referral Prompt */}
+        <div className="mt-8">
+          <MiniReferralPrompt />
         </div>
       </main>
     </div>

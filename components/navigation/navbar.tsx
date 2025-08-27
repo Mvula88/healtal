@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { APP_CONFIG } from '@/lib/config'
 import { 
   Home,
   Compass,
@@ -14,24 +15,46 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  Target,
+  Shield
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
+import { createClient } from '@/lib/supabase/client'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'AI Coach', href: '/coach', icon: Brain },
-  { name: 'Journeys', href: '/journeys', icon: Compass },
-  { name: 'Wellness', href: '/wellness', icon: Heart },
+  { name: 'Pattern Coach', href: '/coach', icon: Brain },
+  { name: 'Growth Paths', href: '/journeys', icon: Compass },
+  { name: 'Progress', href: '/wellness', icon: Target },
   { name: 'Insights', href: '/insights', icon: BookOpen },
   { name: 'Community', href: '/community', icon: Users },
 ]
 
 export function Navbar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const { user, signOut } = useAuth()
+  const supabase = createClient()
+
+  useEffect(() => {
+    checkAdminStatus()
+  }, [user])
+
+  const checkAdminStatus = async () => {
+    if (!user) {
+      setIsAdmin(false)
+      return
+    }
+
+    // Simply check if the user email matches admin email
+    // Bypass database check to avoid infinite recursion error
+    setIsAdmin(user?.email === 'ismaelmvula@gmail.com')
+  }
 
   return (
     <nav className="bg-white border-b">
@@ -39,8 +62,8 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link href={user ? '/dashboard' : '/'} className="flex items-center">
-              <Heart className="h-8 w-8 text-primary mr-2" />
-              <span className="text-xl font-bold">InnerRoot</span>
+              <Brain className="h-8 w-8 text-primary mr-2" />
+              <span className="text-xl font-bold">{APP_CONFIG.name}</span>
             </Link>
 
             {user && (
@@ -70,6 +93,20 @@ export function Navbar() {
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
             {user ? (
               <>
+                {isAdmin && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-orange-600 hover:text-orange-700"
+                    onClick={() => {
+                      console.log('Admin nav clicked!')
+                      window.location.href = '/admin'
+                    }}
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Admin Panel
+                  </Button>
+                )}
                 <Link href="/settings">
                   <Button variant="ghost" size="sm">
                     <Settings className="h-4 w-4 mr-2" />
@@ -136,6 +173,18 @@ export function Navbar() {
             <div className="border-t pt-2">
               {user ? (
                 <>
+                  {isAdmin && (
+                    <button
+                      className="flex items-center px-4 py-2 text-base font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 w-full text-left"
+                      onClick={() => {
+                        router.push('/admin')
+                        setMobileMenuOpen(false)
+                      }}
+                    >
+                      <Shield className="h-5 w-5 mr-3" />
+                      Admin Panel
+                    </button>
+                  )}
                   <Link
                     href="/settings"
                     className="flex items-center px-4 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"

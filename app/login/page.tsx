@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
-import { Heart, AlertCircle } from 'lucide-react'
+import { APP_CONFIG } from '@/lib/config'
+import { Brain, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -38,17 +39,17 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center justify-center">
-            <Heart className="h-12 w-12 text-primary" />
+            <Brain className="h-12 w-12 text-primary" />
           </Link>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">Welcome back</h1>
-          <p className="mt-2 text-gray-600">Continue your personal growth journey</p>
+          <h1 className="mt-4 text-3xl font-bold text-gray-900">Welcome back to {APP_CONFIG.name}</h1>
+          <p className="mt-2 text-gray-600">Continue discovering your deeper patterns</p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Sign in to your account</CardTitle>
             <CardDescription>
-              Enter your email and password to access your wellness dashboard
+              Enter your email and password to continue your pattern discovery journey
             </CardDescription>
           </CardHeader>
           <CardContent>

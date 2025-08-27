@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
-import { Heart, AlertCircle, CheckCircle } from 'lucide-react'
+import { APP_CONFIG, LEGAL_DISCLAIMER } from '@/lib/config'
+import { Brain, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react'
 
 export default function SignUpPage() {
   const [fullName, setFullName] = useState('')
@@ -62,17 +63,17 @@ export default function SignUpPage() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center justify-center">
-            <Heart className="h-12 w-12 text-primary" />
+            <Brain className="h-12 w-12 text-primary" />
           </Link>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">Begin Your Journey</h1>
-          <p className="mt-2 text-gray-600">Create your account to start exploring yourself</p>
+          <h1 className="mt-4 text-3xl font-bold text-gray-900">Start Understanding Your Patterns</h1>
+          <p className="mt-2 text-gray-600">Join {APP_CONFIG.name} to discover the root causes behind your behaviors</p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Create your account</CardTitle>
             <CardDescription>
-              Join thousands discovering their personal growth path
+              Begin your journey to deeper self-understanding
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -171,12 +172,15 @@ export default function SignUpPage() {
                   </span>
                 </label>
 
-                <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
-                  <p className="text-xs text-blue-700">
-                    <strong>Important:</strong> InnerRoot is a personal growth platform for educational purposes. 
-                    It is not a substitute for professional medical or mental health treatment. 
-                    By creating an account, you acknowledge this understanding.
-                  </p>
+                <div className="bg-amber-50 border border-amber-200 p-3 rounded-md">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-amber-800">
+                      <strong>Important:</strong> {APP_CONFIG.name} is an AI Personal Growth Coach for educational purposes only. 
+                      Not a substitute for professional therapy or medical advice. 
+                      If you need immediate help, call 988 or text HOME to 741741.
+                    </p>
+                  </div>
                 </div>
               </div>
 

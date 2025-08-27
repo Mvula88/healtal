@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
+import { Brain } from 'lucide-react'
+import { APP_CONFIG } from '@/lib/config'
 
 export function Footer() {
   return (
@@ -8,11 +9,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center mb-4">
-              <Heart className="h-6 w-6 text-primary mr-2" />
-              <span className="text-lg font-semibold">InnerRoot</span>
+              <Brain className="h-6 w-6 text-primary mr-2" />
+              <span className="text-lg font-semibold">{APP_CONFIG.name}</span>
             </div>
             <p className="text-sm text-gray-600">
-              Where your story becomes your strength. Personal growth and self-discovery wellness platform.
+              {APP_CONFIG.description}. {APP_CONFIG.positioning}
             </p>
           </div>
 
@@ -98,12 +99,12 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-600">
-              © 2024 InnerRoot. All rights reserved.
+              © 2024 {APP_CONFIG.name}. All rights reserved.
             </p>
             <div className="mt-4 md:mt-0">
               <p className="text-xs text-gray-500 max-w-2xl text-center md:text-right">
-                InnerRoot is a personal growth and wellness platform for educational purposes only. 
-                Not intended to diagnose, treat, cure, or prevent any medical or mental health condition. 
+                {APP_CONFIG.name} is an AI Personal Growth Coach for educational purposes only. 
+                Not a substitute for professional therapy or medical advice. 
                 If experiencing a crisis, please call 988 or seek professional help immediately.
               </p>
             </div>

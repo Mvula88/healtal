@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Navbar } from '@/components/navigation/navbar'
 import { Footer } from '@/components/navigation/footer'
-import { AuthProvider } from '@/contexts/auth-context'
+import { LegalDisclaimer, MiniCrisisBar } from '@/components/crisis-resources'
+import { APP_CONFIG, PRICING_TIERS, FEATURES, COMPETITIVE_MESSAGING } from '@/lib/config'
 import { 
   Brain, 
   Heart, 
@@ -15,136 +16,98 @@ import {
   Sparkles,
   ChevronRight,
   Check,
-  Star
+  Star,
+  TrendingUp,
+  Lightbulb,
+  Target
 } from 'lucide-react'
 
 const features = [
   {
     icon: Brain,
-    title: 'AI Growth Coach',
-    description: 'Engage in meaningful conversations that help you explore patterns, understand your story, and foster personal growth.'
+    title: 'Root Cause Analysis',
+    description: 'Go beyond surface symptoms to understand the deeper origins of your patterns and behaviors.'
   },
   {
-    icon: Compass,
-    title: 'Personal Growth Journeys',
-    description: 'Follow structured pathways designed for specific areas of self-discovery, from relationships to career fulfillment.'
+    icon: Lightbulb,
+    title: 'Pattern Discovery',
+    description: 'Identify recurring themes and behaviors that shape your life experiences and relationships.'
   },
   {
-    icon: Heart,
-    title: 'Wellness Tracking',
-    description: 'Monitor your emotional wellness, track patterns, and celebrate progress on your personal growth journey.'
+    icon: Target,
+    title: 'Focused Growth Plans',
+    description: 'Personalized strategies that target the root of your challenges for lasting transformation.'
   },
   {
-    icon: Sparkles,
-    title: 'Pattern Recognition',
-    description: 'Discover connections between past experiences and current behaviors to unlock deeper self-understanding.'
+    icon: TrendingUp,
+    title: 'Progress Tracking',
+    description: 'Monitor your journey from understanding to transformation with clear metrics and milestones.'
   },
   {
     icon: Users,
-    title: 'Supportive Community',
-    description: 'Connect with others on similar journeys, share insights, and find encouragement in a safe space.'
+    title: 'Professional Network',
+    description: 'Access to vetted therapists and coaches when you need additional professional support.'
   },
   {
     icon: Shield,
-    title: 'Safe & Private',
-    description: 'Your personal growth journey is protected with enterprise-grade security and complete privacy controls.'
+    title: 'Safe & Confidential',
+    description: 'Your personal growth journey is protected with enterprise-grade security and complete privacy.'
   }
 ]
 
 const testimonials = [
   {
-    content: "InnerRoot helped me understand patterns I've been repeating for years. The AI coach asks the right questions that led to real breakthroughs.",
+    content: "Healtal helped me understand why I kept repeating the same relationship patterns. Now I finally see the root causes and can make real changes.",
     author: "Sarah M.",
-    role: "Explore Member",
+    role: "Understand Member",
     rating: 5
   },
   {
-    content: "The growth journeys are incredibly well-designed. I finally understand my relationship patterns and am building healthier connections.",
+    content: "Before expensive therapy, I wanted to understand my patterns. Healtal gave me insights that years of surface-level self-help never could.",
     author: "Michael T.",
     role: "Transform Member",
     rating: 5
   },
   {
-    content: "This platform gave me the tools to explore my story safely. The insights I've gained have been truly transformative.",
+    content: "The AI coach asks questions that get to the heart of issues. I discovered connections I never saw before.",
     author: "Emily R.",
-    role: "Explore Member",
+    role: "Understand Member",
     rating: 5
   }
 ]
 
-const pricingPlans = [
-  {
-    name: 'Discover',
-    price: 'Free',
-    description: 'Start your personal growth journey',
-    features: [
-      'Basic mood tracking',
-      '3 AI coaching conversations/month',
-      'Access to community',
-      'Basic wellness insights'
-    ],
-    cta: 'Start Free',
-    highlighted: false
-  },
-  {
-    name: 'Explore',
-    price: '$19.99',
-    period: '/month',
-    description: 'Unlock deeper self-discovery',
-    features: [
-      'Unlimited AI coaching',
-      'All growth journey programs',
-      'Advanced pattern insights',
-      'Priority support',
-      'Export your insights'
-    ],
-    cta: 'Start Exploring',
-    highlighted: true
-  },
-  {
-    name: 'Transform',
-    price: '$39.99',
-    period: '/month',
-    description: 'Complete transformation support',
-    features: [
-      'Everything in Explore',
-      'Human coaching sessions',
-      'Advanced analytics',
-      'Custom growth journeys',
-      'API access',
-      'Priority human support'
-    ],
-    cta: 'Transform Today',
-    highlighted: false
-  }
-]
+const pricingPlans = PRICING_TIERS.map(tier => ({
+  ...tier,
+  period: tier.price > 0 ? '/month' : undefined,
+  price: tier.price === 0 ? 'Free' : `$${tier.price}`,
+  highlighted: tier.popular || false
+}))
 
 export default function HomePage() {
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen hero-gradient">
         <Navbar />
         
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-16 pb-32">
+        <section className="relative overflow-hidden pt-16 pb-32 bg-gradient-to-br from-teal-50/30 via-cyan-50/20 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                Discover the <span className="text-primary">Deeper You</span>
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 float-animation">
+                {APP_CONFIG.tagline}
               </h1>
               <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                Where your story becomes your strength. Explore patterns, understand your journey, 
-                and unlock personal growth through AI-powered conversations and self-discovery tools.
+                {COMPETITIVE_MESSAGING.betterHelp}. Specialized AI coaching that helps you discover 
+                the root causes behind your patterns and behaviors for lasting personal transformation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/signup">
-                  <Button size="lg" className="text-lg px-8">
+                  <Button size="lg" className="text-lg px-8 btn-glow bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 border-0 pulse-animation">
                     Start Your Journey
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link href="/about">
-                  <Button size="lg" variant="outline" className="text-lg px-8">
+                  <Button size="lg" variant="outline" className="text-lg px-8 border-teal-500 text-teal-600 hover:bg-teal-50 hover:border-teal-600">
                     Learn More
                   </Button>
                 </Link>
@@ -157,14 +120,14 @@ export default function HomePage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-gradient-to-b from-white to-teal-50/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Tools for Your Personal Growth Journey
+                Beyond Surface-Level Solutions
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Comprehensive features designed to support your self-discovery and emotional wellness
+                {COMPETITIVE_MESSAGING.headspace}. Our specialized approach helps you understand the why behind your patterns.
               </p>
             </div>
 
@@ -172,10 +135,10 @@ export default function HomePage() {
               {features.map((feature, index) => {
                 const Icon = feature.icon
                 return (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <Card key={index} className="card-hover border-teal-100 hover:border-teal-300">
                     <CardHeader>
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className="w-12 h-12 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-lg flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6 text-teal-600" />
                       </div>
                       <CardTitle className="text-xl">{feature.title}</CardTitle>
                     </CardHeader>
@@ -192,26 +155,26 @@ export default function HomePage() {
         </section>
 
         {/* How It Works Section */}
-        <section className="py-20">
+        <section className="py-20 bg-gradient-to-b from-teal-50/20 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Your Path to Self-Discovery
+                From Surface to Source
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                A simple, supportive process designed for meaningful personal growth
+                A proven approach to understanding the root causes of your patterns
               </p>
             </div>
 
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { step: '1', title: 'Create Your Profile', desc: 'Set your growth intentions and areas of focus' },
-                { step: '2', title: 'Explore with AI Coach', desc: 'Have meaningful conversations about your experiences' },
-                { step: '3', title: 'Discover Patterns', desc: 'Identify connections and insights in your story' },
-                { step: '4', title: 'Apply & Grow', desc: 'Use insights to create positive change in your life' }
+                { step: '1', title: 'Share Your Story', desc: 'Tell our AI coach what you want to understand' },
+                { step: '2', title: 'Explore Root Causes', desc: 'Discover the deeper origins of your patterns' },
+                { step: '3', title: 'Connect the Dots', desc: 'See how past experiences shape current behaviors' },
+                { step: '4', title: 'Transform with Insight', desc: 'Use deep understanding to create lasting change' }
               ].map((step, index) => (
                 <div key={index} className="text-center">
-                  <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
+                  <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold shadow-lg">
                     {step.step}
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
@@ -223,7 +186,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-gradient-to-br from-white via-teal-50/10 to-cyan-50/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -236,11 +199,11 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {testimonials.map((testimonial, index) => (
-                <Card key={index}>
+                <Card key={index} className="card-hover border-teal-100 hover:border-teal-300">
                   <CardContent className="pt-6">
                     <div className="flex mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                        <Star key={i} className="h-5 w-5 text-teal-500 fill-current" />
                       ))}
                     </div>
                     <p className="text-gray-600 mb-4 italic">"{testimonial.content}"</p>
@@ -256,7 +219,7 @@ export default function HomePage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-20">
+        <section className="py-20 bg-gradient-to-b from-cyan-50/20 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -269,9 +232,9 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {pricingPlans.map((plan, index) => (
-                <Card key={index} className={plan.highlighted ? 'border-primary shadow-lg' : ''}>
+                <Card key={index} className={`card-hover ${plan.highlighted ? 'border-teal-500 shadow-xl bg-gradient-to-br from-white to-teal-50/30' : 'border-teal-100'}`}>
                   {plan.highlighted && (
-                    <div className="bg-primary text-white text-center py-2 text-sm font-semibold">
+                    <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-center py-2 text-sm font-semibold">
                       Most Popular
                     </div>
                   )}
@@ -287,14 +250,14 @@ export default function HomePage() {
                     <ul className="space-y-3 mb-6">
                       {plan.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                          <Check className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0 mt-0.5" />
                           <span className="text-sm">{feature}</span>
                         </li>
                       ))}
                     </ul>
                     <Link href="/signup" className="block">
                       <Button 
-                        className="w-full" 
+                        className={`w-full ${plan.highlighted ? 'btn-glow bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 border-0' : 'border-teal-500 text-teal-600 hover:bg-teal-50'}`} 
                         variant={plan.highlighted ? 'default' : 'outline'}
                       >
                         {plan.cta}
@@ -308,34 +271,29 @@ export default function HomePage() {
         </section>
 
         {/* Disclaimer Section */}
-        <section className="py-12 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <Shield className="h-8 w-8 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Important Information</h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              InnerRoot is a personal growth and wellness platform designed for self-discovery and emotional wellness. 
-              This app is for educational purposes only and is not intended to diagnose, treat, cure, or prevent any 
-              medical or mental health condition. The AI coach provides personal growth support, not therapy or medical advice. 
-              If you're experiencing a mental health crisis, please contact your local emergency services or call 988.
-            </p>
+        <section className="py-12 bg-gradient-to-b from-teal-50/30 to-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <LegalDisclaimer />
             <div className="mt-4 flex justify-center space-x-4">
-              <Link href="/privacy" className="text-sm text-primary hover:underline">
+              <Link href="/privacy" className="text-sm text-teal-600 hover:text-teal-700 hover:underline transition-colors">
                 Privacy Policy
               </Link>
-              <span className="text-gray-400">•</span>
-              <Link href="/terms" className="text-sm text-primary hover:underline">
+              <span className="text-teal-300">•</span>
+              <Link href="/terms" className="text-sm text-teal-600 hover:text-teal-700 hover:underline transition-colors">
                 Terms of Service
               </Link>
-              <span className="text-gray-400">•</span>
-              <Link href="/disclaimers" className="text-sm text-primary hover:underline">
+              <span className="text-teal-300">•</span>
+              <Link href="/disclaimers" className="text-sm text-teal-600 hover:text-teal-700 hover:underline transition-colors">
                 Full Disclaimers
               </Link>
             </div>
           </div>
         </section>
 
-        <Footer />
-      </div>
-    </AuthProvider>
+        {/* Crisis Resources Bar */}
+        <MiniCrisisBar />
+
+      <Footer />
+    </div>
   )
 }

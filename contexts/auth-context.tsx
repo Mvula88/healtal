@@ -37,10 +37,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       setLoading(false)
 
+      // Don't redirect if we're on an admin page or already on the target page
+      const currentPath = window.location.pathname
+      const isAdminPage = currentPath.startsWith('/admin')
+      const isDashboard = currentPath === '/dashboard'
+      const isHomePage = currentPath === '/'
+      
       if (event === 'SIGNED_IN') {
-        router.push('/dashboard')
+        // Only redirect to dashboard if not already there and not on admin page
+        if (!isDashboard && !isAdminPage) {
+          router.push('/dashboard')
+        }
       } else if (event === 'SIGNED_OUT') {
-        router.push('/')
+        // Only redirect to home if not already there
+        if (!isHomePage) {
+          router.push('/')
+        }
       }
     })
 

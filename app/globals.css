@@ -5,25 +5,25 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 184 80% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 184 80% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 184 80% 10%;
+    --primary: 174 72% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 174 42% 92%;
+    --secondary-foreground: 174 72% 25%;
+    --muted: 174 20% 94%;
+    --muted-foreground: 174 20% 40%;
+    --accent: 174 60% 88%;
+    --accent-foreground: 174 72% 25%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --border: 174 20% 88%;
+    --input: 174 20% 88%;
+    --ring: 174 72% 46%;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -55,5 +55,65 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #40e0d0 100%);
+  }
+  
+  .turquoise-gradient {
+    background: linear-gradient(135deg, #17ead9 0%, #6078ea 100%);
+  }
+  
+  .hero-gradient {
+    background: linear-gradient(180deg, #ffffff 0%, #e6fffa 50%, #f0fdfa 100%);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #40e0d0 0%, #17b4a6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .card-hover {
+    transition: all 0.3s ease;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(64, 224, 208, 0.15);
+  }
+  
+  .btn-glow {
+    box-shadow: 0 4px 14px 0 rgba(64, 224, 208, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-glow:hover {
+    box-shadow: 0 6px 20px 0 rgba(64, 224, 208, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(64, 224, 208, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(64, 224, 208, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(64, 224, 208, 0); }
+  }
+  
+  .pulse-animation {
+    animation: pulse-glow 2s infinite;
   }
 }

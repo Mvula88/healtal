@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
         .select('conversation_type')
       
       const patternCounts: Record<string, number> = {}
-      allConversations?.forEach(conv => {
+      allConversations?.forEach((conv: any) => {
         const type = conv.conversation_type || 'General'
         patternCounts[type] = (patternCounts[type] || 0) + 1
       })

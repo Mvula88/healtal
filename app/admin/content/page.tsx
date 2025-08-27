@@ -161,7 +161,7 @@ export default function ContentManagementPage() {
         
         // Insert default journeys
         for (const journey of defaultJourneys) {
-          await supabase.from('growth_journeys').insert(journey)
+          await supabase.from('growth_journeys').insert(journey as any)
         }
         
         // Fetch again

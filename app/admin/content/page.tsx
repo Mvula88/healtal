@@ -182,7 +182,7 @@ export default function ContentManagementPage() {
         .order('created_at', { ascending: false })
 
       if (affirmations && !affirmationsError) {
-        const items = affirmations.map(item => ({
+        const items = affirmations.map((item: any) => ({
           ...item,
           type: 'affirmation' as const,
           category: 'Daily',

@@ -171,7 +171,7 @@ export default function ContentManagementPage() {
           .order('created_at', { ascending: false })
         
         if (newJourneys) {
-          setJourneys(newJourneys.map(j => ({ ...j, active_users: 0, completion_rate: 0, status: 'published' as const })))
+          setJourneys(newJourneys.map((j: any) => ({ ...j, active_users: 0, completion_rate: 0, status: 'published' as const })))
         }
       }
 

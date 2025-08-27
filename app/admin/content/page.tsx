@@ -203,11 +203,11 @@ export default function ContentManagementPage() {
         // Insert default affirmations
         const { data: insertedAffirmations } = await supabase
           .from('daily_affirmations')
-          .insert(defaultAffirmations)
+          .insert(defaultAffirmations as any)
           .select()
         
         if (insertedAffirmations) {
-          const items = insertedAffirmations.map(item => ({
+          const items = insertedAffirmations.map((item: any) => ({
             ...item,
             content: item.affirmation,
             type: 'affirmation' as const,

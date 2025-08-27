@@ -104,7 +104,7 @@ export default function ContentManagementPage() {
 
       if (journeysData && !journeysError) {
         // Calculate active users and completion rates for each journey
-        const enrichedJourneys = await Promise.all(journeysData.map(async (journey) => {
+        const enrichedJourneys = await Promise.all(journeysData.map(async (journey: any) => {
           // Count users on this journey
           const { count: activeUsers } = await supabase
             .from('user_journey_progress')

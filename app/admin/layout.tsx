@@ -14,22 +14,22 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, isLoading } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
   const [isAdmin, setIsAdmin] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!loading) {
       const adminEmail = 'ismaelmvula@gmail.com'
       const userIsAdmin = user?.email === adminEmail
       setIsAdmin(userIsAdmin)
       setAuthChecked(true)
     }
-  }, [user, isLoading])
+  }, [user, loading])
 
   // Show loading state while checking auth
-  if (!authChecked || isLoading) {
+  if (!authChecked || loading) {
     return (
       <div className="min-h-screen relative overflow-hidden">
         {/* Subtle animated orbs */}

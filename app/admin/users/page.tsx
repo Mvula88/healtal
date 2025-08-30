@@ -109,8 +109,8 @@ export default function UsersManagementPage() {
         } else {
           // If profiles table doesn't exist, use minimal mock data
           setUsers([{
-            id: user?.id || '1',
-            email: user?.email || 'ismaelmvula@gmail.com',
+            id: '1',
+            email: 'ismaelmvula@gmail.com',
             full_name: 'Admin User',
             role: 'admin' as const,
             subscription_tier: 'transform' as const,
@@ -164,8 +164,8 @@ export default function UsersManagementPage() {
       console.error('Error fetching users:', error)
       // Fallback to minimal data
       setUsers([{
-        id: user?.id || '1',
-        email: user?.email || 'ismaelmvula@gmail.com',
+        id: '1',
+        email: 'ismaelmvula@gmail.com',
         full_name: 'Admin User',
         role: 'admin' as const,
         subscription_tier: 'transform' as const,
@@ -587,7 +587,6 @@ export default function UsersManagementPage() {
               )}
             </CardContent>
           </Card>
-        </div>
       </div>
     </div>
   )

@@ -968,7 +968,7 @@ function CoachContent() {
                       >
                         <Mic className="h-4 w-4" />
                       </Button>
-                      <Button onClick={sendMessage} disabled={!inputMessage.trim() || thinking}>
+                      <Button onClick={() => sendMessage()} disabled={!inputMessage.trim() || thinking}>
                         <Send className="h-4 w-4" />
                       </Button>
                     </>

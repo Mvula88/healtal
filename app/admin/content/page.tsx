@@ -632,7 +632,6 @@ export default function ContentManagementPage() {
               </Card>
             </div>
           )}
-        </div>
       </div>
     </div>
   )

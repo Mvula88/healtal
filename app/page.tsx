@@ -282,23 +282,23 @@ export default function HomePage() {
   return (
     <LoadingWrapper loading={loading} skeleton="page">
       <div className="relative">
-      {/* Subtle animated background */}
-      <motion.div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ opacity }}>
-        <motion.div 
-          className="orb orb-teal w-[600px] h-[600px] absolute -top-48 -right-48"
-          style={{ y: y1 }}
-        />
-        <motion.div 
-          className="orb orb-cyan w-[500px] h-[500px] absolute -bottom-32 -left-32"
-          style={{ y: y2 }}
-        />
-      </motion.div>
-      
-      <Navbar />
-      
-      {/* Hero Section - BetterHelp style */}
-      <section 
-        className="relative pt-24 pb-20 px-4 overflow-hidden"
+        {/* Subtle animated background */}
+        <motion.div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ opacity }}>
+          <motion.div 
+            className="orb orb-teal w-[600px] h-[600px] absolute -top-48 -right-48"
+            style={{ y: y1 }}
+          />
+          <motion.div 
+            className="orb orb-cyan w-[500px] h-[500px] absolute -bottom-32 -left-32"
+            style={{ y: y2 }}
+          />
+        </motion.div>
+        
+        <Navbar />
+        
+        {/* Hero Section - BetterHelp style */}
+        <section 
+          className="relative pt-24 pb-20 px-4 overflow-hidden"
         style={{
           backgroundImage: 'linear-gradient(135deg, rgba(20, 184, 166, 0.5) 0%, rgba(6, 182, 212, 0.5) 100%), url(/hero-nature.jpg)',
           backgroundSize: 'cover',
@@ -339,10 +339,10 @@ export default function HomePage() {
             </div>
           </motion.div>
         </div>
-      </section>
+        </section>
 
       {/* Trust Indicators / Stats */}
-      <section className="py-16 px-4 relative stats-section" style={{
+        <section className="py-16 px-4 relative stats-section" style={{
         background: 'rgba(243, 244, 246, 0.95)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -378,10 +378,10 @@ export default function HomePage() {
             })}
           </motion.div>
         </div>
-      </section>
+        </section>
 
       {/* How It Works */}
-      <section className="py-20 px-4 bg-white/50 backdrop-blur-sm scroll-fade-in">
+        <section className="py-20 px-4 bg-white/50 backdrop-blur-sm scroll-fade-in">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -421,10 +421,10 @@ export default function HomePage() {
             })}
           </div>
         </div>
-      </section>
+        </section>
 
       {/* Features Grid */}
-      <section className="py-20 px-4 scroll-fade-in">
+        <section className="py-20 px-4 scroll-fade-in">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -457,10 +457,10 @@ export default function HomePage() {
             })}
           </div>
         </div>
-      </section>
+        </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 bg-gradient-to-br from-teal-50/50 to-cyan-50/50 scroll-fade-in">
+        <section className="py-20 px-4 bg-gradient-to-br from-teal-50/50 to-cyan-50/50 scroll-fade-in">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -503,10 +503,10 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+        </section>
 
       {/* Pricing */}
-      <section className="py-20 px-4 scroll-fade-in">
+        <section className="py-20 px-4 scroll-fade-in">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -633,10 +633,10 @@ export default function HomePage() {
             All plans include a 7-day free trial. Cancel anytime.
           </p>
         </div>
-      </section>
+        </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 text-white scroll-fade-in relative" style={{
+        <section className="py-20 px-4 text-white scroll-fade-in relative" style={{
         backgroundImage: 'linear-gradient(to bottom right, rgba(20, 184, 166, 0.65), rgba(6, 182, 212, 0.65)), url(/healing-hands.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -669,10 +669,10 @@ export default function HomePage() {
             </div>
           </motion.div>
         </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200">
+        {/* Footer */}
+        <footer className="bg-gray-50 border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand Column */}
@@ -785,7 +785,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </footer>
+        </footer>
       </div>
     </LoadingWrapper>
   )

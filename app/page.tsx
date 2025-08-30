@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navigation/navbar'
+import { PageSkeleton } from '@/components/ui/skeleton'
+import { LoadingWrapper } from '@/components/ui/loading-wrapper'
 import { 
   Brain, 
   Heart, 
@@ -28,6 +30,7 @@ import {
 export default function HomePage() {
   const [activeService, setActiveService] = useState('individual')
   const [mounted, setMounted] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [userCount, setUserCount] = useState(50000)
   const [animatedUserCount, setAnimatedUserCount] = useState(0)
   const [animatedSatisfaction, setAnimatedSatisfaction] = useState(0)
@@ -40,15 +43,22 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true)
-    // Fetch actual user count from database (placeholder for now)
-    // This would be replaced with actual API call
-    const fetchUserCount = async () => {
-      // const response = await fetch('/api/users/count')
-      // const data = await response.json()
-      // setUserCount(data.count)
-      setUserCount(50127) // Simulated real count
+    // Simulate loading time for initial data
+    const loadData = async () => {
+      setLoading(true)
+      // Fetch actual user count from database (placeholder for now)
+      // This would be replaced with actual API call
+      const fetchUserCount = async () => {
+        // const response = await fetch('/api/users/count')
+        // const data = await response.json()
+        // setUserCount(data.count)
+        setUserCount(50127) // Simulated real count
+      }
+      await fetchUserCount()
+      // Simulate a brief loading time
+      setTimeout(() => setLoading(false), 800)
     }
-    fetchUserCount()
+    loadData()
     
     // Simulate real-time updates
     const interval = setInterval(() => {
@@ -270,7 +280,8 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="relative">
+    <LoadingWrapper loading={loading} skeleton="page">
+      <div className="relative">
       {/* Subtle animated background */}
       <motion.div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ opacity }}>
         <motion.div 
@@ -775,6 +786,7 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </LoadingWrapper>
   )
 }

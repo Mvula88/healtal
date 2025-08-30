@@ -2,9 +2,11 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/navigation/navbar'
 import { Footer } from '@/components/navigation/footer'
+import { PageSkeleton } from '@/components/ui/skeleton'
+import { LoadingWrapper } from '@/components/ui/loading-wrapper'
 import { 
   Check, 
   X, 
@@ -27,10 +29,16 @@ import Image from 'next/image'
 
 export default function PricingPage() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
+  const [loading, setLoading] = useState(true)
   const { scrollY } = useScroll()
   const y1 = useTransform(scrollY, [0, 300], [0, 50])
   const y2 = useTransform(scrollY, [0, 300], [0, -50])
   const opacity = useTransform(scrollY, [0, 200], [0.3, 0.1])
+  
+  useEffect(() => {
+    // Simulate loading
+    setTimeout(() => setLoading(false), 600)
+  }, [])
   
   const plans = [
     {
@@ -117,7 +125,8 @@ export default function PricingPage() {
   ]
 
   return (
-    <div className="relative">
+    <LoadingWrapper loading={loading} skeleton="page">
+      <div className="relative">
       {/* Animated Background */}
       <motion.div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ opacity }}>
         <motion.div 
@@ -449,6 +458,7 @@ export default function PricingPage() {
       </section>
 
       <Footer />
-    </div>
+      </div>
+    </LoadingWrapper>
   )
 }

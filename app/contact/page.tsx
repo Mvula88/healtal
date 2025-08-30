@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,8 +11,11 @@ import { Navbar } from '@/components/navigation/navbar'
 import { Footer } from '@/components/navigation/footer'
 import { Mail, MessageSquare, Phone, MapPin, Send } from 'lucide-react'
 import { APP_CONFIG } from '@/lib/config'
+import { PageSkeleton } from '@/components/ui/skeleton'
+import { LoadingWrapper } from '@/components/ui/loading-wrapper'
 
 export default function ContactPage() {
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,6 +23,10 @@ export default function ContactPage() {
     message: ''
   })
   const [sending, setSending] = useState(false)
+  
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 600)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,7 +40,8 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <LoadingWrapper loading={loading} skeleton="page">
+      <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 -z-10">
         <div className="orb orb-teal w-96 h-96 top-20 -right-20 opacity-30" />
@@ -206,6 +214,7 @@ export default function ContactPage() {
       </main>
       
       <Footer />
-    </div>
+      </div>
+    </LoadingWrapper>
   )
 }

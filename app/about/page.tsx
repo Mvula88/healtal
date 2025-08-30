@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navigation/navbar'
+import { PageSkeleton } from '@/components/ui/skeleton'
+import { LoadingWrapper } from '@/components/ui/loading-wrapper'
 import { 
   Brain, 
   Heart, 
@@ -21,6 +23,7 @@ import {
 
 export default function AboutPage() {
   const [mounted, setMounted] = useState(false)
+  const [loading, setLoading] = useState(true)
   const { scrollY } = useScroll()
   const y1 = useTransform(scrollY, [0, 300], [0, 50])
   const y2 = useTransform(scrollY, [0, 300], [0, -50])
@@ -28,6 +31,8 @@ export default function AboutPage() {
 
   useEffect(() => {
     setMounted(true)
+    // Simulate loading
+    setTimeout(() => setLoading(false), 600)
   }, [])
 
   const values = [
@@ -92,7 +97,8 @@ export default function AboutPage() {
   ]
 
   return (
-    <div className="relative">
+    <LoadingWrapper loading={loading} skeleton="page">
+      <div className="relative">
       {/* Animated Background */}
       <motion.div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ opacity }}>
         <motion.div 
@@ -460,6 +466,7 @@ export default function AboutPage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </LoadingWrapper>
   )
 }

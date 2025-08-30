@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 
 /**
  * Set a user as admin by email
@@ -44,10 +44,10 @@ export async function setUserAsAdmin(email: string) {
           id: user.id,
           email: user.email,
           full_name: user.user_metadata?.full_name || 'Admin User',
-          role: 'admin',
+          role: 'admin' as const,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        })
+        } as any)
 
       if (insertError) {
         return {
@@ -64,10 +64,10 @@ export async function setUserAsAdmin(email: string) {
     }
 
     // User exists, update their role
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('profiles')
       .update({ 
-        role: 'admin',
+        role: 'admin' as const,
         updated_at: new Date().toISOString()
       })
       .eq('email', email)
@@ -114,7 +114,7 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
     return false
   }
 
-  return data.role === 'admin'
+  return (data as any).role === 'admin'
 }
 
 /**

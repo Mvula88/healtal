@@ -1,1 +1,1 @@
-# Healtal - AI Personal Growth Coach
+# Beneathy - AI Personal Growth Coach

@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -90,12 +92,12 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-6 text-center">
             <div className="flex justify-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                <Heart className="w-10 h-10 text-primary" />
+              <div className="w-20 h-20 bg-teal-600/10 rounded-full flex items-center justify-center">
+                <Heart className="w-10 h-10 text-teal-600" />
               </div>
             </div>
             <div>
-              <h3 className="text-2xl font-bold mb-2">Welcome, {user?.name || 'there'}!</h3>
+              <h3 className="text-2xl font-bold mb-2">Welcome, {(user as any)?.name || 'there'}!</h3>
               <p className="text-gray-600">
                 We're excited to be part of your personal growth journey. 
                 Let's take a few moments to personalize your experience.
@@ -129,25 +131,27 @@ export default function OnboardingPage() {
                 <button
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`p-4 rounded-xl border-2 transition-all hover:scale-105 ${
                     responses.goals.includes(goal.id)
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-teal-500 bg-teal-50 shadow-lg'
+                      : 'border-gray-200 hover:border-teal-300 hover:bg-teal-50/30'
                   }`}
                 >
                   <div className="text-2xl mb-2">{goal.icon}</div>
-                  <div className="text-sm font-medium">{goal.label}</div>
+                  <div className="text-sm font-semibold text-gray-900">{goal.label}</div>
                 </button>
               ))}
             </div>
             <div>
-              <Label htmlFor="challenge">What's your biggest challenge right now? (Optional)</Label>
-              <Textarea
+              <label htmlFor="challenge" className="block text-sm font-medium text-gray-700 mb-2">
+                What's your biggest challenge right now? (Optional)
+              </label>
+              <textarea
                 id="challenge"
                 placeholder="Share what you're currently struggling with..."
                 value={responses.currentChallenge}
                 onChange={(e) => setResponses(prev => ({ ...prev, currentChallenge: e.target.value }))}
-                className="mt-2"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 transition-all resize-none"
                 rows={3}
               />
             </div>
@@ -282,8 +286,8 @@ export default function OnboardingPage() {
                 Let's begin your journey to a better you.
               </p>
             </div>
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 p-4 rounded-lg">
-              <p className="text-sm text-purple-700">
+            <div className="bg-gradient-to-r from-teal-50 to-pink-50 border border-teal-200 p-4 rounded-lg">
+              <p className="text-sm text-teal-700">
                 <strong>First step:</strong> We've selected a growth journey based on your goals. 
                 You can explore more journeys anytime from your dashboard.
               </p>
@@ -299,71 +303,129 @@ export default function OnboardingPage() {
   const CurrentIcon = onboardingSteps[currentStep].icon
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <div className="mb-8">
-          <Progress value={progress} className="h-2" />
-          <div className="flex justify-between mt-2">
-            {onboardingSteps.map((step, index) => (
-              <div
-                key={step.id}
-                className={`text-xs ${
-                  index <= currentStep ? 'text-primary font-medium' : 'text-gray-400'
-                }`}
-              >
-                {index < currentStep && '✓'}
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-96 h-96 -top-32 -right-32"
+          animate={{ 
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-80 h-80 -bottom-20 -left-20"
+          animate={{ 
+            x: [0, -30, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity }}
+        />
+      </div>
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <CurrentIcon className="h-6 w-6 text-primary" />
-              <div>
-                <CardTitle>{onboardingSteps[currentStep].title}</CardTitle>
-                <CardDescription>{onboardingSteps[currentStep].description}</CardDescription>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <motion.div 
+          className="w-full max-w-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          {/* Progress Section */}
+          <div className="mb-8">
+            <div className="bg-white rounded-full p-2 shadow-lg border border-gray-100">
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <motion.div 
+                  className="bg-gradient-to-r from-teal-500 to-cyan-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                />
               </div>
             </div>
-          </CardHeader>
-          
-          <CardContent>
-            <div className="min-h-[300px]">
-              {renderStepContent()}
+            <div className="flex justify-between mt-4 px-2">
+              {onboardingSteps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className={`flex flex-col items-center text-xs ${
+                    index <= currentStep ? 'text-teal-600 font-medium' : 'text-gray-400'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${
+                    index <= currentStep ? 'bg-teal-100 text-teal-600' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    {index < currentStep ? '✓' : index + 1}
+                  </div>
+                  <span className="hidden sm:block">{step.title.split(' ')[0]}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Main Card */}
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+            key={currentStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-teal-50 to-cyan-50 p-8 border-b border-gray-100">
+              <div className="flex items-center space-x-4">
+                <div className="bg-teal-500 rounded-2xl p-4 shadow-lg">
+                  <CurrentIcon className="h-8 w-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-gray-900">{onboardingSteps[currentStep].title}</h1>
+                  <p className="text-gray-600 mt-1">{onboardingSteps[currentStep].description}</p>
+                </div>
+              </div>
             </div>
             
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentStep === 0}
-                className="flex items-center"
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Back
-              </Button>
+            {/* Content */}
+            <div className="p-8">
+              <div className="min-h-[300px]">
+                {renderStepContent()}
+              </div>
               
-              <Button
-                onClick={handleNext}
-                className="flex items-center"
-                disabled={currentStep === 1 && responses.goals.length === 0}
-              >
-                {currentStep === onboardingSteps.length - 1 ? 'Start Journey' : 'Next'}
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
+              {/* Navigation */}
+              <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+                <button
+                  onClick={handleBack}
+                  disabled={currentStep === 0}
+                  className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all ${
+                    currentStep === 0 
+                      ? 'text-gray-400 cursor-not-allowed' 
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Back
+                </button>
+                
+                <button
+                  onClick={handleNext}
+                  disabled={currentStep === 1 && responses.goals.length === 0}
+                  className="btn-primary group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {currentStep === onboardingSteps.length - 1 ? 'Start Journey' : 'Next'}
+                  <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </motion.div>
 
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="text-sm text-gray-500 hover:text-gray-700 underline"
-          >
-            Skip for now
-          </button>
-        </div>
+          {/* Skip Option */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="text-sm text-gray-500 hover:text-teal-600 transition-colors font-medium"
+            >
+              Skip for now
+            </button>
+          </div>
+        </motion.div>
       </div>
     </div>
   )

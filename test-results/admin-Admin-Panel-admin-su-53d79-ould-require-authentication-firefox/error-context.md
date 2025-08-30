@@ -1,0 +1,58 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - link [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img [ref=e6] [cursor=pointer]
+    - heading "Welcome back to Healtal" [level=1] [ref=e15]
+    - paragraph [ref=e16]: Continue discovering your deeper patterns
+  - generic [ref=e17]:
+    - generic [ref=e18]:
+      - heading "Sign in to your account" [level=3] [ref=e19]
+      - paragraph [ref=e20]: Enter your email and password to continue your pattern discovery journey
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: Email address
+          - textbox "Email address" [ref=e25]
+        - generic [ref=e26]:
+          - generic [ref=e27]: Password
+          - textbox "Password" [ref=e28]
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - checkbox "Remember me" [ref=e31]
+            - generic [ref=e32]: Remember me
+          - link "Forgot password?" [ref=e33] [cursor=pointer]:
+            - /url: /forgot-password
+        - button "Sign in" [ref=e34] [cursor=pointer]
+      - generic [ref=e35]:
+        - generic [ref=e40]: Or continue with
+        - generic [ref=e41]:
+          - button "Google" [disabled]:
+            - img
+            - text: Google
+          - button "GitHub" [disabled]:
+            - img
+            - text: GitHub
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]: Don't have an account?
+        - link "Start your journey" [ref=e45] [cursor=pointer]:
+          - /url: /signup
+      - paragraph [ref=e47]:
+        - text: By signing in, you agree to our
+        - link "Terms of Service" [ref=e48] [cursor=pointer]:
+          - /url: /terms
+        - text: and
+        - link "Privacy Policy" [ref=e49] [cursor=pointer]:
+          - /url: /privacy
+  - paragraph [ref=e51]:
+    - text: Need help? Contact
+    - link "support" [ref=e52] [cursor=pointer]:
+      - /url: /contact
+    - text: or visit our
+    - link "help center" [ref=e53] [cursor=pointer]:
+      - /url: /help
+```

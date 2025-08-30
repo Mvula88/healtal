@@ -468,6 +468,294 @@ export type Database = {
           created_at?: string
         }
       }
+      profiles: {
+        Row: {
+          id: string
+          email: string | null
+          full_name: string | null
+          role: 'user' | 'admin' | 'moderator'
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          email?: string | null
+          full_name?: string | null
+          role?: 'user' | 'admin' | 'moderator'
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string | null
+          full_name?: string | null
+          role?: 'user' | 'admin' | 'moderator'
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      daily_checkins: {
+        Row: {
+          id: string
+          user_id: string
+          mood: number
+          energy: number
+          stress: number
+          gratitude: string | null
+          intention: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          mood: number
+          energy: number
+          stress: number
+          gratitude?: string | null
+          intention?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          mood?: number
+          energy?: number
+          stress?: number
+          gratitude?: string | null
+          intention?: string | null
+          created_at?: string
+        }
+      }
+      therapeutic_tools: {
+        Row: {
+          id: string
+          user_id: string
+          tool_type: string
+          tool_name: string
+          duration_minutes: number
+          completion_percentage: number
+          effectiveness_rating: number
+          insights_gained: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          tool_type: string
+          tool_name: string
+          duration_minutes?: number
+          completion_percentage?: number
+          effectiveness_rating?: number
+          insights_gained?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          tool_type?: string
+          tool_name?: string
+          duration_minutes?: number
+          completion_percentage?: number
+          effectiveness_rating?: number
+          insights_gained?: Json
+          created_at?: string
+        }
+      }
+      professionals: {
+        Row: {
+          id: string
+          name: string
+          title: string
+          specialization: string
+          email: string
+          phone: string | null
+          location: string | null
+          website: string | null
+          bio: string | null
+          verified: boolean
+          rating: number | null
+          referral_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          title: string
+          specialization: string
+          email: string
+          phone?: string | null
+          location?: string | null
+          website?: string | null
+          bio?: string | null
+          verified?: boolean
+          rating?: number | null
+          referral_count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          title?: string
+          specialization?: string
+          email?: string
+          phone?: string | null
+          location?: string | null
+          website?: string | null
+          bio?: string | null
+          verified?: boolean
+          rating?: number | null
+          referral_count?: number
+          created_at?: string
+        }
+      }
+      voice_sessions: {
+        Row: {
+          id: string
+          conversation_id: string
+          audio_url: string | null
+          transcript: string | null
+          duration_seconds: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          audio_url?: string | null
+          transcript?: string | null
+          duration_seconds?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          audio_url?: string | null
+          transcript?: string | null
+          duration_seconds?: number | null
+          created_at?: string
+        }
+      }
+      crisis_safety_plans: {
+        Row: {
+          id: string
+          user_id: string
+          warning_signs: Json
+          coping_strategies: Json
+          support_contacts: Json
+          safe_environment: Json
+          professional_contacts: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          warning_signs?: Json
+          coping_strategies?: Json
+          support_contacts?: Json
+          safe_environment?: Json
+          professional_contacts?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          warning_signs?: Json
+          coping_strategies?: Json
+          support_contacts?: Json
+          safe_environment?: Json
+          professional_contacts?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      pattern_analysis: {
+        Row: {
+          id: string
+          user_id: string
+          pattern_name: string
+          description: string | null
+          frequency: string | null
+          triggers: Json
+          impacts: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          pattern_name: string
+          description?: string | null
+          frequency?: string | null
+          triggers?: Json
+          impacts?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          pattern_name?: string
+          description?: string | null
+          frequency?: string | null
+          triggers?: Json
+          impacts?: Json
+          created_at?: string
+        }
+      }
+      pattern_connections: {
+        Row: {
+          id: string
+          user_id: string
+          from_pattern_id: string
+          to_pattern_id: string
+          connection_type: string
+          strength: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          from_pattern_id: string
+          to_pattern_id: string
+          connection_type: string
+          strength?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          from_pattern_id?: string
+          to_pattern_id?: string
+          connection_type?: string
+          strength?: number
+          created_at?: string
+        }
+      }
+      pattern_timeline: {
+        Row: {
+          id: string
+          user_id: string
+          pattern_id: string
+          event_date: string
+          event_description: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          pattern_id: string
+          event_date: string
+          event_description: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          pattern_id?: string
+          event_date?: string
+          event_description?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

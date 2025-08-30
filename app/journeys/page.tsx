@@ -1,11 +1,13 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { 
   Compass,
   Play,
@@ -72,6 +74,7 @@ function JourneysContent() {
     if (user) {
       fetchJourneys()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchJourneys = async () => {
@@ -195,38 +198,97 @@ function JourneysContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative">
+      {/* Animated Background */}
+      <motion.div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+          animate={{ 
+            y: [0, 20, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Growth Journeys</h1>
-          <p className="text-gray-600 mt-2">Structured pathways for personal development</p>
-        </div>
+        <motion.div 
+          className="mb-12 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Your Growth <span className="gradient-text">Journeys</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Structured pathways designed to guide you through meaningful personal transformation
+          </p>
+          
+          {/* Trust indicators */}
+          <div className="flex justify-center items-center gap-6 mt-6 text-sm text-gray-500">
+            <div className="flex items-center gap-1">
+              <CheckCircle className="h-4 w-4 text-teal-500" />
+              <span>Evidence-based</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4 text-teal-500" />
+              <span>Self-paced</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Award className="h-4 w-4 text-teal-500" />
+              <span>Professional guidance</span>
+            </div>
+          </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Journey List */}
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Available Journeys</CardTitle>
-                <CardDescription>Select a journey to explore</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="text-teal-700">Available Journeys</CardTitle>
+                  <CardDescription>Select a journey to explore</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
                 {availableJourneys.map((journey) => {
                   const status = getJourneyStatus(journey)
                   const progress = getProgressPercentage(journey)
                   
                   return (
-                    <button
+                    <motion.button
                       key={journey.id}
                       onClick={() => selectJourney(journey)}
-                      className={`w-full text-left p-3 rounded-lg transition-all ${
+                      className={`w-full text-left p-4 rounded-2xl transition-all duration-300 ${
                         selectedJourney?.id === journey.id
-                          ? 'bg-primary/10 border-primary/20 border'
-                          : 'hover:bg-gray-50 border border-gray-200'
+                          ? 'bg-teal-50 border-teal-300 border-2 shadow-lg'
+                          : 'hover:bg-white/80 border border-gray-200 hover:border-teal-200 hover:shadow-md'
                       }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
                       <div className="space-y-2">
                         <div className="flex items-start justify-between">
@@ -267,14 +329,20 @@ function JourneysContent() {
                           })}
                         </div>
                       </div>
-                    </button>
+                    </motion.button>
                   )
                 })}
               </CardContent>
             </Card>
+            </motion.div>
 
             {/* Journey Stats */}
-            <Card>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+            <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
               <CardHeader>
                 <CardTitle>Your Progress</CardTitle>
               </CardHeader>
@@ -299,12 +367,18 @@ function JourneysContent() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
           </div>
 
           {/* Journey Details */}
           <div className="lg:col-span-2">
             {selectedJourney ? (
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+              <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -338,7 +412,7 @@ function JourneysContent() {
                   {/* Action Button */}
                   <div className="mt-6">
                     {!currentProgress ? (
-                      <Button onClick={() => startJourney(selectedJourney)} className="w-full">
+                      <Button onClick={() => startJourney(selectedJourney)} className="btn-primary w-full">
                         <Play className="h-4 w-4 mr-2" />
                         Start This Journey
                       </Button>
@@ -357,7 +431,7 @@ function JourneysContent() {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
-                            className="bg-primary h-2 rounded-full transition-all"
+                            className="bg-teal-600 h-2 rounded-full transition-all"
                             style={{ width: `${getProgressPercentage(selectedJourney)}%` }}
                           />
                         </div>
@@ -380,16 +454,16 @@ function JourneysContent() {
                           <div
                             key={index}
                             className={`p-4 rounded-lg border transition-all ${
-                              isCurrent ? 'border-primary bg-primary/5' :
+                              isCurrent ? 'border-teal-600 bg-teal-600/5' :
                               isCompleted ? 'border-green-200 bg-green-50' :
-                              isLocked ? 'border-gray-200 bg-gray-50 opacity-60' :
+                              isLocked ? 'border-gray-200 bg-white opacity-60' :
                               'border-gray-200'
                             }`}
                           >
                             <div className="flex items-start space-x-3">
                               <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                                 isCompleted ? 'bg-green-500 text-white' :
-                                isCurrent ? 'bg-primary text-white' :
+                                isCurrent ? 'bg-teal-600 text-white' :
                                 'bg-gray-200 text-gray-500'
                               }`}>
                                 {isCompleted ? (
@@ -405,7 +479,7 @@ function JourneysContent() {
                                 <div className="flex items-center justify-between">
                                   <h4 className="font-medium">{step.title}</h4>
                                   {isCurrent && (
-                                    <span className="text-xs bg-primary text-white px-2 py-1 rounded-full">
+                                    <span className="text-xs bg-teal-600 text-white px-2 py-1 rounded-full">
                                       Current
                                     </span>
                                   )}
@@ -447,8 +521,14 @@ function JourneysContent() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             ) : (
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+              <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
                 <CardContent className="text-center py-12">
                   <Compass className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500">Select a journey to view details</p>
@@ -457,6 +537,7 @@ function JourneysContent() {
                   </p>
                 </CardContent>
               </Card>
+              </motion.div>
             )}
           </div>
         </div>

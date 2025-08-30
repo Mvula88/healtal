@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect } from 'react'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -149,7 +151,7 @@ export default function BillingPage() {
 
   if (user?.email !== 'ismaelmvula@gmail.com') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Admin Access Required</CardTitle>
@@ -171,7 +173,7 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       <AdminSidebar />
       
       <div className="flex-1 ml-64">
@@ -219,7 +221,7 @@ export default function BillingPage() {
                     <p className="text-2xl font-bold">{subscriptions.filter(s => s.status === 'active').length}</p>
                     <p className="text-xs text-gray-500 mt-1">Paid users</p>
                   </div>
-                  <Users className="h-8 w-8 text-purple-500" />
+                  <Users className="h-8 w-8 text-teal-500" />
                 </div>
               </CardContent>
             </Card>
@@ -250,7 +252,7 @@ export default function BillingPage() {
                   const count = subscriptions.filter(s => s.tier === key && s.status === 'active').length
                   const revenue = count * tier.price
                   return (
-                    <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div key={key} className="flex items-center justify-between p-4 bg-white rounded-lg">
                       <div className="flex-1">
                         <h4 className="font-semibold">{tier.name} Plan</h4>
                         <p className="text-sm text-gray-600">${tier.price}/month</p>
@@ -283,7 +285,7 @@ export default function BillingPage() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-white border-b">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         User
@@ -352,7 +354,7 @@ export default function BillingPage() {
             <CardContent>
               <div className="space-y-3">
                 {transactions.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={transaction.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
                     <div className="flex items-center gap-3">
                       {transaction.status === 'successful' ? (
                         <CheckCircle className="h-5 w-5 text-green-500" />

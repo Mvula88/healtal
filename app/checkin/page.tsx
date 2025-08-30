@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { APP_CONFIG } from '@/lib/config'
 import { 
   Sun,
@@ -95,6 +96,7 @@ function CheckInContent() {
     if (user) {
       fetchCheckIns()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchCheckIns = async () => {
@@ -216,16 +218,48 @@ function CheckInContent() {
 
   if (todayCheckIn && showInsights) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen relative">
+        {/* Animated Background */}
+        <motion.div className="absolute inset-0 -z-10">
+          <motion.div 
+            className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+            animate={{ 
+              y: [0, -20, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div 
+            className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+            animate={{ 
+              y: [0, 20, 0],
+              scale: [1, 0.9, 1]
+            }}
+            transition={{ 
+              duration: 25,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
         <Navbar />
         
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-primary" />
+                    <Sparkles className="h-6 w-6 text-teal-600" />
                     Today's Check-in Complete!
                   </CardTitle>
                   <CardDescription>
@@ -233,7 +267,7 @@ function CheckInContent() {
                   </CardDescription>
                 </div>
                 <Button 
-                  variant="outline"
+                  className="btn-secondary"
                   onClick={() => setShowInsights(false)}
                 >
                   View Check-in Form
@@ -243,8 +277,13 @@ function CheckInContent() {
             <CardContent className="space-y-6">
               {/* Today's Summary */}
               <div className="grid grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="pt-6 text-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                <Card className="trust-badge text-center">
+                  <CardContent className="pt-6">
                     <div className="text-3xl mb-2">
                       {moodEmojis.find(m => m.score === todayCheckIn.mood_score)?.emoji}
                     </div>
@@ -254,9 +293,15 @@ function CheckInContent() {
                     </p>
                   </CardContent>
                 </Card>
+                </motion.div>
                 
-                <Card>
-                  <CardContent className="pt-6 text-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                <Card className="trust-badge text-center">
+                  <CardContent className="pt-6">
                     <div className="text-3xl mb-2">
                       {todayCheckIn.energy_level >= 4 ? '⚡' : todayCheckIn.energy_level >= 2 ? '🔋' : '🪫'}
                     </div>
@@ -264,9 +309,15 @@ function CheckInContent() {
                     <p className="font-semibold">{todayCheckIn.energy_level}/5</p>
                   </CardContent>
                 </Card>
+                </motion.div>
                 
-                <Card>
-                  <CardContent className="pt-6 text-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                <Card className="trust-badge text-center">
+                  <CardContent className="pt-6">
                     <div className="text-3xl mb-2">
                       {todayCheckIn.anxiety_level <= 2 ? '😌' : todayCheckIn.anxiety_level <= 3 ? '😰' : '😟'}
                     </div>
@@ -274,6 +325,7 @@ function CheckInContent() {
                     <p className="font-semibold">{todayCheckIn.anxiety_level}/5</p>
                   </CardContent>
                 </Card>
+                </motion.div>
               </div>
 
               {/* Week Overview */}
@@ -296,7 +348,7 @@ function CheckInContent() {
                         }`}>
                           {day.checkIn ? (
                             <span className="text-lg">
-                              {moodEmojis.find(m => m.score === day.checkIn.mood_score)?.emoji}
+                              {moodEmojis.find(m => m.score === day.checkIn?.mood_score)?.emoji}
                             </span>
                           ) : (
                             <span className="text-gray-400">-</span>
@@ -394,24 +446,71 @@ function CheckInContent() {
               )}
             </CardContent>
           </Card>
+          </motion.div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative">
+      {/* Animated Background */}
+      <motion.div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+          animate={{ 
+            y: [0, 20, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
       <Navbar />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Daily <span className="gradient-text">Check-in</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Take a moment to reflect on how you're feeling today and track your emotional journey
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+        <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-primary" />
-              Daily Check-in
+              <Calendar className="h-6 w-6 text-teal-600" />
+              How are you feeling today?
             </CardTitle>
             <CardDescription>
-              Take a moment to reflect on how you're feeling today
+              Your honest reflection helps us provide better support
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -423,10 +522,10 @@ function CheckInContent() {
                   <button
                     key={mood.score}
                     onClick={() => setMoodScore(mood.score)}
-                    className={`flex flex-col items-center p-3 rounded-lg transition-all ${
+                    className={`flex flex-col items-center p-3 rounded-2xl transition-all duration-200 ${
                       moodScore === mood.score 
-                        ? 'bg-primary/10 ring-2 ring-primary' 
-                        : 'hover:bg-gray-100'
+                        ? 'bg-teal-50 ring-2 ring-teal-500 shadow-md' 
+                        : 'hover:bg-gray-100/70 hover:shadow-sm'
                     }`}
                   >
                     <span className="text-3xl mb-1">{mood.emoji}</span>
@@ -540,13 +639,14 @@ function CheckInContent() {
             {/* Submit Button */}
             <Button 
               onClick={submitCheckIn}
-              className="w-full"
+              className="btn-primary w-full"
               disabled={loading}
             >
               {loading ? 'Saving...' : 'Complete Check-in'}
             </Button>
           </CardContent>
         </Card>
+        </motion.div>
       </div>
     </div>
   )

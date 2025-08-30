@@ -1,0 +1,60 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - link [ref=e5]:
+        - /url: /
+        - img [ref=e6]
+      - heading "Welcome back to Healtal" [level=1] [ref=e14]
+      - paragraph [ref=e15]: Continue discovering your deeper patterns
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - heading "Sign in to your account" [level=3] [ref=e18]
+        - paragraph [ref=e19]: Enter your email and password to continue your pattern discovery journey
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]: Email address
+            - textbox "Email address" [active] [ref=e24]
+          - generic [ref=e25]:
+            - generic [ref=e26]: Password
+            - textbox "Password" [ref=e27]: wrongpassword
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - checkbox "Remember me" [ref=e30]
+              - generic [ref=e31]: Remember me
+            - link "Forgot password?" [ref=e32]:
+              - /url: /forgot-password
+          - button "Sign in" [ref=e33] [cursor=pointer]
+        - generic [ref=e34]:
+          - generic [ref=e39]: Or continue with
+          - generic [ref=e40]:
+            - button "Google" [disabled]:
+              - img
+              - text: Google
+            - button "GitHub" [disabled]:
+              - img
+              - text: GitHub
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: Don't have an account?
+          - link "Start your journey" [ref=e44]:
+            - /url: /signup
+        - paragraph [ref=e46]:
+          - text: By signing in, you agree to our
+          - link "Terms of Service" [ref=e47]:
+            - /url: /terms
+          - text: and
+          - link "Privacy Policy" [ref=e48]:
+            - /url: /privacy
+    - paragraph [ref=e50]:
+      - text: Need help? Contact
+      - link "support" [ref=e51]:
+        - /url: /contact
+      - text: or visit our
+      - link "help center" [ref=e52]:
+        - /url: /help
+  - alert [ref=e53]
+```

@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState } from 'react'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -84,7 +86,7 @@ export default function SettingsPage() {
 
   if (user?.email !== 'ismaelmvula@gmail.com') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Admin Access Required</CardTitle>
@@ -106,7 +108,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       <AdminSidebar />
       
       <div className="flex-1 ml-64">

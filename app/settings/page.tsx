@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -7,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { 
   User,
   Bell,
@@ -32,12 +34,25 @@ interface UserProfile {
   id: string
   full_name: string | null
   avatar_url: string | null
-  subscription_tier: string
+  subscription_tier: 'free' | 'understand' | 'transform'
   created_at: string
   onboarding_completed: boolean
-  preferences: any
-  emergency_contacts: any[]
-  growth_goals: any
+  preferences: {
+    notifications?: {
+      email_updates: boolean
+      wellness_reminders: boolean
+      journey_updates: boolean
+      community_activity: boolean
+    }
+    privacy?: {
+      anonymous_posts: boolean
+      share_insights: boolean
+      profile_visible: boolean
+    }
+    dark_mode?: boolean
+  } | null
+  emergency_contacts: Array<{ name: string; phone: string }>
+  growth_goals: string[] | null
 }
 
 function SettingsContent() {
@@ -71,6 +86,7 @@ function SettingsContent() {
       fetchProfile()
       setEmail(user.email || '')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchProfile = async () => {
@@ -78,16 +94,16 @@ function SettingsContent() {
       const { data } = await supabase
         .from('users')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', user?.id as string)
         .single()
 
       if (data) {
-        setProfile(data)
-        setFullName(data.full_name || '')
-        setEmergencyContact(data.emergency_contacts?.[0] || { name: '', phone: '' })
-        setNotifications(data.preferences?.notifications || notifications)
-        setPrivacy(data.preferences?.privacy || privacy)
-        setDarkMode(data.preferences?.dark_mode || false)
+        setProfile(data as any)
+        setFullName((data as any).full_name || '')
+        setEmergencyContact((data as any).emergency_contacts?.[0] || { name: '', phone: '' })
+        setNotifications((data as any).preferences?.notifications || notifications)
+        setPrivacy((data as any).preferences?.privacy || privacy)
+        setDarkMode((data as any).preferences?.dark_mode || false)
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
@@ -109,8 +125,8 @@ function SettingsContent() {
             privacy,
             dark_mode: darkMode
           }
-        })
-        .eq('id', user?.id)
+        } as any)
+        .eq('id', user?.id as string)
 
       if (error) throw error
       
@@ -155,10 +171,10 @@ function SettingsContent() {
         { data: wellness },
         { data: journeys }
       ] = await Promise.all([
-        supabase.from('conversations').select('*').eq('user_id', user?.id),
-        supabase.from('personal_insights').select('*').eq('user_id', user?.id),
-        supabase.from('wellness_entries').select('*').eq('user_id', user?.id),
-        supabase.from('user_journey_progress').select('*').eq('user_id', user?.id)
+        supabase.from('conversations').select('*').eq('user_id', user?.id as string),
+        supabase.from('personal_insights').select('*').eq('user_id', user?.id as string),
+        supabase.from('wellness_entries').select('*').eq('user_id', user?.id as string),
+        supabase.from('user_journey_progress').select('*').eq('user_id', user?.id as string)
       ])
 
       const exportData = {
@@ -191,7 +207,7 @@ function SettingsContent() {
       const { error } = await supabase
         .from('users')
         .delete()
-        .eq('id', user?.id)
+        .eq('id', user?.id as string)
 
       if (error) throw error
 
@@ -211,18 +227,59 @@ function SettingsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative">
+      {/* Animated Background */}
+      <motion.div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+          animate={{ 
+            y: [0, 20, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
       <Navbar />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-600 mt-2">Manage your account and preferences</p>
-        </div>
+        <motion.div 
+          className="mb-12 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Account <span className="gradient-text">Settings</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Manage your account preferences and privacy settings
+          </p>
+        </motion.div>
 
         <div className="space-y-6">
           {/* Profile Settings */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <User className="h-5 w-5 mr-2" />
@@ -293,9 +350,15 @@ function SettingsContent() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Security Settings */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Shield className="h-5 w-5 mr-2" />
@@ -346,9 +409,15 @@ function SettingsContent() {
               </Button>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Notification Preferences */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Bell className="h-5 w-5 mr-2" />
@@ -365,7 +434,7 @@ function SettingsContent() {
                   <button
                     onClick={() => setNotifications({ ...notifications, [key]: !value })}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      value ? 'bg-primary' : 'bg-gray-200'
+                      value ? 'bg-teal-600' : 'bg-gray-200'
                     }`}
                   >
                     <span
@@ -378,9 +447,15 @@ function SettingsContent() {
               ))}
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Privacy Settings */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Shield className="h-5 w-5 mr-2" />
@@ -397,7 +472,7 @@ function SettingsContent() {
                   <button
                     onClick={() => setPrivacy({ ...privacy, [key]: !value })}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      value ? 'bg-primary' : 'bg-gray-200'
+                      value ? 'bg-teal-600' : 'bg-gray-200'
                     }`}
                   >
                     <span
@@ -410,9 +485,15 @@ function SettingsContent() {
               ))}
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Appearance */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle>Appearance</CardTitle>
               <CardDescription>Customize how the app looks</CardDescription>
@@ -426,7 +507,7 @@ function SettingsContent() {
                 <button
                   onClick={() => setDarkMode(!darkMode)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    darkMode ? 'bg-primary' : 'bg-gray-200'
+                    darkMode ? 'bg-teal-600' : 'bg-gray-200'
                   }`}
                 >
                   <span
@@ -438,9 +519,15 @@ function SettingsContent() {
               </label>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Data Management */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+          <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
               <CardTitle>Data Management</CardTitle>
               <CardDescription>Export or delete your data</CardDescription>
@@ -474,22 +561,28 @@ function SettingsContent() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Save Button */}
-          <div className="flex justify-end space-x-4">
-            <Button variant="outline" onClick={() => window.location.reload()}>
+          <motion.div 
+            className="flex justify-end space-x-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <Button className="btn-secondary" onClick={() => window.location.reload()}>
               Cancel
             </Button>
-            <Button onClick={updateProfile} disabled={saving}>
+            <Button className="btn-primary" onClick={updateProfile} disabled={saving}>
               {saving ? 'Saving...' : 'Save Changes'}
             </Button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <Card className="max-w-md">
+            <Card className="max-w-md rounded-2xl bg-white/90 backdrop-blur-sm border border-red-100 shadow-2xl">
               <CardHeader>
                 <CardTitle className="flex items-center text-red-600">
                   <AlertCircle className="h-5 w-5 mr-2" />

@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -85,15 +87,68 @@ export default function InsightsPage() {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen relative">
+        {/* Animated Background */}
+        <motion.div className="absolute inset-0 -z-10">
+          <motion.div 
+            className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+            animate={{ 
+              y: [0, -20, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div 
+            className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+            animate={{ 
+              y: [0, 20, 0],
+              scale: [1, 0.9, 1]
+            }}
+            transition={{ 
+              duration: 25,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="mb-8 flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics & Insights</h1>
-              <p className="text-gray-600">Data-driven insights into your patterns and progress</p>
+          <motion.div 
+            className="mb-12 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Personal <span className="gradient-text">Insights</span>
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Track your progress and discover meaningful patterns in your mental wellness journey
+            </p>
+            
+            {/* Trust indicators */}
+            <div className="flex justify-center items-center gap-6 mt-6 text-sm text-gray-500">
+              <div className="flex items-center gap-1">
+                <TrendingUp className="h-4 w-4 text-teal-500" />
+                <span>Progress tracking</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Brain className="h-4 w-4 text-teal-500" />
+                <span>AI analysis</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Sparkles className="h-4 w-4 text-teal-500" />
+                <span>Personalized insights</span>
+              </div>
             </div>
-            <Button variant="outline">
+          </motion.div>
+
+          <div className="mb-8 flex justify-between items-start">
+            <Button className="btn-secondary">
               <Download className="h-4 w-4 mr-2" />
               Export Report
             </Button>
@@ -102,7 +157,13 @@ export default function InsightsPage() {
           {/* Key Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             {metrics.map((metric, index) => (
-              <Card key={index}>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
+              >
+              <Card className="trust-badge">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start">
                     <div>
@@ -126,12 +187,18 @@ export default function InsightsPage() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             ))}
           </div>
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+            <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
               <CardHeader>
                 <CardTitle>Weekly Mood Trends</CardTitle>
               </CardHeader>
@@ -150,8 +217,14 @@ export default function InsightsPage() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+            </motion.div>
 
-            <Card>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
+            <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
               <CardHeader>
                 <CardTitle>Life Balance Assessment</CardTitle>
               </CardHeader>
@@ -166,6 +239,7 @@ export default function InsightsPage() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+            </motion.div>
           </div>
         </div>
       </div>

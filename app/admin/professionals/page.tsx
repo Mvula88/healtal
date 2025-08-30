@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'
 import {
@@ -70,6 +70,7 @@ export default function ProfessionalsPage() {
     } else {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchProfessionals = async () => {

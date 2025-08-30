@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createServerActionClient } from '@/lib/supabase/server'
+import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(request: Request) {
   try {
@@ -25,10 +26,11 @@ export async function POST(request: Request) {
       )
     }
 
-    const supabase = createServerActionClient()
+    const supabase = await createUntypedServerClient()
+    const adminSupabase = createAdminClient()
 
     // First check if user exists in auth.users
-    const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers()
+    const { data: { users }, error: usersError } = await adminSupabase.auth.admin.listUsers()
     
     if (usersError) {
       // Fallback: Try to update profile directly
@@ -43,9 +45,9 @@ export async function POST(request: Request) {
         const { data, error } = await supabase
           .from('profiles')
           .update({ 
-            role: 'admin',
+            role: 'admin' as const,
             updated_at: new Date().toISOString()
-          })
+          } as any)
           .eq('email', email)
           .select()
           .single()
@@ -86,9 +88,9 @@ export async function POST(request: Request) {
       const { data, error } = await supabase
         .from('profiles')
         .update({ 
-          role: 'admin',
+          role: 'admin' as const,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', user.id)
         .select()
         .single()
@@ -113,10 +115,10 @@ export async function POST(request: Request) {
           id: user.id,
           email: user.email,
           full_name: user.user_metadata?.full_name || 'Ismael Mvula',
-          role: 'admin',
+          role: 'admin' as const,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .select()
         .single()
 
@@ -154,7 +156,7 @@ export async function GET(request: Request) {
     )
   }
 
-  const supabase = createServerActionClient()
+  const supabase = await createUntypedServerClient()
   
   const { data, error } = await supabase
     .from('profiles')
@@ -170,10 +172,10 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json({
-    isAdmin: data.role === 'admin',
+    isAdmin: (data as any).role === 'admin',
     user: data,
-    message: data.role === 'admin' 
+    message: (data as any).role === 'admin' 
       ? `${email} is an admin` 
-      : `${email} is not an admin (role: ${data.role})`
+      : `${email} is not an admin (role: ${(data as any).role})`
   })
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Brain } from 'lucide-react'
 import { APP_CONFIG } from '@/lib/config'
 
@@ -8,9 +9,14 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center mb-4">
-              <Brain className="h-6 w-6 text-primary mr-2" />
-              <span className="text-lg font-semibold">{APP_CONFIG.name}</span>
+            <div className="mb-4">
+              <Image 
+                src="/images/beneathy-logo.png" 
+                alt={`${APP_CONFIG.name} Logo`}
+                width={120} 
+                height={32} 
+                className="h-8 w-auto"
+              />
             </div>
             <p className="text-sm text-gray-600">
               {APP_CONFIG.description}. {APP_CONFIG.positioning}
@@ -99,7 +105,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-600">
-              © 2024 {APP_CONFIG.name}. All rights reserved.
+              © 2025 {APP_CONFIG.name}. All rights reserved.
             </p>
             <div className="mt-4 md:mt-0">
               <p className="text-xs text-gray-500 max-w-2xl text-center md:text-right">

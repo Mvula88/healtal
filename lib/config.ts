@@ -1,6 +1,6 @@
 // App configuration
 export const APP_CONFIG = {
-  name: "Healtal",
+  name: "Beneathy",
   tagline: "Understand Your Deeper Patterns",
   description: "AI Personal Growth Coach specializing in root cause exploration",
   positioning: "Personal development through deeper pattern understanding",
@@ -8,7 +8,7 @@ export const APP_CONFIG = {
 }
 
 export const LEGAL_DISCLAIMER = `
-Healtal AI Personal Growth Coach is not a licensed mental health 
+Beneathy AI Personal Growth Coach is not a licensed mental health 
 professional, therapist, psychologist, or psychiatrist. This platform 
 is for personal development and educational purposes only.
 
@@ -114,7 +114,7 @@ export const FEATURES = {
 }
 
 export const COMPETITIVE_MESSAGING = {
-  betterHelp: "Before paying for therapy, understand your patterns with Healtal",
+  betterHelp: "Before paying for therapy, understand your patterns with Beneathy",
   headspace: "Beyond meditation - discover why you feel the way you do",
   abby: "Not just AI therapy - specialized root cause personal growth"
 }

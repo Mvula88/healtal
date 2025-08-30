@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createServerActionClient } from '@/lib/supabase/server'
+import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
+
+// Debug: Log the API key status (not the key itself)
+console.log('ANTHROPIC_API_KEY status:', process.env.ANTHROPIC_API_KEY ? 'Present' : 'Missing')
+console.log('API Key length:', process.env.ANTHROPIC_API_KEY?.length)
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
-const SYSTEM_PROMPT = `You are Healtal's AI Personal Growth Coach specializing in root cause exploration and pattern discovery. Your role is to:
+const SYSTEM_PROMPT = `You are Beneathy's AI Personal Growth Coach specializing in root cause exploration and pattern discovery. Your role is to:
 
 1. Help users understand the deeper origins of their patterns and behaviors
 2. Identify recurring themes and connect them to root causes
@@ -64,6 +68,8 @@ function detectPatterns(message: string): string[] {
 export async function POST(request: Request) {
   try {
     const { message, conversationId, userId } = await request.json()
+    
+    console.log('Received request:', { message: message.substring(0, 50), conversationId, userId })
 
     // Check for crisis keywords
     const isCrisis = detectCrisis(message)
@@ -79,23 +85,29 @@ export async function POST(request: Request) {
     }
 
     // Get conversation history from Supabase
-    const supabase = await createServerActionClient()
-    const { data: messages } = await supabase
+    const supabase = await createUntypedServerClient()
+    const { data: messages, error: dbError } = await supabase
       .from('messages')
       .select('role, content')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true })
       .limit(10)
+    
+    if (dbError) {
+      console.log('Database error (non-fatal):', dbError)
+    }
 
     // Build conversation history for context
-    const conversationHistory = messages?.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
+    const conversationHistory: Array<{role: 'user' | 'assistant', content: string}> = messages?.map((msg: any) => ({
+      role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
       content: msg.content
     })) || []
 
-    // Call Anthropic API
+    console.log('Calling Anthropic API...')
+    
+    // Call Anthropic API with updated model
     const response = await anthropic.messages.create({
-      model: 'claude-3-opus-20240229',
+      model: 'claude-3-5-sonnet-20241022', // Using Claude 3.5 Sonnet
       max_tokens: 500,
       temperature: 0.7,
       system: SYSTEM_PROMPT,
@@ -104,6 +116,8 @@ export async function POST(request: Request) {
         { role: 'user', content: message }
       ]
     })
+
+    console.log('Anthropic API response received')
 
     const aiResponse = response.content[0].type === 'text' 
       ? response.content[0].text 
@@ -121,14 +135,49 @@ export async function POST(request: Request) {
       }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in coach API:', error)
+    console.error('Error details:', {
+      message: error.message,
+      status: error.status,
+      type: error.type,
+      stack: error.stack
+    })
     
-    // Fallback response if API fails
+    // Check if it's an authentication error or model not found
+    if (error.status === 401 || error.status === 404 || error.message?.includes('invalid x-api-key') || error.message?.includes('Invalid API Key') || error.message?.includes('not_found_error')) {
+      return NextResponse.json({
+        content: "⚠️ Configuration Issue: The AI coach service needs to be configured. To fix this:\n\n1. Get a valid API key from https://console.anthropic.com/\n2. Update ANTHROPIC_API_KEY in your .env.local file with a new key\n3. Restart the development server\n\nYour current API key appears to be invalid or expired (keys starting with 'sk-ant-api03-' are outdated).\n\nIn the meantime, I encourage you to explore the other features of the platform like wellness tracking, pattern analysis, and journaling.",
+        metadata: {
+          error: 'api_configuration',
+          patterns_detected: [],
+          emotional_tone: 'informative',
+          growth_opportunities: ['self-reflection', 'journaling']
+        }
+      })
+    }
+    
+    // Check for network/connection errors
+    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.message?.includes('fetch failed')) {
+      return NextResponse.json({
+        content: "⚠️ Connection Issue: Unable to reach the AI service. This might be due to:\n\n• Network connectivity issues\n• Firewall blocking the connection\n• VPN interference\n\nPlease check your internet connection and try again. In the meantime, consider journaling your thoughts or exploring the wellness features.",
+        metadata: {
+          error: 'connection_failed',
+          patterns_detected: [],
+          emotional_tone: 'informative',
+          growth_opportunities: ['self-reflection', 'journaling']
+        }
+      })
+    }
+    
+    // Fallback response if API fails for other reasons
     return NextResponse.json({
-      content: "I'm here to support you. Could you share a bit more about what's on your mind? Sometimes just expressing our thoughts can help us understand them better.",
+      content: "I'm experiencing a temporary connection issue, but I'm still here to support you. While we work on reconnecting, consider taking a moment to reflect on what brought you here today. Sometimes the most powerful insights come from within. What would you like to explore?",
       metadata: {
-        error: true
+        error: true,
+        patterns_detected: [],
+        emotional_tone: 'supportive',
+        growth_opportunities: ['self-reflection', 'mindfulness']
       }
     })
   }

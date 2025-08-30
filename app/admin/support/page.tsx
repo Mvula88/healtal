@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect } from 'react'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -163,7 +165,7 @@ export default function SupportPage() {
 
   if (user?.email !== 'ismaelmvula@gmail.com') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Admin Access Required</CardTitle>
@@ -185,7 +187,7 @@ export default function SupportPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       <AdminSidebar />
       
       <div className="flex-1 ml-64">
@@ -284,7 +286,7 @@ export default function SupportPage() {
                   </div>
                 ) : (
                   filteredTickets.map((ticket) => (
-                    <div key={ticket.id} className="p-6 hover:bg-gray-50">
+                    <div key={ticket.id} className="p-6 hover:bg-white">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-start gap-4">
@@ -319,7 +321,7 @@ export default function SupportPage() {
                           <p className="mt-3 text-gray-700">{ticket.message}</p>
                           
                           {ticket.response && (
-                            <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                            <div className="mt-3 p-3 bg-white rounded-lg">
                               <p className="text-sm font-medium text-gray-600 mb-1">Response:</p>
                               <p className="text-sm text-gray-700">{ticket.response}</p>
                             </div>
@@ -388,7 +390,7 @@ export default function SupportPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="p-3 bg-white rounded-lg">
                       <p className="text-sm font-medium text-gray-600 mb-1">Original Message:</p>
                       <p className="text-sm text-gray-700">{selectedTicket.message}</p>
                     </div>

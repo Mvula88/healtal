@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: `${APP_CONFIG.name} - ${APP_CONFIG.tagline}`,
   description: APP_CONFIG.description,
   keywords: 'personal growth coach, root cause analysis, pattern discovery, self-understanding, personal development, AI coaching, deeper patterns, life transformation',
-  authors: [{ name: 'Healtal Team' }],
+  authors: [{ name: 'Beneathy Team' }],
   openGraph: {
     title: `${APP_CONFIG.name} - AI Personal Growth Coach`,
     description: 'Specialized root cause exploration and pattern discovery for lasting personal transformation.',

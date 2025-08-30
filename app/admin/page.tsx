@@ -1,13 +1,12 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { useAuth } from '@/contexts/auth-context'
 import { APP_CONFIG } from '@/lib/config'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import {
   Users,
   Brain,
@@ -24,7 +23,11 @@ import {
   Clock,
   ChevronRight,
   CheckCircle,
-  XCircle
+  XCircle,
+  Zap,
+  Globe,
+  Heart,
+  Star
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -54,18 +57,10 @@ function getTimeAgo(date: Date): string {
 }
 
 export default function AdminPage() {
-  console.log('AdminPage component rendering...')
-  
-  const { user } = useAuth()
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [recentActivity, setRecentActivity] = useState<any[]>([])
-  
-  // Log user info
-  console.log('Current user:', user)
-  console.log('User email:', user?.email)
-  console.log('Is admin email?', user?.email === 'ismaelmvula@gmail.com')
   
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -80,16 +75,10 @@ export default function AdminPage() {
     pendingSupport: 0
   })
 
-  // Don't redirect, just show appropriate content
-  const isAdmin = user?.email === 'ismaelmvula@gmail.com'
-  
-  console.log('Rendering admin page, isAdmin:', isAdmin)
-  
   useEffect(() => {
-    if (isAdmin) {
-      fetchAdminStats()
-    }
-  }, [isAdmin])
+    fetchAdminStats()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   
   const fetchAdminStats = async () => {
     try {
@@ -201,48 +190,11 @@ export default function AdminPage() {
     }
   }
   
-  if (!isAdmin) {
-    console.log('NOT ADMIN - Showing access denied')
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Admin Access Required</CardTitle>
-            <CardDescription>
-              This page is restricted to administrators only.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  <strong>Current user:</strong> {user?.email || 'Not logged in'}
-                </p>
-                <p className="text-sm text-gray-600 mt-2">
-                  <strong>Required email:</strong> ismaelmvula@gmail.com
-                </p>
-              </div>
-              <Button 
-                onClick={() => {
-                  console.log('Back to dashboard clicked')
-                  router.push('/dashboard')
-                }}
-                className="w-full"
-              >
-                Back to Dashboard
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  console.log('ADMIN ACCESS GRANTED - Showing dashboard')
+  // Layout now handles admin auth, so we can show dashboard directly
 
   const quickActions = [
     { title: 'User Management', icon: Users, href: '/admin/users', color: 'bg-blue-500' },
-    { title: 'Content Manager', icon: Brain, href: '/admin/content', color: 'bg-purple-500' },
+    { title: 'Content Manager', icon: Brain, href: '/admin/content', color: 'bg-teal-500' },
     { title: 'Analytics', icon: BarChart3, href: '/admin/analytics', color: 'bg-green-500' },
     { title: 'Support Tickets', icon: MessageSquare, href: '/admin/support', color: 'bg-orange-500' },
   ]
@@ -255,121 +207,210 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 ml-64">
-        <div className="p-8">
+    <div className="flex-1 ml-64">
+      <div className="p-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              {APP_CONFIG.name} Admin Dashboard
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Platform management and analytics • {format(new Date(), 'EEEE, MMMM d, yyyy')}
-            </p>
-          </div>
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                  Welcome to Admin Dashboard
+                </h1>
+                <p className="text-gray-600 text-lg">
+                  {APP_CONFIG.name} Platform Management • {format(new Date(), 'EEEE, MMMM d, yyyy')}
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-white/20">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                    <span className="text-sm font-medium text-gray-700">All Systems Operational</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  Total Users
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold">
-                    {loading ? '...' : stats.totalUsers.toLocaleString()}
-                  </span>
-                  <Users className="h-8 w-8 text-blue-500" />
-                </div>
-                <p className="text-sm text-green-600 mt-2">
-                  {loading ? '...' : `+${stats.newUsersToday} today`}
-                </p>
-              </CardContent>
-            </Card>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                    <Users className="h-4 w-4 mr-2 text-blue-500" />
+                    Total Users
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-3xl font-bold text-gray-900">
+                      {loading ? <div className="animate-pulse bg-gray-200 h-8 w-16 rounded" /> : stats.totalUsers.toLocaleString()}
+                    </span>
+                    <div className="p-3 bg-blue-50 rounded-xl">
+                      <Users className="h-6 w-6 text-blue-600" />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <p className="text-sm text-green-600 font-medium">
+                      {loading ? '...' : `+${stats.newUsersToday} today`}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  Active Users (7d)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold">
-                    {loading ? '...' : stats.activeUsers.toLocaleString()}
-                  </span>
-                  <Activity className="h-8 w-8 text-green-500" />
-                </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  {loading ? '...' : stats.totalUsers > 0 ? `${((stats.activeUsers / stats.totalUsers) * 100).toFixed(1)}% engagement` : '0% engagement'}
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-green-500 to-green-600 h-2" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                    <Activity className="h-4 w-4 mr-2 text-green-500" />
+                    Active Users (7d)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-3xl font-bold text-gray-900">
+                      {loading ? <div className="animate-pulse bg-gray-200 h-8 w-16 rounded" /> : stats.activeUsers.toLocaleString()}
+                    </span>
+                    <div className="p-3 bg-green-50 rounded-xl">
+                      <Activity className="h-6 w-6 text-green-600" />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Heart className="h-4 w-4 text-green-500" />
+                    <p className="text-sm text-gray-600 font-medium">
+                      {loading ? '...' : stats.totalUsers > 0 ? `${((stats.activeUsers / stats.totalUsers) * 100).toFixed(1)}% engagement` : '0% engagement'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  Pattern Sessions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold">
-                    {loading ? '...' : stats.totalSessions.toLocaleString()}
-                  </span>
-                  <Brain className="h-8 w-8 text-purple-500" />
-                </div>
-                <p className="text-sm text-green-600 mt-2">
-                  {loading ? '...' : `+${stats.sessionsToday} today`}
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-teal-500 to-teal-600 h-2" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                    <Brain className="h-4 w-4 mr-2 text-teal-500" />
+                    Pattern Sessions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-3xl font-bold text-gray-900">
+                      {loading ? <div className="animate-pulse bg-gray-200 h-8 w-16 rounded" /> : stats.totalSessions.toLocaleString()}
+                    </span>
+                    <div className="p-3 bg-teal-50 rounded-xl">
+                      <Brain className="h-6 w-6 text-teal-600" />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Zap className="h-4 w-4 text-green-500" />
+                    <p className="text-sm text-green-600 font-medium">
+                      {loading ? '...' : `+${stats.sessionsToday} today`}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  Monthly Revenue
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold">
-                    {loading ? '...' : `$${stats.totalRevenue.toLocaleString()}`}
-                  </span>
-                  <DollarSign className="h-8 w-8 text-green-600" />
-                </div>
-                <p className="text-sm text-green-600 mt-2">
-                  {loading ? '...' : '+12.5% vs last month'}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 h-2" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                    <DollarSign className="h-4 w-4 mr-2 text-green-600" />
+                    Monthly Revenue
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-3xl font-bold text-gray-900">
+                      {loading ? <div className="animate-pulse bg-gray-200 h-8 w-20 rounded" /> : `$${stats.totalRevenue.toLocaleString()}`}
+                    </span>
+                    <div className="p-3 bg-green-50 rounded-xl">
+                      <DollarSign className="h-6 w-6 text-green-600" />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <p className="text-sm text-green-600 font-medium">
+                      {loading ? '...' : '+12.5% vs last month'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
               const Icon = action.icon
               return (
-                <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => router.push(action.href)}>
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mx-auto mb-3`}>
-                      <Icon className="h-6 w-6 text-white" />
-                    </div>
-                    <p className="font-medium text-sm">{action.title}</p>
-                  </CardContent>
-                </Card>
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="cursor-pointer"
+                  onClick={() => router.push(action.href)}
+                >
+                  <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 h-full">
+                    <CardContent className="p-6 text-center">
+                      <div className={`w-14 h-14 ${action.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                        <Icon className="h-7 w-7 text-white" />
+                      </div>
+                      <p className="font-semibold text-gray-900">{action.title}</p>
+                      <p className="text-sm text-gray-500 mt-1">Manage and configure</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               )
             })}
-          </div>
+            </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             {/* System Health */}
-            <Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>System Health</span>
@@ -385,23 +426,32 @@ export default function AdminPage() {
               <CardContent>
                 <div className="space-y-3">
                   {systemStatus.map((service) => (
-                    <div key={service.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <motion.div 
+                      key={service.name} 
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white transition-colors duration-200"
+                      whileHover={{ scale: 1.01 }}
+                    >
                       <div className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <span className="font-medium">{service.name}</span>
+                        <div className="p-2 bg-green-50 rounded-lg">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        </div>
+                        <span className="font-medium text-gray-900">{service.name}</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-green-600 font-medium">Operational</p>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                          <p className="text-sm text-green-600 font-medium">Operational</p>
+                        </div>
                         <p className="text-xs text-gray-500">{service.uptime} uptime</p>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
             {/* Recent Activity */}
-            <Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Recent Activity</span>
@@ -420,7 +470,7 @@ export default function AdminPage() {
                       const IconComponent = activity.icon === 'Brain' ? Brain :
                                           activity.icon === 'UserCheck' ? UserCheck :
                                           activity.icon === 'DollarSign' ? DollarSign : AlertCircle
-                      const iconColor = activity.icon === 'Brain' ? 'text-purple-500' :
+                      const iconColor = activity.icon === 'Brain' ? 'text-teal-500' :
                                       activity.icon === 'UserCheck' ? 'text-blue-500' :
                                       activity.icon === 'DollarSign' ? 'text-green-500' : 'text-orange-500'
                       
@@ -447,11 +497,16 @@ export default function AdminPage() {
                 </Button>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
 
           {/* Alerts Section */}
           {stats.pendingSupport > 0 && (
-            <Card className="mt-8 border-orange-200 bg-orange-50">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Card className="mt-8 border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -473,8 +528,8 @@ export default function AdminPage() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
           )}
-        </div>
       </div>
     </div>
   )

@@ -1,14 +1,13 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { createClient } from '@/lib/supabase/client'
-import { useAuth } from '@/contexts/auth-context'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { useRouter } from 'next/navigation'
 import {
   Search,
@@ -26,7 +25,9 @@ import {
   Edit,
   Trash2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Users,
+  DollarSign
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -44,7 +45,6 @@ interface User {
 }
 
 export default function UsersManagementPage() {
-  const { user } = useAuth()
   const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
@@ -60,28 +60,14 @@ export default function UsersManagementPage() {
   const usersPerPage = 10
 
   useEffect(() => {
-    checkAdminAndFetchUsers()
-  }, [user])
+    fetchUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     filterUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, filterRole, filterStatus, users])
-
-  const checkAdminAndFetchUsers = async () => {
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    // Simple email check instead of database
-    if (user.email !== 'ismaelmvula@gmail.com') {
-      // Don't redirect, just set loading to false
-      setLoading(false)
-      return
-    }
-
-    fetchUsers()
-  }
 
   const fetchUsers = async () => {
     try {
@@ -95,14 +81,14 @@ export default function UsersManagementPage() {
           .from('profiles')
           .select('*')
         
-        if (profiles) {
-          const formattedUsers = profiles.map(profile => ({
+        if (profiles && profiles.length > 0) {
+          const formattedUsers = profiles.map((profile: any) => ({
             id: profile.id,
             email: profile.email || 'N/A',
             full_name: profile.full_name || profile.name || 'Unknown',
-            role: profile.email === 'ismaelmvula@gmail.com' ? 'admin' : 'user',
-            subscription_tier: 'free',
-            status: 'active',
+            role: (profile.email === 'ismaelmvula@gmail.com' ? 'admin' : 'user') as 'admin' | 'user' | 'moderator',
+            subscription_tier: 'free' as 'free' | 'understand' | 'transform',
+            status: 'active' as 'active' | 'suspended' | 'inactive',
             created_at: profile.created_at,
             last_sign_in_at: profile.updated_at || profile.created_at,
             total_sessions: 0,
@@ -126,9 +112,9 @@ export default function UsersManagementPage() {
             id: user?.id || '1',
             email: user?.email || 'ismaelmvula@gmail.com',
             full_name: 'Admin User',
-            role: 'admin',
-            subscription_tier: 'transform',
-            status: 'active',
+            role: 'admin' as const,
+            subscription_tier: 'transform' as const,
+            status: 'active' as const,
             created_at: new Date().toISOString(),
             last_sign_in_at: new Date().toISOString(),
             total_sessions: 0,
@@ -141,9 +127,9 @@ export default function UsersManagementPage() {
           id: authUser.id,
           email: authUser.email || '',
           full_name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || 'Unknown',
-          role: authUser.email === 'ismaelmvula@gmail.com' ? 'admin' : 'user',
-          subscription_tier: 'free',
-          status: authUser.banned_until ? 'suspended' : 'active',
+          role: (authUser.email === 'ismaelmvula@gmail.com' ? 'admin' : 'user') as 'admin' | 'user' | 'moderator',
+          subscription_tier: 'free' as 'free' | 'understand' | 'transform',
+          status: ((authUser as any).banned_until ? 'suspended' : 'active') as 'active' | 'suspended' | 'inactive',
           created_at: authUser.created_at,
           last_sign_in_at: authUser.last_sign_in_at || authUser.created_at,
           total_sessions: 0,
@@ -167,7 +153,7 @@ export default function UsersManagementPage() {
             .single()
           
           if (subscription) {
-            user.subscription_tier = subscription.tier
+            user.subscription_tier = subscription.tier as 'free' | 'understand' | 'transform'
             user.subscription_status = subscription.status
           }
         }
@@ -181,9 +167,9 @@ export default function UsersManagementPage() {
         id: user?.id || '1',
         email: user?.email || 'ismaelmvula@gmail.com',
         full_name: 'Admin User',
-        role: 'admin',
-        subscription_tier: 'transform',
-        status: 'active',
+        role: 'admin' as const,
+        subscription_tier: 'transform' as const,
+        status: 'active' as const,
         created_at: new Date().toISOString(),
         last_sign_in_at: new Date().toISOString(),
         total_sessions: 0,
@@ -247,148 +233,204 @@ export default function UsersManagementPage() {
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage)
 
-  // Check if user is admin
-  if (user?.email !== 'ismaelmvula@gmail.com') {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Admin Access Required</CardTitle>
-            <CardDescription>
-              This page is restricted to administrators only.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={() => router.push('/dashboard')}
-              className="w-full"
-            >
-              Back to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  // Layout handles admin auth
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 ml-64">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-            <p className="text-gray-600 mt-2">
-              Manage user accounts, subscriptions, and permissions
-            </p>
-          </div>
+    <div className="flex-1 ml-64">
+      <div className="p-8">
+        {/* Header */}
+        <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">User Management</h1>
+                <p className="text-gray-600 text-lg">
+                  Manage user accounts, subscriptions, and permissions
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button 
+                  onClick={exportUsers}
+                  variant="outline"
+                  className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-xl font-medium"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Users
+                </Button>
+                <Button className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add User
+                </Button>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Users</p>
-                    <p className="text-2xl font-bold">{users.length}</p>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2" />
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Total Users</p>
+                      <p className="text-3xl font-bold text-gray-900">{users.length}</p>
+                    </div>
+                    <div className="p-3 bg-blue-50 rounded-xl">
+                      <Users className="h-6 w-6 text-blue-600" />
+                    </div>
                   </div>
-                  <CheckCircle className="h-8 w-8 text-green-500" />
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <p className="text-sm text-gray-600">All registered users</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Active Users</p>
-                    <p className="text-2xl font-bold">
-                      {users.filter(u => u.status === 'active').length}
-                    </p>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-green-500 to-green-600 h-2" />
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Active Users</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {users.filter(u => u.status === 'active').length}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-green-50 rounded-xl">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    </div>
                   </div>
-                  <CheckCircle className="h-8 w-8 text-blue-500" />
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <p className="text-sm text-gray-600">Currently active</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Paid Users</p>
-                    <p className="text-2xl font-bold">
-                      {users.filter(u => u.subscription_tier !== 'free').length}
-                    </p>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-teal-500 to-teal-600 h-2" />
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Paid Users</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {users.filter(u => u.subscription_tier !== 'free').length}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-teal-50 rounded-xl">
+                      <DollarSign className="h-6 w-6 text-teal-600" />
+                    </div>
                   </div>
-                  <CheckCircle className="h-8 w-8 text-purple-500" />
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-teal-500 rounded-full" />
+                    <p className="text-sm text-gray-600">Premium subscribers</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Admins</p>
-                    <p className="text-2xl font-bold">
-                      {users.filter(u => u.role === 'admin').length}
-                    </p>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-2" />
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium mb-1">Admins</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {users.filter(u => u.role === 'admin').length}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-orange-50 rounded-xl">
+                      <Shield className="h-6 w-6 text-orange-600" />
+                    </div>
                   </div>
-                  <Shield className="h-8 w-8 text-orange-500" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                    <p className="text-sm text-gray-600">Admin access</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
 
           {/* Filters and Search */}
-          <Card className="mb-6">
-            <CardContent className="pt-6">
-              <div className="flex flex-wrap gap-4 items-end">
-                <div className="flex-1 min-w-[300px]">
-                  <Label htmlFor="search">Search Users</Label>
-                  <div className="relative mt-1">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="search"
-                      placeholder="Search by name or email..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="mb-6 bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
+              <CardContent className="pt-6">
+                <div className="flex flex-wrap gap-4 items-end">
+                  <div className="flex-1 min-w-[300px]">
+                    <Label htmlFor="search" className="text-sm font-medium text-gray-700">Search Users</Label>
+                    <div className="relative mt-2">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="search"
+                        placeholder="Search by name or email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 border-0 bg-gray-50 rounded-xl focus:bg-white transition-colors duration-200 focus:ring-2 focus:ring-teal-500"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <Label htmlFor="role">Role</Label>
-                  <select
-                    id="role"
-                    value={filterRole}
-                    onChange={(e) => setFilterRole(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  >
-                    <option value="all">All Roles</option>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                    <option value="moderator">Moderator</option>
-                  </select>
-                </div>
+                  <div>
+                    <Label htmlFor="role" className="text-sm font-medium text-gray-700">Role</Label>
+                    <select
+                      id="role"
+                      value={filterRole}
+                      onChange={(e) => setFilterRole(e.target.value)}
+                      className="mt-2 block w-full rounded-xl border-0 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all duration-200"
+                    >
+                      <option value="all">All Roles</option>
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                      <option value="moderator">Moderator</option>
+                    </select>
+                  </div>
 
-                <div>
-                  <Label htmlFor="status">Status</Label>
-                  <select
-                    id="status"
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="suspended">Suspended</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
+                  <div>
+                    <Label htmlFor="status" className="text-sm font-medium text-gray-700">Status</Label>
+                    <select
+                      id="status"
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="mt-2 block w-full rounded-xl border-0 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all duration-200"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="suspended">Suspended</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
 
                 <Button variant="outline" onClick={exportUsers}>
                   <Download className="h-4 w-4 mr-2" />
@@ -399,16 +441,31 @@ export default function UsersManagementPage() {
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add User
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  <div>
+                    <Button
+                      onClick={() => {
+                        setSearchTerm('')
+                        setFilterRole('all')
+                        setFilterStatus('all')
+                      }}
+                      variant="outline"
+                      className="mt-6 bg-white/80 border-0 shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-xl font-medium"
+                    >
+                      <Filter className="h-4 w-4 mr-2" />
+                      Clear Filters
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Users Table */}
           <Card>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-white border-b">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         User
@@ -435,7 +492,7 @@ export default function UsersManagementPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {paginatedUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
+                      <tr key={user.id} className="hover:bg-white">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <p className="text-sm font-medium text-gray-900">{user.full_name || 'Unknown'}</p>

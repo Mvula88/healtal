@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { APP_CONFIG } from '@/lib/config'
 import { 
   Brain,
@@ -44,7 +46,7 @@ interface TherapeuticTool {
   description: string
   duration: string
   difficulty: 'beginner' | 'intermediate' | 'advanced'
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   color: string
 }
 
@@ -75,7 +77,7 @@ function ToolsContent() {
   const router = useRouter()
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [activeWorksheet, setActiveWorksheet] = useState<CBTWorksheet | null>(null)
-  const [worksheetAnswers, setWorksheetAnswers] = useState<Record<string, any>>({})
+  const [worksheetAnswers, setWorksheetAnswers] = useState<Record<string, string>>({})
   
   // Breathwork state
   const [breathingActive, setBreathingActive] = useState(false)
@@ -108,7 +110,7 @@ function ToolsContent() {
       duration: '10-20 min',
       difficulty: 'beginner',
       icon: Brain,
-      color: 'text-purple-500'
+      color: 'text-teal-500'
     },
     {
       id: 'emdr',
@@ -328,7 +330,7 @@ function ToolsContent() {
     const breathInterval = setInterval(() => {
       const phases = ['inhale', 'hold', 'exhale', 'hold'].slice(0, pattern.length)
       currentPhase = (currentPhase + 1) % phases.length
-      setBreathPhase(phases[currentPhase] as any)
+      setBreathPhase(phases[currentPhase] as 'inhale' | 'hold' | 'exhale')
       
       if (currentPhase === 0) {
         setBreathCount(prev => prev + 1)
@@ -412,7 +414,7 @@ function ToolsContent() {
           completion_percentage: 100,
           effectiveness_rating: 0, // User can rate later
           insights_gained: []
-        })
+        } as any)
     } catch (error) {
       console.error('Error saving tool usage:', error)
     }
@@ -447,7 +449,7 @@ function ToolsContent() {
     }
 
     return (
-      <Card>
+      <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>{activeWorksheet.title}</CardTitle>
@@ -485,7 +487,7 @@ function ToolsContent() {
           
           <div className="flex gap-4">
             <Button 
-              className="flex-1"
+              className="btn-primary flex-1"
               onClick={() => {
                 console.log('Saving worksheet:', worksheetAnswers)
                 saveToolUsage('cbt_worksheet', activeWorksheet.title, 15)
@@ -533,7 +535,7 @@ function ToolsContent() {
                       <span>{session.duration / 60} min</span>
                     </div>
                     <Button 
-                      className="w-full"
+                      className="btn-primary w-full"
                       onClick={() => startBreathwork(session)}
                     >
                       <Play className="h-4 w-4 mr-2" />
@@ -545,7 +547,7 @@ function ToolsContent() {
             ))}
           </div>
         ) : (
-          <Card>
+          <Card className="glass-card border-0">
             <CardContent className="pt-6">
               <div className="text-center space-y-6">
                 <div className="relative w-48 h-48 mx-auto">
@@ -586,7 +588,7 @@ function ToolsContent() {
 
   const renderEMDR = () => {
     return (
-      <Card>
+      <Card className="glass-card border-0">
         <CardHeader>
           <CardTitle>EMDR Eye Movement Exercise</CardTitle>
           <CardDescription>
@@ -633,7 +635,7 @@ function ToolsContent() {
             <>
               <div className="relative h-32 bg-gray-100 rounded-lg overflow-hidden">
                 <div 
-                  className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 bg-primary rounded-full transition-none"
+                  className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 bg-teal-600 rounded-full transition-none"
                   style={{ left: `${dotPosition}%`, transform: `translate(-50%, -50%)` }}
                 />
               </div>
@@ -675,7 +677,7 @@ function ToolsContent() {
                   <Badge variant="outline">{meditation.duration}</Badge>
                 </div>
                 <Button 
-                  className="w-full"
+                  className="btn-primary w-full"
                   onClick={() => {
                     setSelectedMeditation(meditation.id)
                     setMeditationActive(true)
@@ -715,7 +717,7 @@ function ToolsContent() {
             ))}
           </div>
         ) : (
-          <Card>
+          <Card className="glass-card border-0">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Journal Entry</CardTitle>
@@ -733,7 +735,7 @@ function ToolsContent() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-white rounded-lg">
                 <p className="text-gray-700 italic">{selectedPrompt}</p>
               </div>
               
@@ -770,77 +772,156 @@ function ToolsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative">
+      {/* Animated Background */}
+      <motion.div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+          animate={{ 
+            y: [0, 20, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Therapeutic Tools</h1>
-          <p className="text-gray-600">
-            Evidence-based exercises to support your healing journey
+        <motion.div 
+          className="mb-12 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Therapeutic <span className="gradient-text">Tools</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Evidence-based exercises and techniques to support your healing and growth journey
           </p>
-        </div>
+          
+          {/* Trust indicators */}
+          <div className="flex justify-center items-center gap-6 mt-6 text-sm text-gray-500">
+            <div className="flex items-center gap-1">
+              <Brain className="h-4 w-4 text-teal-500" />
+              <span>Clinically proven</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Shield className="h-4 w-4 text-teal-500" />
+              <span>Safe & secure</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Target className="h-4 w-4 text-teal-500" />
+              <span>Personalized</span>
+            </div>
+          </div>
+        </motion.div>
 
         {!selectedTool ? (
           <>
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+              <Card className="trust-badge">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600">Sessions This Week</p>
                       <p className="text-2xl font-bold">12</p>
                     </div>
-                    <Activity className="h-8 w-8 text-primary opacity-20" />
+                    <Activity className="h-8 w-8 text-teal-600 opacity-20" />
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
               
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+              <Card className="trust-badge">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600">Total Minutes</p>
-                      <p className="text-2xl font-bold">245</p>
+                      <p className="text-2xl font-bold text-teal-700">245</p>
                     </div>
-                    <Target className="h-8 w-8 text-green-500 opacity-20" />
+                    <Target className="h-8 w-8 text-teal-600 opacity-20" />
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
               
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+              <Card className="trust-badge">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600">Favorite Tool</p>
-                      <p className="text-lg font-bold">Breathwork</p>
+                      <p className="text-lg font-bold text-teal-700">Breathwork</p>
                     </div>
-                    <Wind className="h-8 w-8 text-blue-500 opacity-20" />
+                    <Wind className="h-8 w-8 text-teal-600 opacity-20" />
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
               
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+              <Card className="trust-badge">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600">Streak</p>
-                      <p className="text-2xl font-bold">7 days</p>
+                      <p className="text-2xl font-bold text-teal-700">7 days</p>
                     </div>
-                    <Zap className="h-8 w-8 text-yellow-500 opacity-20" />
+                    <Zap className="h-8 w-8 text-teal-600 opacity-20" />
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             </div>
 
             {/* Tools Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tools.map(tool => (
-                <Card 
+              {tools.map((tool, index) => (
+                <motion.div
                   key={tool.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                >
+                <Card 
+                  className="feature-card cursor-pointer"
                   onClick={() => setSelectedTool(tool.id)}
                 >
                   <CardHeader>
@@ -854,21 +935,27 @@ function ToolsContent() {
                   <CardContent>
                     <div className="flex items-center justify-between text-sm text-gray-600">
                       <span>Duration: {tool.duration}</span>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="btn-secondary">
                         Try Now
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
+                </motion.div>
               ))}
             </div>
           </>
         ) : (
-          <div className="space-y-6">
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             {/* Back Button */}
             <Button 
-              variant="ghost" 
+              className="btn-secondary"
               onClick={() => {
                 setSelectedTool(null)
                 setActiveWorksheet(null)
@@ -885,7 +972,7 @@ function ToolsContent() {
             {selectedTool === 'emdr' && renderEMDR()}
             {selectedTool === 'meditation' && renderMeditation()}
             {selectedTool === 'journaling' && renderJournaling()}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

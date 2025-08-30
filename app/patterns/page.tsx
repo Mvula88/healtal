@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import {
   Brain,
   TrendingUp,
@@ -83,6 +84,7 @@ function PatternsContent() {
     if (user) {
       fetchPatternData()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchPatternData = async () => {
@@ -276,62 +278,135 @@ function PatternsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative">
+      {/* Animated Background */}
+      <motion.div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
+          animate={{ 
+            y: [0, 20, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Pattern Analysis & Insights</h1>
-          <p className="text-gray-600 mt-2">
-            Deep understanding of your behavioral patterns and their interconnections
+        <motion.div 
+          className="mb-12 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Pattern <span className="gradient-text">Analysis</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Discover the deeper patterns shaping your thoughts, emotions, and behaviors
           </p>
-        </div>
+          
+          {/* Trust indicators */}
+          <div className="flex justify-center items-center gap-6 mt-6 text-sm text-gray-500">
+            <div className="flex items-center gap-1">
+              <Brain className="h-4 w-4 text-teal-500" />
+              <span>AI-powered insights</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Network className="h-4 w-4 text-teal-500" />
+              <span>Pattern connections</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <BarChart3 className="h-4 w-4 text-teal-500" />
+              <span>Progress tracking</span>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Pattern Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+          <Card className="trust-badge">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Active Patterns</p>
-                  <p className="text-2xl font-bold">{patterns.filter(p => p.status === 'active').length}</p>
+                  <p className="text-2xl font-bold text-teal-700">{patterns.filter(p => p.status === 'active').length}</p>
                 </div>
-                <Brain className="h-8 w-8 text-purple-500" />
+                <Brain className="h-8 w-8 text-teal-600 opacity-20" />
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+          <Card className="trust-badge">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Improving</p>
-                  <p className="text-2xl font-bold">{patterns.filter(p => p.status === 'improving').length}</p>
+                  <p className="text-2xl font-bold text-teal-700">{patterns.filter(p => p.status === 'improving').length}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
+                <TrendingUp className="h-8 w-8 text-teal-600 opacity-20" />
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+          <Card className="trust-badge">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Triggers</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-teal-700">
                     {patterns.reduce((sum, p) => sum + p.triggers.length, 0)}
                   </p>
                 </div>
-                <Zap className="h-8 w-8 text-orange-500" />
+                <Zap className="h-8 w-8 text-teal-600 opacity-20" />
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Pattern List */}
           <div className="lg:col-span-1">
-            <Card>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+            <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
               <CardHeader>
                 <CardTitle>Your Patterns</CardTitle>
                 <CardDescription>Click to explore each pattern</CardDescription>
@@ -339,12 +414,14 @@ function PatternsContent() {
               <CardContent className="p-0">
                 <div className="divide-y">
                   {patterns.map((pattern) => (
-                    <button
+                    <motion.button
                       key={pattern.id}
                       onClick={() => setSelectedPattern(pattern)}
-                      className={`w-full text-left p-4 hover:bg-gray-50 transition-colors ${
-                        selectedPattern?.id === pattern.id ? 'bg-gray-50' : ''
+                      className={`w-full text-left p-4 rounded-lg hover:bg-teal-50 transition-all duration-200 ${
+                        selectedPattern?.id === pattern.id ? 'bg-teal-50 border-l-4 border-teal-500' : 'hover:shadow-sm'
                       }`}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-medium">{pattern.pattern_name}</h4>
@@ -365,17 +442,23 @@ function PatternsContent() {
                       <div className="mt-2">
                         <Progress value={100 - (pattern.severity * 10)} className="h-2" />
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
           </div>
 
           {/* Pattern Details */}
           <div className="lg:col-span-2">
             {selectedPattern && (
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+              <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -521,7 +604,7 @@ function PatternsContent() {
                           </CardContent>
                         </Card>
 
-                        <Button className="w-full">
+                        <Button className="btn-primary w-full">
                           Start Pattern-Breaking Exercise
                           <ChevronRight className="h-4 w-4 ml-2" />
                         </Button>
@@ -530,12 +613,18 @@ function PatternsContent() {
                   </Tabs>
                 </CardContent>
               </Card>
+              </motion.div>
             )}
           </div>
         </div>
 
         {/* Pattern Insights */}
-        <Card className="mt-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+        >
+        <Card className="mt-8 rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-yellow-500" />
@@ -568,6 +657,7 @@ function PatternsContent() {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
       </main>
     </div>
   )

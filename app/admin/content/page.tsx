@@ -1,15 +1,14 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { createClient } from '@/lib/supabase/client'
-import { useAuth } from '@/contexts/auth-context'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { useRouter } from 'next/navigation'
 import { APP_CONFIG } from '@/lib/config'
 import {
@@ -57,7 +56,6 @@ interface ContentItem {
 }
 
 export default function ContentManagementPage() {
-  const { user } = useAuth()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'journeys' | 'prompts' | 'affirmations'>('journeys')
   const [journeys, setJourneys] = useState<Journey[]>([])
@@ -76,21 +74,10 @@ export default function ContentManagementPage() {
 
   useEffect(() => {
     checkAdminAndFetchContent()
-  }, [user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const checkAdminAndFetchContent = async () => {
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    // Check if user is admin by email (hardcoded to bypass database issues)
-    if (user.email !== 'ismaelmvula@gmail.com') {
-      // Don't redirect, just show appropriate message
-      setLoading(false)
-      return
-    }
-
     fetchContent()
   }
 
@@ -161,7 +148,15 @@ export default function ContentManagementPage() {
         
         // Insert default journeys
         for (const journey of defaultJourneys) {
-          await supabase.from('growth_journeys').insert(journey as any)
+          await supabase.from('growth_journeys').insert({
+            name: journey.name,
+            description: journey.description,
+            steps: journey.steps,
+            focus_areas: journey.focus_areas,
+            estimated_duration_weeks: journey.estimated_duration_weeks,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          } as any)
         }
         
         // Fetch again
@@ -291,51 +286,40 @@ export default function ContentManagementPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse">Loading content management...</div>
-      </div>
-    )
-  }
-
-  // Check if user is admin
-  if (user?.email !== 'ismaelmvula@gmail.com') {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Admin Access Required</CardTitle>
-            <CardDescription>
-              This page is restricted to administrators only.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={() => router.push('/dashboard')}
-              className="w-full"
-            >
-              Back to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  // Layout handles admin auth and loading states
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 ml-64">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
-            <p className="text-gray-600 mt-2">
-              Manage growth journeys, prompts, and educational content
-            </p>
-          </div>
+    <div className="flex-1 ml-64">
+      <div className="p-8">
+        {/* Header */}
+        <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Content Management</h1>
+                <p className="text-gray-600 text-lg">
+                  Manage growth journeys, prompts, and educational content
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant="outline"
+                  className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-xl font-medium"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export Content
+                </Button>
+                <Button className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Content
+                </Button>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -346,7 +330,7 @@ export default function ContentManagementPage() {
                     <p className="text-sm text-gray-600">Total Journeys</p>
                     <p className="text-2xl font-bold">{journeys.length}</p>
                   </div>
-                  <Compass className="h-8 w-8 text-purple-500" />
+                  <Compass className="h-8 w-8 text-teal-500" />
                 </div>
               </CardContent>
             </Card>
@@ -401,7 +385,7 @@ export default function ContentManagementPage() {
                   onClick={() => setActiveTab(tab as any)}
                   className={`py-2 px-1 border-b-2 font-medium text-sm capitalize ${
                     activeTab === tab
-                      ? 'border-primary text-primary'
+                      ? 'border-teal-600 text-teal-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -524,7 +508,7 @@ export default function ContentManagementPage() {
               <Card>
                 <CardContent className="p-0">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b">
+                    <thead className="bg-white border-b">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Content

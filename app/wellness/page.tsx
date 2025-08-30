@@ -1,12 +1,14 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { 
   Heart,
   Activity,
@@ -40,7 +42,12 @@ interface WellnessEntry {
   id: string
   mood_score: number
   energy_level: number
-  life_satisfaction: any
+  life_satisfaction: {
+    relationships: number
+    work: number
+    health: number
+    personal_growth: number
+  }
   notes: string
   created_at: string
 }
@@ -85,6 +92,7 @@ function WellnessContent() {
     if (user) {
       fetchWellnessData()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchWellnessData = async () => {
@@ -101,11 +109,11 @@ function WellnessContent() {
         .single()
 
       if (todayData) {
-        setTodayEntry(todayData)
-        setMoodScore(todayData.mood_score || 5)
-        setEnergyLevel(todayData.energy_level || 5)
-        setLifeSatisfaction(todayData.life_satisfaction || lifeSatisfaction)
-        setNotes(todayData.notes || '')
+        setTodayEntry(todayData as any)
+        setMoodScore((todayData as any).mood_score || 5)
+        setEnergyLevel((todayData as any).energy_level || 5)
+        setLifeSatisfaction((todayData as any).life_satisfaction || lifeSatisfaction)
+        setNotes((todayData as any).notes || '')
       }
 
       // Fetch recent entries for the chart
@@ -139,17 +147,17 @@ function WellnessContent() {
         // Update existing entry
         await supabase
           .from('wellness_entries')
-          .update(entryData)
+          .update(entryData as any)
           .eq('id', todayEntry.id)
       } else {
         // Create new entry
         const { data } = await supabase
           .from('wellness_entries')
-          .insert(entryData)
+          .insert(entryData as any)
           .select()
           .single()
         
-        if (data) setTodayEntry(data)
+        if (data) setTodayEntry(data as any)
       }
 
       await fetchWellnessData()
@@ -188,7 +196,26 @@ function WellnessContent() {
     : '0'
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-96 h-96 top-20 -right-20 opacity-20"
+          animate={{ 
+            x: [0, 30, 0],
+            y: [0, -20, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity }}
+        />
+        <motion.div 
+          className="orb orb-cyan w-80 h-80 bottom-10 left-10 opacity-20"
+          animate={{ 
+            x: [0, -20, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{ duration: 18, repeat: Infinity }}
+        />
+      </div>
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -200,7 +227,7 @@ function WellnessContent() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Daily Check-in */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
+            <Card className="glass-card border-0">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center">
@@ -335,7 +362,7 @@ function WellnessContent() {
           {/* Stats and Insights */}
           <div className="space-y-6">
             {/* Quick Stats */}
-            <Card>
+            <Card className="glass-card border-0">
               <CardHeader>
                 <CardTitle>30-Day Overview</CardTitle>
               </CardHeader>
@@ -356,7 +383,7 @@ function WellnessContent() {
             </Card>
 
             {/* Trend Chart */}
-            <Card>
+            <Card className="glass-card border-0">
               <CardHeader>
                 <CardTitle>Wellness Trends</CardTitle>
                 <CardDescription>Your mood and energy patterns</CardDescription>
@@ -406,7 +433,7 @@ function WellnessContent() {
             </Card>
 
             {/* Wellness Tips */}
-            <Card>
+            <Card className="glass-card border-0">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Heart className="h-5 w-5 mr-2 text-red-500" />

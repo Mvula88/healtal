@@ -1,0 +1,154 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - navigation [ref=e7]:
+      - generic [ref=e9]:
+        - link "Healtal" [ref=e11] [cursor=pointer]:
+          - /url: /
+          - img [ref=e13] [cursor=pointer]
+          - generic [ref=e22] [cursor=pointer]: Healtal
+        - generic [ref=e23]:
+          - link "Sign In" [ref=e24] [cursor=pointer]:
+            - /url: /login
+            - button "Sign In" [ref=e25] [cursor=pointer]
+          - link "Get Started" [ref=e26] [cursor=pointer]:
+            - /url: /signup
+            - button "Get Started" [ref=e27] [cursor=pointer]
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - heading "Privacy Policy" [level=1] [ref=e30]
+        - paragraph [ref=e31]: "Last updated: January 2025"
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - generic [ref=e35]:
+            - img [ref=e36]
+            - heading "Our Commitment to Privacy" [level=3] [ref=e38]
+          - paragraph [ref=e40]: At Healtal, we understand that your mental health journey is deeply personal. We are committed to protecting your privacy and ensuring your data remains secure and confidential.
+        - generic [ref=e41]:
+          - generic [ref=e43]:
+            - img [ref=e44]
+            - heading "Information We Collect" [level=3] [ref=e48]
+          - generic [ref=e49]:
+            - heading "Personal Information" [level=3] [ref=e50]
+            - list [ref=e51]:
+              - listitem [ref=e52]: Name and email address when you create an account
+              - listitem [ref=e53]: Payment information for paid subscriptions (processed securely via Stripe)
+              - listitem [ref=e54]: Optional profile information you choose to provide
+            - heading "Usage Data" [level=3] [ref=e55]
+            - list [ref=e56]:
+              - listitem [ref=e57]: Conversation history with our AI coach
+              - listitem [ref=e58]: Wellness tracking entries
+              - listitem [ref=e59]: Journey progress and completed exercises
+              - listitem [ref=e60]: App usage patterns and preferences
+        - generic [ref=e61]:
+          - generic [ref=e63]:
+            - img [ref=e64]
+            - heading "How We Protect Your Data" [level=3] [ref=e67]
+          - list [ref=e69]:
+            - listitem [ref=e70]: End-to-end encryption for all sensitive data
+            - listitem [ref=e71]: HIPAA-compliant infrastructure and practices
+            - listitem [ref=e72]: Regular security audits and penetration testing
+            - listitem [ref=e73]: Strict access controls for our team members
+            - listitem [ref=e74]: Secure data centers with 24/7 monitoring
+            - listitem [ref=e75]: Regular backups with encryption at rest
+        - generic [ref=e76]:
+          - generic [ref=e78]:
+            - img [ref=e79]
+            - heading "How We Use Your Information" [level=3] [ref=e82]
+          - generic [ref=e83]:
+            - list [ref=e84]:
+              - listitem [ref=e85]: To provide personalized AI coaching and insights
+              - listitem [ref=e86]: To track your wellness journey and progress
+              - listitem [ref=e87]: To improve our services and develop new features
+              - listitem [ref=e88]: To send important account and service updates
+              - listitem [ref=e89]: To provide customer support when requested
+            - paragraph [ref=e90]: "We Never:"
+            - list [ref=e91]:
+              - listitem [ref=e92]: Sell your personal data to third parties
+              - listitem [ref=e93]: Share your conversations without explicit consent
+              - listitem [ref=e94]: Use your data for advertising purposes
+              - listitem [ref=e95]: Allow unauthorized access to your information
+        - generic [ref=e96]:
+          - generic [ref=e98]:
+            - img [ref=e99]
+            - heading "Your Rights" [level=3] [ref=e103]
+          - generic [ref=e104]:
+            - paragraph [ref=e105]: "You have the right to:"
+            - list [ref=e106]:
+              - listitem [ref=e107]: Access all data we have about you
+              - listitem [ref=e108]: Export your data in common formats
+              - listitem [ref=e109]: Request correction of inaccurate information
+              - listitem [ref=e110]: Delete your account and all associated data
+              - listitem [ref=e111]: Opt-out of non-essential communications
+              - listitem [ref=e112]: Restrict processing of your data
+              - listitem [ref=e113]: Lodge a complaint with supervisory authorities
+        - generic [ref=e114]:
+          - generic [ref=e116]:
+            - img [ref=e117]
+            - heading "Contact Us" [level=3] [ref=e121]
+          - generic [ref=e122]:
+            - paragraph [ref=e123]: "If you have any questions about this Privacy Policy or our data practices, please contact us:"
+            - list [ref=e124]:
+              - listitem [ref=e125]: "Email: privacy@healtal.com"
+              - listitem [ref=e126]: "Phone: 1-800-HEALTAL"
+              - listitem [ref=e127]: "Mail: Healtal Privacy Team, 123 Wellness Street, San Francisco, CA 94105"
+    - contentinfo [ref=e128]:
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - img [ref=e133]
+              - generic [ref=e142]: Healtal
+            - paragraph [ref=e143]: AI Personal Growth Coach specializing in root cause exploration. Personal development through deeper pattern understanding
+          - generic [ref=e144]:
+            - heading "Platform" [level=3] [ref=e145]
+            - list [ref=e146]:
+              - listitem [ref=e147]:
+                - link "Features" [ref=e148] [cursor=pointer]:
+                  - /url: /features
+              - listitem [ref=e149]:
+                - link "Pricing" [ref=e150] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=e151]:
+                - link "About Us" [ref=e152] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e153]:
+                - link "Resources" [ref=e154] [cursor=pointer]:
+                  - /url: /resources
+          - generic [ref=e155]:
+            - heading "Support" [level=3] [ref=e156]
+            - list [ref=e157]:
+              - listitem [ref=e158]:
+                - link "Help Center" [ref=e159] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e160]:
+                - link "Contact Us" [ref=e161] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e162]:
+                - link "Crisis Resources" [ref=e163] [cursor=pointer]:
+                  - /url: /get-help
+              - listitem [ref=e164]:
+                - link "Community" [ref=e165] [cursor=pointer]:
+                  - /url: /community
+          - generic [ref=e166]:
+            - heading "Legal" [level=3] [ref=e167]
+            - list [ref=e168]:
+              - listitem [ref=e169]:
+                - link "Privacy Policy" [ref=e170] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e171]:
+                - link "Terms of Service" [ref=e172] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e173]:
+                - link "Disclaimers" [ref=e174] [cursor=pointer]:
+                  - /url: /disclaimers
+              - listitem [ref=e175]:
+                - link "Cookie Policy" [ref=e176] [cursor=pointer]:
+                  - /url: /cookies
+        - generic [ref=e178]:
+          - paragraph [ref=e179]: © 2024 Healtal. All rights reserved.
+          - paragraph [ref=e181]: Healtal is an AI Personal Growth Coach for educational purposes only. Not a substitute for professional therapy or medical advice. If experiencing a crisis, please call 988 or seek professional help immediately.
+```

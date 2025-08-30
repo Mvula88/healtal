@@ -1,5 +1,7 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 import { useState, useEffect } from 'react'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -221,7 +223,7 @@ export default function SystemPage() {
 
   if (user?.email !== 'ismaelmvula@gmail.com') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Admin Access Required</CardTitle>
@@ -246,7 +248,7 @@ export default function SystemPage() {
                        services.some(s => s.status === 'down') ? 'critical' : 'warning'
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       <AdminSidebar />
       
       <div className="flex-1 ml-64">
@@ -321,7 +323,7 @@ export default function SystemPage() {
             <CardContent>
               <div className="space-y-3">
                 {services.map((service) => (
-                  <div key={service.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={service.name} className="flex items-center justify-between p-3 bg-white rounded-lg">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(service.status)}
                       <div>
@@ -360,7 +362,7 @@ export default function SystemPage() {
             <CardContent>
               <div className="space-y-2">
                 {logs.map((log) => (
-                  <div key={log.id} className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded">
+                  <div key={log.id} className="flex items-start gap-3 p-2 hover:bg-white rounded">
                     {log.type === 'error' ? (
                       <XCircle className="h-4 w-4 text-red-500 mt-0.5" />
                     ) : log.type === 'warning' ? (

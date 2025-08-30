@@ -1,0 +1,281 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e7]:
+      - generic [ref=e9]:
+        - link "Healtal" [ref=e11] [cursor=pointer]:
+          - /url: /
+          - img [ref=e13] [cursor=pointer]
+          - generic [ref=e21] [cursor=pointer]: Healtal
+        - button [ref=e23] [cursor=pointer]:
+          - img [ref=e24] [cursor=pointer]
+    - generic [ref=e27]:
+      - heading "Understand Your Deeper Patterns" [level=1] [ref=e28]
+      - paragraph [ref=e29]: Before paying for therapy, understand your patterns with Healtal. Specialized AI coaching that helps you discover the root causes behind your patterns and behaviors for lasting personal transformation.
+      - generic [ref=e30]:
+        - link "Start Your Journey" [ref=e31] [cursor=pointer]:
+          - /url: /signup
+          - button "Start Your Journey" [ref=e32] [cursor=pointer]:
+            - text: Start Your Journey
+            - img
+        - link "Learn More" [ref=e33] [cursor=pointer]:
+          - /url: /about
+          - button "Learn More" [ref=e34] [cursor=pointer]
+      - paragraph [ref=e35]: No credit card required • Start free today
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - heading "Beyond Surface-Level Solutions" [level=2] [ref=e39]
+        - paragraph [ref=e40]: Beyond meditation - discover why you feel the way you do. Our specialized approach helps you understand the why behind your patterns.
+      - generic [ref=e41]:
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - img [ref=e46]
+            - heading "Root Cause Analysis" [level=3] [ref=e54]
+          - paragraph [ref=e56]: Go beyond surface symptoms to understand the deeper origins of your patterns and behaviors.
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - img [ref=e61]
+            - heading "Pattern Discovery" [level=3] [ref=e63]
+          - paragraph [ref=e65]: Identify recurring themes and behaviors that shape your life experiences and relationships.
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - img [ref=e70]
+            - heading "Focused Growth Plans" [level=3] [ref=e74]
+          - paragraph [ref=e76]: Personalized strategies that target the root of your challenges for lasting transformation.
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - img [ref=e81]
+            - heading "Progress Tracking" [level=3] [ref=e84]
+          - paragraph [ref=e86]: Monitor your journey from understanding to transformation with clear metrics and milestones.
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - img [ref=e91]
+            - heading "Professional Network" [level=3] [ref=e96]
+          - paragraph [ref=e98]: Access to vetted therapists and coaches when you need additional professional support.
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - img [ref=e103]
+            - heading "Safe & Confidential" [level=3] [ref=e105]
+          - paragraph [ref=e107]: Your personal growth journey is protected with enterprise-grade security and complete privacy.
+    - generic [ref=e109]:
+      - generic [ref=e110]:
+        - heading "From Surface to Source" [level=2] [ref=e111]
+        - paragraph [ref=e112]: A proven approach to understanding the root causes of your patterns
+      - generic [ref=e113]:
+        - generic [ref=e114]:
+          - generic [ref=e115]: "1"
+          - heading "Share Your Story" [level=3] [ref=e116]
+          - paragraph [ref=e117]: Tell our AI coach what you want to understand
+        - generic [ref=e118]:
+          - generic [ref=e119]: "2"
+          - heading "Explore Root Causes" [level=3] [ref=e120]
+          - paragraph [ref=e121]: Discover the deeper origins of your patterns
+        - generic [ref=e122]:
+          - generic [ref=e123]: "3"
+          - heading "Connect the Dots" [level=3] [ref=e124]
+          - paragraph [ref=e125]: See how past experiences shape current behaviors
+        - generic [ref=e126]:
+          - generic [ref=e127]: "4"
+          - heading "Transform with Insight" [level=3] [ref=e128]
+          - paragraph [ref=e129]: Use deep understanding to create lasting change
+    - generic [ref=e131]:
+      - generic [ref=e132]:
+        - heading "Stories of Transformation" [level=2] [ref=e133]
+        - paragraph [ref=e134]: Real experiences from our community members
+      - generic [ref=e135]:
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - img [ref=e140]
+            - img [ref=e142]
+            - img [ref=e144]
+            - img [ref=e146]
+            - img [ref=e148]
+          - paragraph [ref=e150]: "\"Healtal helped me understand why I kept repeating the same relationship patterns. Now I finally see the root causes and can make real changes.\""
+          - generic [ref=e151]:
+            - paragraph [ref=e152]: Sarah M.
+            - paragraph [ref=e153]: Understand Member
+        - generic [ref=e156]:
+          - generic [ref=e157]:
+            - img [ref=e158]
+            - img [ref=e160]
+            - img [ref=e162]
+            - img [ref=e164]
+            - img [ref=e166]
+          - paragraph [ref=e168]: "\"Before expensive therapy, I wanted to understand my patterns. Healtal gave me insights that years of surface-level self-help never could.\""
+          - generic [ref=e169]:
+            - paragraph [ref=e170]: Michael T.
+            - paragraph [ref=e171]: Transform Member
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - img [ref=e176]
+            - img [ref=e178]
+            - img [ref=e180]
+            - img [ref=e182]
+            - img [ref=e184]
+          - paragraph [ref=e186]: "\"The AI coach asks questions that get to the heart of issues. I discovered connections I never saw before.\""
+          - generic [ref=e187]:
+            - paragraph [ref=e188]: Emily R.
+            - paragraph [ref=e189]: Understand Member
+    - generic [ref=e191]:
+      - generic [ref=e192]:
+        - heading "Choose Your Growth Path" [level=2] [ref=e193]
+        - paragraph [ref=e194]: Flexible plans to support your personal development journey
+      - generic [ref=e195]:
+        - generic [ref=e197]:
+          - generic [ref=e198]:
+            - heading "Discover" [level=3] [ref=e199]
+            - generic [ref=e201]: Free
+            - paragraph [ref=e202]: Start your journey
+          - generic [ref=e203]:
+            - list [ref=e204]:
+              - listitem [ref=e205]:
+                - img [ref=e206]
+                - generic [ref=e208]: 5 pattern exploration sessions per month
+              - listitem [ref=e209]:
+                - img [ref=e210]
+                - generic [ref=e212]: Basic insights dashboard
+              - listitem [ref=e213]:
+                - img [ref=e214]
+                - generic [ref=e216]: Self-guided exercises
+              - listitem [ref=e217]:
+                - img [ref=e218]
+                - generic [ref=e220]: Community forum access
+            - link "Start Free" [ref=e221] [cursor=pointer]:
+              - /url: /signup
+              - button "Start Free" [ref=e222] [cursor=pointer]
+        - generic [ref=e224]:
+          - generic [ref=e225]: Most Popular
+          - generic [ref=e226]:
+            - heading "Understand" [level=3] [ref=e227]
+            - generic [ref=e228]:
+              - generic [ref=e229]: $24.99
+              - generic [ref=e230]: /month
+            - paragraph [ref=e231]: Deepen your self-understanding
+          - generic [ref=e232]:
+            - list [ref=e233]:
+              - listitem [ref=e234]:
+                - img [ref=e235]
+                - generic [ref=e237]: Unlimited AI coaching sessions
+              - listitem [ref=e238]:
+                - img [ref=e239]
+                - generic [ref=e241]: Advanced pattern analysis
+              - listitem [ref=e242]:
+                - img [ref=e243]
+                - generic [ref=e245]: Personalized growth plans
+              - listitem [ref=e246]:
+                - img [ref=e247]
+                - generic [ref=e249]: Progress tracking
+              - listitem [ref=e250]:
+                - img [ref=e251]
+                - generic [ref=e253]: Email support
+            - link "Start Understanding" [ref=e254] [cursor=pointer]:
+              - /url: /signup
+              - button "Start Understanding" [ref=e255] [cursor=pointer]
+        - generic [ref=e257]:
+          - generic [ref=e258]:
+            - heading "Transform" [level=3] [ref=e259]
+            - generic [ref=e260]:
+              - generic [ref=e261]: $44.99
+              - generic [ref=e262]: /month
+            - paragraph [ref=e263]: Complete transformation toolkit
+          - generic [ref=e264]:
+            - list [ref=e265]:
+              - listitem [ref=e266]:
+                - img [ref=e267]
+                - generic [ref=e269]: Everything in Understand
+              - listitem [ref=e270]:
+                - img [ref=e271]
+                - generic [ref=e273]: Life mapping tools
+              - listitem [ref=e274]:
+                - img [ref=e275]
+                - generic [ref=e277]: Professional referral network
+              - listitem [ref=e278]:
+                - img [ref=e279]
+                - generic [ref=e281]: Priority support
+              - listitem [ref=e282]:
+                - img [ref=e283]
+                - generic [ref=e285]: Weekly progress reviews
+              - listitem [ref=e286]:
+                - img [ref=e287]
+                - generic [ref=e289]: Advanced analytics
+            - link "Transform Your Life" [ref=e290] [cursor=pointer]:
+              - /url: /signup
+              - button "Transform Your Life" [ref=e291] [cursor=pointer]
+    - generic [ref=e294]:
+      - generic [ref=e296]:
+        - img [ref=e297]
+        - paragraph [ref=e300]: "Healtal AI Personal Growth Coach is not a licensed mental health professional, therapist, psychologist, or psychiatrist. This platform is for personal development and educational purposes only. For mental health concerns or crisis situations, please contact: - National Suicide Prevention Lifeline: 988 - Crisis Text Line: Text HOME to 741741 - Your local emergency services: 911 If you need professional therapy, we can help connect you with licensed mental health professionals in your area."
+      - generic [ref=e301]:
+        - link "Privacy Policy" [ref=e302] [cursor=pointer]:
+          - /url: /privacy
+        - generic [ref=e303]: •
+        - link "Terms of Service" [ref=e304] [cursor=pointer]:
+          - /url: /terms
+        - generic [ref=e305]: •
+        - link "Full Disclaimers" [ref=e306] [cursor=pointer]:
+          - /url: /disclaimers
+    - generic [ref=e308]:
+      - generic [ref=e309]: Need immediate help? Call 988 for crisis support
+      - button "Crisis Resources" [ref=e310] [cursor=pointer]:
+        - img
+        - text: Crisis Resources
+    - contentinfo [ref=e311]:
+      - generic [ref=e312]:
+        - generic [ref=e313]:
+          - generic [ref=e314]:
+            - generic [ref=e315]:
+              - img [ref=e316]
+              - generic [ref=e324]: Healtal
+            - paragraph [ref=e325]: AI Personal Growth Coach specializing in root cause exploration. Personal development through deeper pattern understanding
+          - generic [ref=e326]:
+            - heading "Platform" [level=3] [ref=e327]
+            - list [ref=e328]:
+              - listitem [ref=e329]:
+                - link "Features" [ref=e330] [cursor=pointer]:
+                  - /url: /features
+              - listitem [ref=e331]:
+                - link "Pricing" [ref=e332] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=e333]:
+                - link "About Us" [ref=e334] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e335]:
+                - link "Resources" [ref=e336] [cursor=pointer]:
+                  - /url: /resources
+          - generic [ref=e337]:
+            - heading "Support" [level=3] [ref=e338]
+            - list [ref=e339]:
+              - listitem [ref=e340]:
+                - link "Help Center" [ref=e341] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e342]:
+                - link "Contact Us" [ref=e343] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e344]:
+                - link "Crisis Resources" [ref=e345] [cursor=pointer]:
+                  - /url: /get-help
+              - listitem [ref=e346]:
+                - link "Community" [ref=e347] [cursor=pointer]:
+                  - /url: /community
+          - generic [ref=e348]:
+            - heading "Legal" [level=3] [ref=e349]
+            - list [ref=e350]:
+              - listitem [ref=e351]:
+                - link "Privacy Policy" [ref=e352] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e353]:
+                - link "Terms of Service" [ref=e354] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e355]:
+                - link "Disclaimers" [ref=e356] [cursor=pointer]:
+                  - /url: /disclaimers
+              - listitem [ref=e357]:
+                - link "Cookie Policy" [ref=e358] [cursor=pointer]:
+                  - /url: /cookies
+        - generic [ref=e360]:
+          - paragraph [ref=e361]: © 2024 Healtal. All rights reserved.
+          - paragraph [ref=e363]: Healtal is an AI Personal Growth Coach for educational purposes only. Not a substitute for professional therapy or medical advice. If experiencing a crisis, please call 988 or seek professional help immediately.
+  - alert [ref=e364]
+```

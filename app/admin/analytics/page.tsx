@@ -1,13 +1,11 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
-import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'
-import { APP_CONFIG } from '@/lib/config'
 import {
   BarChart3,
   TrendingUp,
@@ -34,7 +32,6 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
-  const { user } = useAuth()
   const router = useRouter()
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d')
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>({
@@ -49,24 +46,9 @@ export default function AnalyticsPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    checkAdminAndFetchAnalytics()
-  }, [user, timeRange])
-
-  const checkAdminAndFetchAnalytics = async () => {
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    // Check if user is admin by email (hardcoded to bypass database issues)
-    if (user.email !== 'ismaelmvula@gmail.com') {
-      // Don't redirect, just show appropriate message
-      setLoading(false)
-      return
-    }
-
     fetchAnalytics()
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeRange])
 
   const fetchAnalytics = async () => {
     try {
@@ -239,7 +221,7 @@ export default function AnalyticsPage() {
       change: '+18.2%',
       trend: 'up',
       icon: Brain,
-      color: 'text-purple-500'
+      color: 'text-teal-500'
     },
     {
       title: 'Monthly Revenue',
@@ -259,49 +241,21 @@ export default function AnalyticsPage() {
     }
   ]
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse">Loading analytics...</div>
-      </div>
-    )
-  }
-
-  // Check if user is admin
-  if (user?.email !== 'ismaelmvula@gmail.com') {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Admin Access Required</CardTitle>
-            <CardDescription>
-              This page is restricted to administrators only.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={() => router.push('/dashboard')}
-              className="w-full"
-            >
-              Back to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  // Layout now handles admin auth and loading states
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 ml-64">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8 flex justify-between items-start">
+    <div className="flex-1 ml-64">
+      <div className="p-8">
+        {/* Header */}
+        <motion.div 
+          className="mb-8 flex justify-between items-start"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Dashboard</h1>
+              <p className="text-gray-600 text-lg">
                 Platform performance metrics and insights
               </p>
             </div>
@@ -309,46 +263,101 @@ export default function AnalyticsPage() {
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value as any)}
-                className="px-4 py-2 border rounded-lg bg-white"
+                className="px-4 py-3 border-0 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
                 <option value="90d">Last 90 days</option>
               </select>
-              <Button variant="outline" onClick={exportAnalytics}>
+              <Button 
+                variant="outline" 
+                onClick={exportAnalytics}
+                className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-xl font-medium"
+              >
                 <Download className="h-4 w-4 mr-2" />
-                Export
+                Export Data
               </Button>
             </div>
-          </div>
+          </motion.div>
 
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {kpis.map((kpi, index) => {
-              const Icon = kpi.icon
-              return (
-                <Card key={index}>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {loading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index} className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
                   <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <Icon className={`h-6 w-6 ${kpi.color}`} />
-                      <span className={`text-sm font-medium flex items-center ${
-                        kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {kpi.trend === 'up' ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
-                        {kpi.change}
-                      </span>
+                    <div className="animate-pulse">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-8 h-8 bg-gray-200 rounded-lg" />
+                        <div className="w-16 h-4 bg-gray-200 rounded" />
+                      </div>
+                      <div className="w-20 h-8 bg-gray-200 rounded mb-2" />
+                      <div className="w-24 h-4 bg-gray-200 rounded" />
                     </div>
-                    <p className="text-2xl font-bold">{kpi.value}</p>
-                    <p className="text-sm text-gray-600">{kpi.title}</p>
                   </CardContent>
                 </Card>
-              )
-            })}
-          </div>
+              ))
+            ) : (
+              kpis.map((kpi, index) => {
+                const Icon = kpi.icon
+                return (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                      <div className={`h-2 bg-gradient-to-r ${
+                        kpi.color === 'text-blue-500' ? 'from-blue-500 to-blue-600' :
+                        kpi.color === 'text-teal-500' ? 'from-teal-500 to-teal-600' :
+                        kpi.color === 'text-green-500' ? 'from-green-500 to-green-600' :
+                        'from-orange-500 to-orange-600'
+                      }`} />
+                      <CardContent className="pt-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className={`p-3 rounded-xl ${
+                            kpi.color === 'text-blue-500' ? 'bg-blue-50' :
+                            kpi.color === 'text-teal-500' ? 'bg-teal-50' :
+                            kpi.color === 'text-green-500' ? 'bg-green-50' :
+                            'bg-orange-50'
+                          }`}>
+                            <Icon className={`h-6 w-6 ${
+                              kpi.color === 'text-blue-500' ? 'text-blue-600' :
+                              kpi.color === 'text-teal-500' ? 'text-teal-600' :
+                              kpi.color === 'text-green-500' ? 'text-green-600' :
+                              'text-orange-600'
+                            }`} />
+                          </div>
+                          <div className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
+                            kpi.trend === 'up' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+                          }`}>
+                            {kpi.trend === 'up' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                            <span>{kpi.change}</span>
+                          </div>
+                        </div>
+                        <p className="text-3xl font-bold text-gray-900 mb-1">{kpi.value}</p>
+                        <p className="text-sm text-gray-600 font-medium">{kpi.title}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })
+            )}
+          </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             {/* User Growth Chart */}
-            <Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardHeader>
                 <CardTitle>User Growth</CardTitle>
                 <CardDescription>New user registrations over time</CardDescription>
@@ -358,7 +367,7 @@ export default function AnalyticsPage() {
                   {analyticsData.userGrowth.slice(-10).map((day, index) => (
                     <div key={index} className="flex-1 flex flex-col items-center">
                       <div 
-                        className="w-full bg-primary rounded-t transition-all hover:bg-primary/80"
+                        className="w-full bg-teal-600 rounded-t transition-all hover:bg-teal-600/80"
                         style={{ height: `${(day.count / 50) * 100}%` }}
                       />
                       <p className="text-xs text-gray-500 mt-2 -rotate-45 origin-left">{day.date}</p>
@@ -369,7 +378,7 @@ export default function AnalyticsPage() {
             </Card>
 
             {/* Pattern Insights */}
-            <Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardHeader>
                 <CardTitle>Top Pattern Categories</CardTitle>
                 <CardDescription>Most explored patterns by users</CardDescription>
@@ -384,7 +393,7 @@ export default function AnalyticsPage() {
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          className="bg-primary h-2 rounded-full transition-all"
+                          className="bg-teal-600 h-2 rounded-full transition-all"
                           style={{ width: `${pattern.percentage}%` }}
                         />
                       </div>
@@ -393,10 +402,15 @@ export default function AnalyticsPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
 
           {/* Conversion Funnel */}
-          <Card className="mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardHeader>
               <CardTitle>Conversion Funnel</CardTitle>
               <CardDescription>User journey from visitor to active subscriber</CardDescription>
@@ -422,9 +436,15 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Revenue Metrics */}
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardHeader>
               <CardTitle>Revenue Trends</CardTitle>
               <CardDescription>Monthly revenue and subscription growth</CardDescription>
@@ -458,6 +478,7 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         </div>
       </div>
     </div>

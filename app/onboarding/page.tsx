@@ -1,8 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
+import { Skeleton, FormSkeleton } from '@/components/ui/skeleton'
 import { Heart, ChevronRight, ChevronLeft, CheckCircle, Target, Users, Brain, Sparkles } from 'lucide-react'
 
 const onboardingSteps = [

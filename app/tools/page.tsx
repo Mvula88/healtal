@@ -1,8 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,6 +14,7 @@ import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
 import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { APP_CONFIG } from '@/lib/config'
+import { Skeleton, CardSkeleton } from '@/components/ui/skeleton'
 import { 
   Brain,
   Heart,

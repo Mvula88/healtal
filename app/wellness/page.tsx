@@ -1,14 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
 import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
+import { Skeleton, CardSkeleton, StatsSkeleton } from '@/components/ui/skeleton'
 import { 
   Heart,
   Activity,

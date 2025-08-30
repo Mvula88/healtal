@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,6 +22,8 @@ import {
   CheckCircle
 } from 'lucide-react'
 import { APP_CONFIG, FEATURES } from '@/lib/config'
+import { LoadingWrapper, useLoadingState } from '@/components/ui/loading-wrapper'
+import { CardSkeleton } from '@/components/ui/skeleton'
 
 const detailedFeatures = [
   {

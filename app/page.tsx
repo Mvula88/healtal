@@ -30,7 +30,7 @@ import {
 export default function HomePage() {
   const [activeService, setActiveService] = useState('individual')
   const [mounted, setMounted] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [userCount, setUserCount] = useState(50000)
   const [animatedUserCount, setAnimatedUserCount] = useState(0)
   const [animatedSatisfaction, setAnimatedSatisfaction] = useState(0)
@@ -45,7 +45,6 @@ export default function HomePage() {
     setMounted(true)
     // Simulate loading time for initial data
     const loadData = async () => {
-      setLoading(true)
       // Fetch actual user count from database (placeholder for now)
       // This would be replaced with actual API call
       const fetchUserCount = async () => {
@@ -55,8 +54,6 @@ export default function HomePage() {
         setUserCount(50127) // Simulated real count
       }
       await fetchUserCount()
-      // Simulate a brief loading time
-      setTimeout(() => setLoading(false), 800)
     }
     loadData()
     
@@ -280,24 +277,21 @@ export default function HomePage() {
   ]
 
   return (
-    <LoadingWrapper loading={loading} skeleton="page">
-      <div className="relative">
-        {/* Subtle animated background */}
-        <motion.div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ opacity }}>
-          <motion.div 
-            className="orb orb-teal w-[600px] h-[600px] absolute -top-48 -right-48"
-            style={{ y: y1 }}
-          />
-          <motion.div 
-            className="orb orb-cyan w-[500px] h-[500px] absolute -bottom-32 -left-32"
-            style={{ y: y2 }}
-          />
-        </motion.div>
-        
-        <Navbar />
-        
-        {/* Hero Section - BetterHelp style */}
-        <section 
+    <div className="relative">
+      {/* Subtle animated background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div 
+          className="orb orb-teal w-[600px] h-[600px] absolute -top-48 -right-48"
+        />
+        <div 
+          className="orb orb-cyan w-[500px] h-[500px] absolute -bottom-32 -left-32"
+        />
+      </div>
+      
+      <Navbar />
+      
+      {/* Hero Section - BetterHelp style */}
+      <section 
           className="relative pt-24 pb-20 px-4 overflow-hidden"
           style={{
             backgroundImage: 'linear-gradient(135deg, rgba(20, 184, 166, 0.5) 0%, rgba(6, 182, 212, 0.5) 100%), url(/hero-nature.jpg)',
@@ -308,12 +302,7 @@ export default function HomePage() {
         >
         
           <div className="max-w-6xl mx-auto relative">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
+          <div className="text-center">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 text-balance drop-shadow-lg">
               You deserve to be
               <span className="block text-yellow-300">understood</span>
@@ -337,8 +326,8 @@ export default function HomePage() {
                 </button>
               </Link>
             </div>
-          </motion.div>
-        </div>
+          </div>
+          </div>
         </section>
 
       {/* Trust Indicators / Stats */}
@@ -349,60 +338,45 @@ export default function HomePage() {
           border: '1px solid rgba(229, 231, 235, 0.5)'
         }}>
           <div className="max-w-6xl mx-auto">
-          <motion.div 
-            className="grid grid-cols-2 md:grid-cols-4 gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, staggerChildren: 0.1 }}
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => {
               const Icon = stat.icon
               return (
-                <motion.div
+                <div
                   key={index}
                   className="trust-badge group"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
                 >
                   <Icon className="h-8 w-8 text-teal-600 mb-2 group-hover:scale-110 transition-transform" />
                   <div className={`text-3xl font-bold text-gray-900 ${stat.isAnimated ? 'transition-all duration-100' : ''}`}>
                     {stat.number}
                   </div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
-                </motion.div>
+                </div>
               )
             })}
-          </motion.div>
+          </div>
         </div>
         </section>
 
-      {/* How It Works */}
+        {/* How It Works */}
         <section className="py-20 px-4 bg-white/50 backdrop-blur-sm scroll-fade-in">
           <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+            <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Your journey to understanding starts here
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Four simple steps to deeper self-awareness and lasting change
             </p>
-          </div>
+            </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => {
               const Icon = step.icon
               return (
-                <motion.div
+                <div
                   key={index}
                   className="relative"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
                 >
                   {index < steps.length - 1 && (
                     <div className="hidden lg:block absolute top-12 left-full w-full h-[2px] bg-gradient-to-r from-teal-200 to-transparent" />
@@ -416,71 +390,62 @@ export default function HomePage() {
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
                     <p className="text-gray-600 text-sm">{step.description}</p>
                   </div>
-                </motion.div>
+                </div>
               )
             })}
+            </div>
           </div>
-        </div>
         </section>
 
-      {/* Features Grid */}
+          {/* Features Grid */}
         <section className="py-20 px-4 scroll-fade-in">
           <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+            <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Everything you need to heal and grow
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Comprehensive support designed for your unique journey
             </p>
-          </div>
+            </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon
               return (
-                <motion.div
+                <div
                   key={index}
                   className="feature-card group"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
                 >
                   <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl ${feature.color} mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className="h-7 w-7" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
                   <p className="text-gray-600">{feature.description}</p>
-                </motion.div>
+                </div>
               )
             })}
+            </div>
           </div>
-        </div>
         </section>
 
-      {/* Testimonials */}
+          {/* Testimonials */}
         <section className="py-20 px-4 bg-gradient-to-br from-teal-50/50 to-cyan-50/50 scroll-fade-in">
           <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+            <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Join thousands finding clarity
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Real stories from people who discovered their patterns
             </p>
-          </div>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <div
                 key={index}
                 className="testimonial-card"
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
               >
                 <div className="flex mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -499,33 +464,27 @@ export default function HomePage() {
                     <p className="text-sm text-gray-500">{testimonial.role}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
+            </div>
           </div>
-        </div>
         </section>
 
-      {/* Pricing */}
+          {/* Pricing */}
         <section className="py-20 px-4 scroll-fade-in">
           <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+            <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Invest in your mental wellness
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Affordable plans that fit your journey
             </p>
-          </div>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
             {/* Starter Plan */}
-            <motion.div
-              className="pricing-card"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0 }}
-            >
+            <div className="pricing-card">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
                 <div className="text-5xl font-bold text-gray-900 mb-1">$19</div>
@@ -550,16 +509,10 @@ export default function HomePage() {
                   Start now
                 </button>
               </Link>
-            </motion.div>
+            </div>
 
             {/* Growth Plan */}
-            <motion.div
-              className="pricing-card popular relative"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
+            <div className="pricing-card popular relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
                   Most Popular
@@ -590,16 +543,10 @@ export default function HomePage() {
                   Get started
                 </button>
               </Link>
-            </motion.div>
+            </div>
 
             {/* Premium Plan */}
-            <motion.div
-              className="pricing-card"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
+            <div className="pricing-card">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Premium</h3>
                 <div className="text-5xl font-bold text-gray-900 mb-1">$79</div>
@@ -626,16 +573,16 @@ export default function HomePage() {
                   Get started
                 </button>
               </Link>
-            </motion.div>
-          </div>
+            </div>
+            </div>
 
-          <p className="text-center text-gray-600 mt-8">
+            <p className="text-center text-gray-600 mt-8">
             All plans include a 7-day free trial. Cancel anytime.
-          </p>
-        </div>
+            </p>
+          </div>
         </section>
 
-      {/* Final CTA */}
+        {/* Final CTA */}
         <section className="py-20 px-4 text-white scroll-fade-in relative" style={{
           backgroundImage: 'linear-gradient(to bottom right, rgba(20, 184, 166, 0.65), rgba(6, 182, 212, 0.65)), url(/healing-hands.jpg)',
           backgroundSize: 'cover',
@@ -643,11 +590,7 @@ export default function HomePage() {
           backgroundRepeat: 'no-repeat'
         }}>
           <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
+            <div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Take the first step toward understanding yourself
             </h2>
@@ -667,16 +610,16 @@ export default function HomePage() {
                 </button>
               </Link>
             </div>
-          </motion.div>
-        </div>
+            </div>
+          </div>
         </section>
 
         {/* Footer */}
         <footer className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* Brand Column */}
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+              {/* Brand Column */}
+              <div>
               <div className="mb-4">
                 <Image 
                   src="/images/beneathy-logo.png" 
@@ -689,10 +632,10 @@ export default function HomePage() {
               <p className="text-sm text-gray-600">
                 AI-powered mental wellness platform helping you understand your patterns and heal from within.
               </p>
-            </div>
+              </div>
 
-            {/* Product Column */}
-            <div>
+              {/* Product Column */}
+              <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Product</h3>
               <ul className="space-y-2">
                 <li>
@@ -716,10 +659,10 @@ export default function HomePage() {
                   </Link>
                 </li>
               </ul>
-            </div>
+              </div>
 
-            {/* Support Column */}
-            <div>
+              {/* Support Column */}
+              <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Support</h3>
               <ul className="space-y-2">
                 <li>
@@ -743,10 +686,10 @@ export default function HomePage() {
                   </Link>
                 </li>
               </ul>
-            </div>
+              </div>
 
-            {/* Legal Column */}
-            <div>
+              {/* Legal Column */}
+              <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
@@ -770,23 +713,22 @@ export default function HomePage() {
                   </Link>
                 </li>
               </ul>
+              </div>
             </div>
-          </div>
 
-          {/* Bottom Bar */}
-          <div className="pt-8 border-t border-gray-200">
-            <div className="flex flex-col md:flex-row justify-between items-center">
+            {/* Bottom Bar */}
+            <div className="pt-8 border-t border-gray-200">
+              <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-gray-600">
                 © 2025 Beneathy. All rights reserved.
               </p>
               <p className="text-xs text-gray-500 mt-4 md:mt-0 max-w-2xl text-center md:text-right">
                 Beneathy is an AI coach for educational purposes only. Not a substitute for professional therapy.
               </p>
+              </div>
             </div>
           </div>
-        </div>
         </footer>
-      </div>
-    </LoadingWrapper>
+    </div>
   )
 }

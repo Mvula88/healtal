@@ -10,8 +10,11 @@ import {
   Sparkles, 
   BarChart3,
   Settings,
-  ChevronRight
+  ChevronRight,
+  Brain,
+  CheckCircle
 } from 'lucide-react'
+import Link from 'next/link'
 
 // Lazy load components for better performance
 const DashboardHeader = lazy(() => import('@/components/dashboard/sections/DashboardHeader').then(m => ({ default: m.DashboardHeader })))
@@ -98,18 +101,42 @@ function DashboardContent() {
       </Suspense>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
+        {/* Enhanced Welcome Section with Featured Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl p-8 text-white shadow-xl"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || 'Friend'}! 
-          </h1>
-          <p className="text-gray-600">
-            Your journey to healing continues. Here's everything you need today.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-3">
+                Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || 'Friend'}! 
+              </h1>
+              <p className="text-teal-50 text-lg mb-4">
+                Your journey to healing continues. Let's make today count.
+              </p>
+              <div className="flex gap-3">
+                <Link href="/coach">
+                  <button className="bg-white text-teal-600 px-6 py-2.5 rounded-lg font-semibold hover:bg-teal-50 transition-colors shadow-lg flex items-center gap-2">
+                    <Brain className="h-5 w-5" />
+                    Start AI Session
+                  </button>
+                </Link>
+                <Link href="/checkin">
+                  <button className="bg-teal-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-teal-700 transition-colors border border-teal-400 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5" />
+                    Daily Check-in
+                  </button>
+                </Link>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-3xl font-bold mb-1">Day 7</div>
+                <div className="text-teal-100 text-sm">Current Streak</div>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Main Dashboard Tabs */}
@@ -131,6 +158,11 @@ function DashboardContent() {
 
           <AnimatePresence mode="wait">
             <TabsContent value="overview" className="space-y-6">
+              {/* Quick Actions - MOVED TO TOP AND MADE PROMINENT */}
+              <Suspense fallback={<div className="h-64 bg-gray-100 rounded-lg animate-pulse" />}>
+                <QuickActions />
+              </Suspense>
+
               {/* Quick Stats */}
               <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
                 <QuickStats stats={dashboardData?.stats} />
@@ -154,10 +186,6 @@ function DashboardContent() {
 
                 {/* Right Column - Sidebar */}
                 <div className="space-y-6">
-                  <Suspense fallback={<div className="h-64 bg-gray-100 rounded-lg animate-pulse" />}>
-                    <QuickActions />
-                  </Suspense>
-
                   <Suspense fallback={<div className="h-64 bg-gray-100 rounded-lg animate-pulse" />}>
                     <ActiveGoals goals={dashboardData?.goals} />
                   </Suspense>

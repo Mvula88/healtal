@@ -277,9 +277,11 @@ export const RECOVERY_STAGES = {
   }
 }
 
-export default {
+const addictionPrompts = {
   ADDICTION_RECOVERY_PROMPTS,
   ADDICTION_SPECIFIC_PROMPTS,
   CRISIS_SCRIPTS,
   RECOVERY_STAGES
 }
+
+export default addictionPrompts

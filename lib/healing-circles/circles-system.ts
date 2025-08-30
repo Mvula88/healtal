@@ -123,6 +123,21 @@ export interface MemberProgress {
   peer_support_received: number
 }
 
+export interface AttendanceRecord {
+  session_id: string
+  date: Date
+  attended: boolean
+  duration_minutes?: number
+}
+
+export interface Contribution {
+  id: string
+  type: 'share' | 'support' | 'resource' | 'breakthrough'
+  content: string
+  date: Date
+  impact_score: number
+}
+
 export interface Breakthrough {
   id: string
   date: Date
@@ -158,6 +173,16 @@ export interface Testimonial {
   date: Date
   verified: boolean
   helpful_count: number
+}
+
+export interface AvailabilitySchedule {
+  monday?: string[]
+  tuesday?: string[]
+  wednesday?: string[]
+  thursday?: string[]
+  friday?: string[]
+  saturday?: string[]
+  sunday?: string[]
 }
 
 export interface AIEndorsement {

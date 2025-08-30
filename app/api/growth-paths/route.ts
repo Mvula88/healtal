@@ -102,8 +102,8 @@ async function handleExerciseAnalysis(data: any) {
   const { exerciseId, userResponse, pathId, moduleId } = data
   
   const path = GROWTH_PATHS.find(p => p.id === pathId)
-  const module = path?.modules.find(m => m.id === moduleId)
-  const exercise = module?.exercises.find(e => e.id === exerciseId)
+  const pathModule = path?.modules.find(m => m.id === moduleId)
+  const exercise = pathModule?.exercises.find(e => e.id === exerciseId)
   
   if (!exercise) {
     return NextResponse.json({ error: 'Exercise not found' }, { status: 404 })
@@ -337,10 +337,10 @@ function getNextMilestone(progress: any, pathId: string): string {
   if (!path) return 'Continue your journey'
   
   const currentModule = progress?.current_module || 0
-  const module = path.modules[currentModule]
+  const pathModule = path.modules[currentModule]
   
-  if (module && module.milestones.length > 0) {
-    const uncompletedMilestone = module.milestones.find(
+  if (pathModule && pathModule.milestones.length > 0) {
+    const uncompletedMilestone = pathModule.milestones.find(
       m => !progress?.completed_milestones?.includes(m.id)
     )
     return uncompletedMilestone?.title || 'Complete current module'

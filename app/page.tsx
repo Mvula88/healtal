@@ -299,15 +299,15 @@ export default function HomePage() {
         {/* Hero Section - BetterHelp style */}
         <section 
           className="relative pt-24 pb-20 px-4 overflow-hidden"
-        style={{
-          backgroundImage: 'linear-gradient(135deg, rgba(20, 184, 166, 0.5) 0%, rgba(6, 182, 212, 0.5) 100%), url(/hero-nature.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
+          style={{
+            backgroundImage: 'linear-gradient(135deg, rgba(20, 184, 166, 0.5) 0%, rgba(6, 182, 212, 0.5) 100%), url(/hero-nature.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
         
-        <div className="max-w-6xl mx-auto relative">
+          <div className="max-w-6xl mx-auto relative">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -343,12 +343,12 @@ export default function HomePage() {
 
       {/* Trust Indicators / Stats */}
         <section className="py-16 px-4 relative stats-section" style={{
-        background: 'rgba(243, 244, 246, 0.95)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        border: '1px solid rgba(229, 231, 235, 0.5)'
-      }}>
-        <div className="max-w-6xl mx-auto">
+          background: 'rgba(243, 244, 246, 0.95)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(229, 231, 235, 0.5)'
+        }}>
+          <div className="max-w-6xl mx-auto">
           <motion.div 
             className="grid grid-cols-2 md:grid-cols-4 gap-6"
             initial={{ opacity: 0, y: 20 }}
@@ -382,7 +382,7 @@ export default function HomePage() {
 
       {/* How It Works */}
         <section className="py-20 px-4 bg-white/50 backdrop-blur-sm scroll-fade-in">
-        <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Your journey to understanding starts here
@@ -425,7 +425,7 @@ export default function HomePage() {
 
       {/* Features Grid */}
         <section className="py-20 px-4 scroll-fade-in">
-        <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Everything you need to heal and grow
@@ -461,7 +461,7 @@ export default function HomePage() {
 
       {/* Testimonials */}
         <section className="py-20 px-4 bg-gradient-to-br from-teal-50/50 to-cyan-50/50 scroll-fade-in">
-        <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Join thousands finding clarity
@@ -507,7 +507,7 @@ export default function HomePage() {
 
       {/* Pricing */}
         <section className="py-20 px-4 scroll-fade-in">
-        <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Invest in your mental wellness
@@ -637,12 +637,12 @@ export default function HomePage() {
 
       {/* Final CTA */}
         <section className="py-20 px-4 text-white scroll-fade-in relative" style={{
-        backgroundImage: 'linear-gradient(to bottom right, rgba(20, 184, 166, 0.65), rgba(6, 182, 212, 0.65)), url(/healing-hands.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}>
-        <div className="max-w-4xl mx-auto text-center">
+          backgroundImage: 'linear-gradient(to bottom right, rgba(20, 184, 166, 0.65), rgba(6, 182, 212, 0.65)), url(/healing-hands.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}>
+          <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -673,7 +673,7 @@ export default function HomePage() {
 
         {/* Footer */}
         <footer className="bg-gray-50 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand Column */}
             <div>

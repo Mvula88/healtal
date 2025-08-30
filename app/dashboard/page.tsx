@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navigation/navbar'
 import { MiniReferralPrompt } from '@/components/professional-referral'
+import { FeatureHub } from '@/components/dashboard/feature-hub'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
 import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { APP_CONFIG } from '@/lib/config'
@@ -1084,6 +1085,23 @@ function DashboardContent() {
         {/* Professional Referral Prompt */}
         <div className="mt-8">
           <MiniReferralPrompt />
+        </div>
+
+        {/* Comprehensive Feature Hub */}
+        <div className="mt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              All Platform Features
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Everything you need for your transformation journey in one place
+            </p>
+            <FeatureHub />
+          </motion.div>
         </div>
       </main>
     </div>

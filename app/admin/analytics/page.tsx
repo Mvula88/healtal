@@ -249,10 +249,10 @@ export default function AnalyticsPage() {
         {/* Header */}
         <motion.div 
           className="mb-8 flex justify-between items-start"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Dashboard</h1>
               <p className="text-gray-600 text-lg">

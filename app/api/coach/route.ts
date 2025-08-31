@@ -157,7 +157,7 @@ export async function POST(request: Request) {
     // Using 3.7 for enhanced reasoning and extended thinking capabilities
     // Perfect for deep psychological analysis and pattern recognition
     const response = await replicate.run(
-      "anthropic/claude-3.7-sonnet",
+      "anthropic/claude-3.7-sonnet:81a891bd00c339f3565bda15b255b372eb8bf6c669fe996b66eea5d677454a46",
       {
         input: {
           prompt: message,
@@ -196,7 +196,9 @@ export async function POST(request: Request) {
       message: error.message,
       status: error.status,
       type: error.type,
-      stack: error.stack
+      stack: error.stack,
+      code: error.code,
+      response: error.response
     })
     
     // Check if it's an authentication error

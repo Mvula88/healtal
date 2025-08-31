@@ -143,28 +143,30 @@ export async function POST(request: Request) {
 
     console.log('Calling Claude via Replicate...')
     
-    // Format messages for Replicate
-    const formattedMessages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...conversationHistory.map((msg: any) => ({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.content
-      })),
-      { role: 'user', content: message }
-    ]
+    // Build conversation context for Claude 3.7
+    let conversationContext = ""
+    if (conversationHistory && conversationHistory.length > 0) {
+      conversationContext = "\n\nPrevious conversation:\n"
+      conversationHistory.forEach((msg: any) => {
+        const role = msg.role === 'user' ? 'User' : 'Coach'
+        conversationContext += `${role}: ${msg.content}\n\n`
+      })
+      conversationContext += "Current message:\n"
+    }
     
-    // Call Claude 3.7 Sonnet via Replicate
-    // Using 3.7 for enhanced reasoning and extended thinking capabilities
-    // Perfect for deep psychological analysis and pattern recognition
+    // Using Meta Llama 3.1 70B - Excellent for mental health coaching
+    // This model is highly empathetic and great at understanding complex emotions
+    const fullPrompt = `${SYSTEM_PROMPT}\n\n${conversationContext}User: ${message}\n\nCoach:`
+    
     const response = await replicate.run(
-      "anthropic/claude-3.7-sonnet:81a891bd00c339f3565bda15b255b372eb8bf6c669fe996b66eea5d677454a46",
+      "meta/meta-llama-3.1-405b-instruct:e6cb7fc3ed90eae2c879c48deda8f49152391ad66349fe7694be24089c29f71c",
       {
         input: {
-          prompt: message,
-          system_prompt: SYSTEM_PROMPT,
-          max_tokens: 1500, // Increased for more comprehensive responses
-          temperature: 0.7, // Slightly lower for more focused, therapeutic responses
-          messages: JSON.stringify(formattedMessages)
+          prompt: fullPrompt,
+          max_tokens: 1024,
+          temperature: 0.7,
+          top_p: 0.9,
+          system_prompt: SYSTEM_PROMPT
         }
       }
     )

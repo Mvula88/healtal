@@ -3,6 +3,7 @@ import { Bell, Settings, Search, Menu, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface DashboardHeaderProps {
   user: any
@@ -27,9 +28,16 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <div className="flex justify-between items-center h-16">
           {/* Left side */}
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-              Beneathy
-            </h1>
+            <Link href="/dashboard">
+              <Image 
+                src="/beneathy-dash.png" 
+                alt="Beneathy" 
+                width={120} 
+                height={40}
+                className="object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                priority
+              />
+            </Link>
             <div className="hidden md:block text-gray-500">|</div>
             <div className="hidden md:block">
               <p className="text-gray-900 font-medium">

@@ -20,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isInitialized, setIsInitialized] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -29,40 +30,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
       setLoading(false)
+      setIsInitialized(true)
     }
 
     getSession()
 
     // Listen for changes on auth state (signed in, signed out, etc.)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event, 'Path:', window.location.pathname)
+      
+      // Update user state
       setUser(session?.user ?? null)
       setLoading(false)
 
-      // Don't redirect if we're on an admin page or already on the target page
-      const currentPath = window.location.pathname
-      const isAdminPage = currentPath.startsWith('/admin')
-      const isDashboard = currentPath === '/dashboard'
-      const isHomePage = currentPath === '/'
-      const isAuthPage = currentPath.startsWith('/login') || currentPath.startsWith('/signup')
-      
-      // Only handle redirects for actual auth state changes, not token refreshes
-      if (event === 'SIGNED_IN' && isAuthPage) {
-        // Only redirect from auth pages to dashboard after sign in
-        router.push('/dashboard')
-      } else if (event === 'SIGNED_OUT') {
-        // Only redirect to home if not already there
-        if (!isHomePage && !isAuthPage) {
-          router.push('/')
-        }
+      // CRITICAL: Only handle redirects for actual authentication changes
+      // Completely ignore TOKEN_REFRESHED which fires when tabs regain focus
+      if (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        // Do nothing - these events should not cause any navigation
+        return
       }
-      // Remove any redirect logic for TOKEN_REFRESHED or other events
-      // This prevents unwanted redirects when switching tabs
+      
+      // Only handle redirects for true auth state changes
+      const currentPath = window.location.pathname
+      const isAuthPage = currentPath === '/login' || currentPath === '/signup'
+      const isHomePage = currentPath === '/'
+      
+      // Only redirect on initial sign in from login/signup pages
+      if (event === 'SIGNED_IN' && isAuthPage) {
+        console.log('Redirecting to dashboard from auth page')
+        router.push('/dashboard')
+      } 
+      // Only redirect on sign out if not already on public pages
+      else if (event === 'SIGNED_OUT' && !isHomePage && !isAuthPage) {
+        console.log('Redirecting to home after sign out')
+        router.push('/')
+      }
+      // For all other cases, maintain current page
     })
 
     return () => {
       authListener?.subscription.unsubscribe()
     }
-  }, [supabase, router])
+  }, [supabase, router, isInitialized])
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({

@@ -87,6 +87,10 @@ function detectPatterns(message: string): string[] {
 }
 
 export async function POST(request: Request) {
+  console.log('=== Coach API called ===')
+  console.log('Replicate configured:', !!replicate)
+  console.log('Token exists:', !!replicateToken)
+  
   try {
     // Check if API key is configured
     if (!replicate) {
@@ -171,14 +175,20 @@ export async function POST(request: Request) {
       }
     )
 
-    console.log('Replicate API response received')
+    console.log('Replicate API response received:', response)
 
-    // Extract the response text
-    const aiResponse = typeof response === 'string' 
-      ? response 
-      : Array.isArray(response) 
-        ? response.join('') 
-        : 'I understand you\'re sharing something important. Could you tell me more about that?'
+    // Extract the response text - Llama returns array of tokens
+    let aiResponse = ''
+    if (typeof response === 'string') {
+      aiResponse = response
+    } else if (Array.isArray(response)) {
+      // Filter out empty strings and join
+      aiResponse = response.filter(token => token && token.trim()).join('')
+    } else {
+      aiResponse = 'I understand you\'re sharing something important. Could you tell me more about that?'
+    }
+    
+    console.log('Processed response:', aiResponse)
 
     // Detect patterns and emotional tone
     const patterns = detectPatterns(message)

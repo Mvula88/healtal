@@ -40,16 +40,6 @@ export function QuickActions() {
       stats: '7 day streak'
     },
     {
-      title: 'Growth Paths',
-      description: 'Continue your personalized healing journey',
-      icon: Compass,
-      href: '/journeys',
-      color: 'from-teal-500 to-cyan-600',
-      bgColor: 'bg-gradient-to-br from-teal-50 to-cyan-50',
-      borderColor: 'border-teal-200 hover:border-teal-400',
-      stats: '3 paths active'
-    },
-    {
       title: 'Healing Circles',
       description: 'Join peer support groups and share experiences',
       icon: Users,
@@ -57,8 +47,18 @@ export function QuickActions() {
       color: 'from-blue-500 to-indigo-600',
       bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
       borderColor: 'border-blue-200 hover:border-blue-400',
-      new: true,
       stats: '12 members online'
+    },
+    {
+      title: 'Pattern Insights',
+      description: 'View analytics, journeys & personalized insights',
+      icon: TrendingUp,
+      href: '/insights',
+      color: 'from-amber-500 to-orange-600',
+      bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50',
+      borderColor: 'border-amber-200 hover:border-amber-400',
+      new: true,
+      stats: '12 patterns detected'
     }
   ]
 
@@ -70,10 +70,10 @@ export function QuickActions() {
       color: 'text-pink-600'
     },
     {
-      title: 'Insights',
-      icon: TrendingUp,
-      href: '/insights',
-      color: 'text-orange-600'
+      title: 'Growth Journeys',
+      icon: Compass,
+      href: '/journeys',
+      color: 'text-teal-600'
     },
     {
       title: 'Resources',

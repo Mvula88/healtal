@@ -1,248 +1,405 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useState, Suspense } from 'react'
+import { useState, useEffect } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Navbar } from '@/components/navigation/navbar'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
-import { Skeleton, CardSkeleton, StatsSkeleton } from '@/components/ui/skeleton'
+import { PatternAnalyticsDashboard } from '@/components/pattern-analytics-dashboard'
+import { GrowthJourneyIntegration } from '@/components/growth-journey-integration'
+import { PersonalizedPatternInsights } from '@/components/personalized-pattern-insights'
+import { createUntypedClient as createClient } from '@/lib/supabase/client-untyped'
 import { 
-  TrendingUp,
-  Activity,
-  Brain,
-  Target,
-  Award,
-  AlertTriangle,
-  ChevronRight,
-  Download,
-  Filter,
-  Sparkles,
-  Heart,
-  Zap,
-  ArrowUpRight,
-  ArrowDownRight,
+  Brain, 
+  BarChart3, 
+  Compass, 
   Lightbulb,
-  CheckCircle
+  TrendingUp,
+  Sparkles,
+  Activity,
+  ChevronRight,
+  Lock,
+  Crown
 } from 'lucide-react'
-import { 
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar
-} from 'recharts'
+import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
-export default function InsightsPage() {
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('week')
-  
-  const metrics = [
-    { label: 'Average Mood', value: 3.8, change: 12, trend: 'up', unit: '/5' },
-    { label: 'Pattern Recognition', value: 85, change: 23, trend: 'up', unit: '%' },
-    { label: 'Coping Strategy Use', value: 6.2, change: -8, trend: 'down', unit: '/day' },
-    { label: 'Anxiety Level', value: 2.8, change: -15, trend: 'down', unit: '/5' }
-  ]
+function InsightsContent() {
+  const { user } = useAuth()
+  const router = useRouter()
+  const [detectedPatterns, setDetectedPatterns] = useState<string[]>([])
+  const [userTier, setUserTier] = useState<'free' | 'explore' | 'transform' | 'enterprise'>('free')
+  const [activeTab, setActiveTab] = useState('analytics')
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
 
-  const moodTrendData = [
-    { date: 'Mon', mood: 3.2, anxiety: 3.5, energy: 2.8 },
-    { date: 'Tue', mood: 3.5, anxiety: 3.2, energy: 3.0 },
-    { date: 'Wed', mood: 3.8, anxiety: 2.9, energy: 3.5 },
-    { date: 'Thu', mood: 3.6, anxiety: 3.1, energy: 3.2 },
-    { date: 'Fri', mood: 4.0, anxiety: 2.7, energy: 3.8 },
-    { date: 'Sat', mood: 4.2, anxiety: 2.5, energy: 4.0 },
-    { date: 'Sun', mood: 3.9, anxiety: 2.8, energy: 3.6 }
-  ]
+  useEffect(() => {
+    if (user) {
+      fetchUserData()
+      analyzeUserPatterns()
+    } else {
+      router.push('/login')
+    }
+  }, [user])
 
-  const patternDistribution = [
-    { name: 'Anxiety', value: 35, color: '#8B5CF6' },
-    { name: 'Relationship', value: 25, color: '#3B82F6' },
-    { name: 'Work Stress', value: 20, color: '#10B981' },
-    { name: 'Self-Worth', value: 15, color: '#F59E0B' },
-    { name: 'Other', value: 5, color: '#6B7280' }
-  ]
+  const fetchUserData = async () => {
+    try {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('subscription_tier')
+        .eq('id', user?.id)
+        .single()
+      
+      if (userData) {
+        setUserTier(userData.subscription_tier || 'free')
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+    }
+  }
 
-  const radarData = [
-    { subject: 'Mood', A: 75, fullMark: 100 },
-    { subject: 'Energy', A: 68, fullMark: 100 },
-    { subject: 'Social', A: 55, fullMark: 100 },
-    { subject: 'Work', A: 72, fullMark: 100 },
-    { subject: 'Sleep', A: 60, fullMark: 100 },
-    { subject: 'Exercise', A: 45, fullMark: 100 }
-  ]
+  const analyzeUserPatterns = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch user's conversations and messages to detect patterns
+      const { data: conversations } = await supabase
+        .from('conversations')
+        .select('*, messages(*)')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (conversations) {
+        // Extract patterns from conversation metadata
+        const patterns = new Set<string>()
+        
+        conversations.forEach(conv => {
+          // Check insights_generated for patterns
+          if (conv.insights_generated?.patterns) {
+            conv.insights_generated.patterns.forEach((p: string) => patterns.add(p))
+          }
+          
+          // Check message metadata for patterns
+          conv.messages?.forEach((msg: any) => {
+            if (msg.metadata?.patterns_detected) {
+              msg.metadata.patterns_detected.forEach((p: string) => patterns.add(p))
+            }
+          })
+          
+          // Check tags
+          if (conv.tags) {
+            conv.tags.forEach((tag: string) => patterns.add(tag))
+          }
+        })
+        
+        // Add some detected patterns based on conversation content
+        // This is a simplified version - in production, you'd use NLP
+        const allMessages = conversations.flatMap(c => c.messages || [])
+        const messageContent = allMessages.map(m => m.content).join(' ').toLowerCase()
+        
+        if (messageContent.includes('addiction') || messageContent.includes('drinking')) {
+          patterns.add('addiction patterns')
+        }
+        if (messageContent.includes('friend') || messageContent.includes('social')) {
+          patterns.add('social dependency')
+        }
+        if (messageContent.includes('all or nothing') || messageContent.includes('extreme')) {
+          patterns.add('all-or-nothing thinking')
+        }
+        if (messageContent.includes('anxious') || messageContent.includes('anxiety')) {
+          patterns.add('anxiety patterns')
+        }
+        
+        setDetectedPatterns(Array.from(patterns))
+      }
+    } catch (error) {
+      console.error('Error analyzing patterns:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isPremiumFeature = (feature: string) => {
+    const freeFeatures = ['analytics-basic']
+    const exploreFeatures = ['analytics', 'insights-basic']
+    const transformFeatures = ['analytics', 'journeys', 'insights']
+    
+    switch (userTier) {
+      case 'free':
+        return !freeFeatures.includes(feature)
+      case 'explore':
+        return !exploreFeatures.includes(feature)
+      case 'transform':
+      case 'enterprise':
+        return false
+      default:
+        return true
+    }
+  }
+
+  if (!user) {
+    return null
+  }
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen relative">
-        {/* Animated Background */}
-        <motion.div className="absolute inset-0 -z-10">
-          <motion.div 
-            className="orb orb-teal w-[600px] h-[600px] -top-48 -right-48"
-            animate={{ 
-              y: [0, -20, 0],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{ 
-              duration: 20,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <motion.div 
-            className="orb orb-cyan w-[500px] h-[500px] -bottom-32 -left-32"
-            animate={{ 
-              y: [0, 20, 0],
-              scale: [1, 0.9, 1]
-            }}
-            transition={{ 
-              duration: 25,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </motion.div>
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <motion.div 
-            className="mb-12 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Personal <span className="gradient-text">Insights</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Track your progress and discover meaningful patterns in your mental wellness journey
-            </p>
-            
-            {/* Trust indicators */}
-            <div className="flex justify-center items-center gap-6 mt-6 text-sm text-gray-500">
-              <div className="flex items-center gap-1">
-                <TrendingUp className="h-4 w-4 text-teal-500" />
-                <span>Progress tracking</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Brain className="h-4 w-4 text-teal-500" />
-                <span>AI analysis</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Sparkles className="h-4 w-4 text-teal-500" />
-                <span>Personalized insights</span>
-              </div>
-            </div>
-          </motion.div>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50">
+      {/* Animated Background */}
+      <div className="absolute inset-0 -z-10">
+        <motion.div 
+          className="orb orb-teal w-96 h-96 top-20 -right-20 opacity-20"
+          animate={{ 
+            x: [0, 30, 0],
+            y: [0, -20, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity }}
+        />
+        <motion.div 
+          className="orb orb-purple w-80 h-80 bottom-10 left-10 opacity-20"
+          animate={{ 
+            x: [0, -20, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{ duration: 18, repeat: Infinity }}
+        />
+      </div>
 
-          <div className="mb-8 flex justify-between items-start">
-            <Button className="btn-secondary">
-              <Download className="h-4 w-4 mr-2" />
-              Export Report
-            </Button>
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Pattern Insights Hub</h1>
+              <p className="text-gray-600">
+                Deep analysis of your behavioral patterns and personalized growth recommendations
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              {userTier !== 'free' && (
+                <Badge variant="premium" className="px-3 py-1">
+                  <Crown className="h-3 w-3 mr-1" />
+                  {userTier.charAt(0).toUpperCase() + userTier.slice(1)} Plan
+                </Badge>
+              )}
+            </div>
           </div>
 
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            {metrics.map((metric, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
-              >
-              <Card className="trust-badge">
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm text-gray-600">{metric.label}</p>
-                      <p className="text-2xl font-bold">
-                        {metric.value}{metric.unit}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1">
-                        {metric.trend === 'up' ? (
-                          <ArrowUpRight className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <ArrowDownRight className="h-4 w-4 text-red-500" />
-                        )}
-                        <span className={`text-sm ${
-                          metric.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {Math.abs(metric.change)}%
-                        </span>
-                      </div>
-                    </div>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Patterns Detected</p>
+                    <p className="text-2xl font-bold text-teal-600">{detectedPatterns.length}</p>
+                  </div>
+                  <Brain className="h-8 w-8 text-teal-500 opacity-50" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Active Journeys</p>
+                    <p className="text-2xl font-bold text-purple-600">2</p>
+                  </div>
+                  <Compass className="h-8 w-8 text-purple-500 opacity-50" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Weekly Progress</p>
+                    <p className="text-2xl font-bold text-green-600">+15%</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-green-500 opacity-50" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Insights Generated</p>
+                    <p className="text-2xl font-bold text-amber-600">12</p>
+                  </div>
+                  <Lightbulb className="h-8 w-8 text-amber-500 opacity-50" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Main Content Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="analytics" className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4" />
+              <span>Pattern Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="journeys" 
+              className="flex items-center space-x-2"
+              disabled={isPremiumFeature('journeys')}
+            >
+              <Compass className="h-4 w-4" />
+              <span>Growth Journeys</span>
+              {isPremiumFeature('journeys') && <Lock className="h-3 w-3 ml-1" />}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="insights"
+              className="flex items-center space-x-2"
+              disabled={isPremiumFeature('insights')}
+            >
+              <Lightbulb className="h-4 w-4" />
+              <span>Personal Insights</span>
+              {isPremiumFeature('insights') && <Lock className="h-3 w-3 ml-1" />}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="analytics" className="space-y-6">
+            {isPremiumFeature('analytics') && userTier === 'free' ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Unlock Full Pattern Analytics</CardTitle>
+                  <CardDescription>
+                    Get detailed analytics about your behavioral patterns with a premium plan
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Lock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">
+                      Pattern Analytics is available with Explore plan and above
+                    </p>
+                    <Button onClick={() => router.push('/pricing')}>
+                      Upgrade Now
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
-              </motion.div>
-            ))}
-          </div>
+            ) : (
+              <PatternAnalyticsDashboard userId={user.id} />
+            )}
+          </TabsContent>
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
-            <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle>Weekly Mood Trends</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={moodTrendData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={[0, 5]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="mood" stroke="#8B5CF6" strokeWidth={2} />
-                    <Line type="monotone" dataKey="anxiety" stroke="#EF4444" strokeWidth={2} />
-                    <Line type="monotone" dataKey="energy" stroke="#10B981" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            </motion.div>
+          <TabsContent value="journeys" className="space-y-6">
+            {isPremiumFeature('journeys') ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Unlock Growth Journeys</CardTitle>
+                  <CardDescription>
+                    Access personalized growth programs with Transform plan
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Lock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">
+                      Growth Journeys are available with Transform plan and above
+                    </p>
+                    <Button onClick={() => router.push('/pricing')}>
+                      Upgrade to Transform
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <GrowthJourneyIntegration 
+                userId={user.id} 
+                detectedPatterns={detectedPatterns}
+              />
+            )}
+          </TabsContent>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-            >
-            <Card className="rounded-2xl bg-white/70 backdrop-blur-sm border border-teal-100 shadow-xl hover:shadow-2xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle>Life Balance Assessment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <RadarChart data={radarData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="subject" />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                    <Radar name="Current" dataKey="A" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.6} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            </motion.div>
-          </div>
-        </div>
+          <TabsContent value="insights" className="space-y-6">
+            {isPremiumFeature('insights') ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Unlock Personalized Insights</CardTitle>
+                  <CardDescription>
+                    Get AI-powered personal insights with Transform plan
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Lock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">
+                      Personalized Insights are available with Transform plan and above
+                    </p>
+                    <Button onClick={() => router.push('/pricing')}>
+                      Upgrade to Transform
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <PersonalizedPatternInsights userId={user.id} />
+            )}
+          </TabsContent>
+        </Tabs>
+
+        {/* Call to Action */}
+        {loading === false && detectedPatterns.length > 0 && (
+          <Card className="mt-8 bg-gradient-to-r from-teal-50 to-cyan-50 border-teal-200">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Ready to explore your patterns deeper?
+                  </h3>
+                  <p className="text-gray-600">
+                    Start a new coaching session to work on: {detectedPatterns.slice(0, 2).join(', ')}
+                  </p>
+                </div>
+                <Button 
+                  size="lg"
+                  onClick={() => router.push('/coach')}
+                  className="bg-teal-600 hover:bg-teal-700"
+                >
+                  <Brain className="h-5 w-5 mr-2" />
+                  Start Coaching Session
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
+    </div>
+  )
+}
+
+// Helper Badge component for tier display
+function Badge({ children, variant, className }: { 
+  children: React.ReactNode, 
+  variant: string,
+  className?: string 
+}) {
+  const baseClasses = "inline-flex items-center rounded-full font-medium"
+  const variantClasses = variant === 'premium' 
+    ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
+    : "bg-gray-100 text-gray-700"
+  
+  return (
+    <span className={`${baseClasses} ${variantClasses} ${className}`}>
+      {children}
+    </span>
+  )
+}
+
+export default function InsightsPage() {
+  return (
+    <AuthProvider>
+      <InsightsContent />
     </AuthProvider>
   )
 }

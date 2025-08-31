@@ -61,6 +61,11 @@ interface Conversation {
   messages?: Message[]
   mode?: 'general' | 'recovery'
   addiction_type?: string
+  tags?: string[]
+  insights_generated?: {
+    mode?: string
+    addiction_type?: string
+  }
 }
 
 interface RecoveryData {

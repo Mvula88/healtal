@@ -157,31 +157,54 @@ function CoachContent() {
 
   const createNewConversation = async () => {
     try {
+      // Check if user is authenticated
+      if (!user?.id) {
+        alert('Please log in to start a new conversation')
+        router.push('/login')
+        return
+      }
+
       const title = coachMode === 'recovery' 
         ? `Recovery Session - ${format(new Date(), 'MMM d, yyyy')}`
         : `Session - ${format(new Date(), 'MMM d, yyyy')}`
 
+      setLoading(true)
       const { data, error } = await supabase
         .from('conversations')
         .insert({
-          user_id: user?.id,
+          user_id: user.id,
           title,
-          conversation_type: coachMode === 'recovery' ? 'recovery' : 'exploration',
-          mode: coachMode,
-          addiction_type: selectedAddictionType || null
+          conversation_type: 'exploration', // Use valid enum value from schema
+          tags: coachMode === 'recovery' 
+            ? ['recovery', selectedAddictionType].filter(Boolean)
+            : ['exploration'],
+          insights_generated: {
+            mode: coachMode,
+            addiction_type: selectedAddictionType
+          }
         })
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        alert(`Error creating conversation: ${error.message}. Please try again.`)
+        throw error
+      }
       
       if (data) {
         setCurrentConversation(data)
         setMessages([])
         await fetchConversations()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating conversation:', error)
+      // If it's a database constraint error, it might mean the tables don't exist
+      if (error.code === '42P01') {
+        alert('Database tables not set up. Please contact support.')
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -223,8 +246,8 @@ function CoachContent() {
           message: userMessage.content,
           conversationId: currentConversation.id,
           userId: user?.id,
-          mode: currentConversation.mode || 'general',
-          addictionType: currentConversation.addiction_type
+          mode: currentConversation.insights_generated?.mode || 'general',
+          addictionType: currentConversation.insights_generated?.addiction_type
         })
       })
 
@@ -633,9 +656,19 @@ function CoachContent() {
             <button 
               onClick={createNewConversation} 
               className="w-full btn-primary group"
+              disabled={loading}
             >
-              <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-              {coachMode === 'recovery' ? 'New Recovery Session' : 'New Pattern Discovery'}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                  {coachMode === 'recovery' ? 'New Recovery Session' : 'New Pattern Discovery'}
+                </>
+              )}
             </button>
           </div>
 
@@ -1008,9 +1041,19 @@ function CoachContent() {
                   <Button 
                     onClick={createNewConversation}
                     className={coachMode === 'recovery' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+                    disabled={loading}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {coachMode === 'recovery' ? 'Start Recovery Session' : 'Start Pattern Discovery'}
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-4 w-4 mr-2" />
+                        {coachMode === 'recovery' ? 'Start Recovery Session' : 'Start Pattern Discovery'}
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>

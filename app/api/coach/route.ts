@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import Replicate from 'replicate'
 import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
 import { AI_MODELS, selectModel, SPECIALIZED_PROMPTS } from '@/lib/ai-config'
 
-// Debug: Log the API key status (not the key itself)
-console.log('ANTHROPIC_API_KEY status:', process.env.ANTHROPIC_API_KEY ? 'Present' : 'Missing')
-console.log('API Key length:', process.env.ANTHROPIC_API_KEY?.length)
+// Initialize Replicate client
+const replicateToken = process.env.REPLICATE_API_TOKEN || process.env.ANTHROPIC_API_KEY
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
+// Check if we have a valid Replicate token
+const isValidApiKey = replicateToken && 
+  replicateToken !== 'YOUR_ANTHROPIC_API_KEY_HERE'
+
+const replicate = isValidApiKey ? new Replicate({
+  auth: replicateToken,
+}) : null
 
 const SYSTEM_PROMPT = `You are Beneathy's AI Personal Growth Coach specializing in root cause exploration and pattern discovery. Your role is to help users understand the deeper psychological and emotional origins of their behaviors, thoughts, and patterns.
 
@@ -85,6 +88,23 @@ function detectPatterns(message: string): string[] {
 
 export async function POST(request: Request) {
   try {
+    // Check if API key is configured
+    if (!replicate) {
+      console.log('Replicate client not initialized. Token status:', {
+        exists: !!replicateToken,
+        isPlaceholder: replicateToken === 'YOUR_ANTHROPIC_API_KEY_HERE'
+      })
+      
+      return NextResponse.json({
+        content: "⚠️ Configuration Required: The AI coach service is not yet configured.\n\nTo enable AI coaching, you have two options:\n\nOption 1: Use Replicate (Recommended)\n1. Sign up for a free account at https://replicate.com/\n2. Get your API token from https://replicate.com/account/api-tokens\n3. Add it to your .env.local file:\n   REPLICATE_API_TOKEN=r8_...\n4. Restart your development server\n\nOption 2: Use Anthropic directly\n1. Get an API key from https://console.anthropic.com/\n2. Add it to .env.local:\n   ANTHROPIC_API_KEY=sk-ant-...\n\nNote: Old Anthropic keys (sk-ant-api03-) are no longer valid.\n\nExplore our other features while you set this up!",
+        metadata: {
+          error: 'api_not_configured',
+          patterns_detected: [],
+          emotional_tone: 'informative'
+        }
+      })
+    }
+    
     const { message, conversationId, userId } = await request.json()
     
     console.log('Received request:', { message: message.substring(0, 50), conversationId, userId })
@@ -121,27 +141,42 @@ export async function POST(request: Request) {
       content: msg.content
     })) || []
 
-    console.log('Calling Anthropic API...')
+    console.log('Calling Claude via Replicate...')
     
-    // Call Anthropic API with optimal model for deep analysis
-    // Using Claude 3 Opus for maximum understanding and insight
-    // Alternative: claude-3-5-sonnet-20241022 for faster responses
-    const response = await anthropic.messages.create({
-      model: 'claude-3-opus-20240229', // Most powerful model for deep psychological analysis
-      max_tokens: 1024, // Increased for more comprehensive responses
-      temperature: 0.8, // Slightly higher for more nuanced, empathetic responses
-      system: SYSTEM_PROMPT,
-      messages: [
-        ...conversationHistory,
-        { role: 'user', content: message }
-      ]
-    })
+    // Format messages for Replicate
+    const formattedMessages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...conversationHistory.map((msg: any) => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      })),
+      { role: 'user', content: message }
+    ]
+    
+    // Call Claude 3.7 Sonnet via Replicate
+    // Using 3.7 for enhanced reasoning and extended thinking capabilities
+    // Perfect for deep psychological analysis and pattern recognition
+    const response = await replicate.run(
+      "anthropic/claude-3.7-sonnet",
+      {
+        input: {
+          prompt: message,
+          system_prompt: SYSTEM_PROMPT,
+          max_tokens: 1500, // Increased for more comprehensive responses
+          temperature: 0.7, // Slightly lower for more focused, therapeutic responses
+          messages: JSON.stringify(formattedMessages)
+        }
+      }
+    )
 
-    console.log('Anthropic API response received')
+    console.log('Replicate API response received')
 
-    const aiResponse = response.content[0].type === 'text' 
-      ? response.content[0].text 
-      : 'I understand you\'re sharing something important. Could you tell me more about that?'
+    // Extract the response text
+    const aiResponse = typeof response === 'string' 
+      ? response 
+      : Array.isArray(response) 
+        ? response.join('') 
+        : 'I understand you\'re sharing something important. Could you tell me more about that?'
 
     // Detect patterns and emotional tone
     const patterns = detectPatterns(message)
@@ -164,15 +199,26 @@ export async function POST(request: Request) {
       stack: error.stack
     })
     
-    // Check if it's an authentication error or model not found
-    if (error.status === 401 || error.status === 404 || error.message?.includes('invalid x-api-key') || error.message?.includes('Invalid API Key') || error.message?.includes('not_found_error')) {
+    // Check if it's an authentication error
+    if (error.status === 401 || error.message?.includes('invalid x-api-key') || error.message?.includes('Invalid API Key')) {
       return NextResponse.json({
-        content: "⚠️ Configuration Issue: The AI coach service needs to be configured. To fix this:\n\n1. Get a valid API key from https://console.anthropic.com/\n2. Update ANTHROPIC_API_KEY in your .env.local file with a new key\n3. Restart the development server\n\nYour current API key appears to be invalid or expired (keys starting with 'sk-ant-api03-' are outdated).\n\nIn the meantime, I encourage you to explore the other features of the platform like wellness tracking, pattern analysis, and journaling.",
+        content: "⚠️ Invalid API Key: The API key provided is invalid or expired.\n\n1. Get a valid API key from https://console.anthropic.com/\n2. Update ANTHROPIC_API_KEY in your .env.local file\n3. Restart the development server\n\nNote: Keys starting with 'sk-ant-api03-' are outdated and no longer work.",
         metadata: {
-          error: 'api_configuration',
+          error: 'invalid_api_key',
           patterns_detected: [],
-          emotional_tone: 'informative',
-          growth_opportunities: ['self-reflection', 'journaling']
+          emotional_tone: 'informative'
+        }
+      })
+    }
+    
+    // Check if it's a model not found error
+    if (error.status === 404 || error.message?.includes('not_found_error')) {
+      return NextResponse.json({
+        content: "⚠️ Model Configuration Issue: The AI model specified is not available.\n\nThis is likely a temporary issue. Please try again in a moment, or contact support if the problem persists.",
+        metadata: {
+          error: 'model_not_found',
+          patterns_detected: [],
+          emotional_tone: 'informative'
         }
       })
     }

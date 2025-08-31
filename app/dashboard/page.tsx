@@ -121,18 +121,9 @@ function DashboardContent() {
           
           <div className="flex items-center justify-between relative z-10">
             <div>
-              <div className="flex items-center gap-4 mb-3">
-                <Image 
-                  src="/beneathy-logo.png" 
-                  alt="Beneathy" 
-                  width={50} 
-                  height={50}
-                  className="object-contain bg-white/10 rounded-lg p-2"
-                />
-                <h1 className="text-4xl font-bold">
-                  Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || 'Friend'}! 
-                </h1>
-              </div>
+              <h1 className="text-4xl font-bold mb-3">
+                Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || 'Friend'}! 
+              </h1>
               <p className="text-teal-50 text-lg mb-4">
                 Your journey to healing continues with Beneathy. Let's make today count.
               </p>

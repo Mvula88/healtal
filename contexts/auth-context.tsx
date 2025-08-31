@@ -43,18 +43,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const isAdminPage = currentPath.startsWith('/admin')
       const isDashboard = currentPath === '/dashboard'
       const isHomePage = currentPath === '/'
+      const isAuthPage = currentPath.startsWith('/login') || currentPath.startsWith('/signup')
       
-      if (event === 'SIGNED_IN') {
-        // Only redirect to dashboard if not already there and not on admin page
-        if (!isDashboard && !isAdminPage) {
-          router.push('/dashboard')
-        }
+      // Only handle redirects for actual auth state changes, not token refreshes
+      if (event === 'SIGNED_IN' && isAuthPage) {
+        // Only redirect from auth pages to dashboard after sign in
+        router.push('/dashboard')
       } else if (event === 'SIGNED_OUT') {
         // Only redirect to home if not already there
-        if (!isHomePage) {
+        if (!isHomePage && !isAuthPage) {
           router.push('/')
         }
       }
+      // Remove any redirect logic for TOKEN_REFRESHED or other events
+      // This prevents unwanted redirects when switching tabs
     })
 
     return () => {

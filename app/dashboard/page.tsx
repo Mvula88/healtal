@@ -15,6 +15,7 @@ import {
   CheckCircle
 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // Lazy load components for better performance
 const DashboardHeader = lazy(() => import('@/components/dashboard/sections/DashboardHeader').then(m => ({ default: m.DashboardHeader })))
@@ -101,19 +102,39 @@ function DashboardContent() {
       </Suspense>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Enhanced Welcome Section with Featured Actions */}
+        {/* Enhanced Welcome Section with Featured Actions and Beneathy Logo */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl p-8 text-white shadow-xl"
+          className="mb-8 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden"
         >
-          <div className="flex items-center justify-between">
+          {/* Beneathy Logo Watermark */}
+          <div className="absolute top-4 right-4 opacity-20">
+            <Image 
+              src="/beneathy-logo.png" 
+              alt="Beneathy" 
+              width={120} 
+              height={120}
+              className="object-contain"
+            />
+          </div>
+          
+          <div className="flex items-center justify-between relative z-10">
             <div>
-              <h1 className="text-4xl font-bold mb-3">
-                Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || 'Friend'}! 
-              </h1>
+              <div className="flex items-center gap-4 mb-3">
+                <Image 
+                  src="/beneathy-logo.png" 
+                  alt="Beneathy" 
+                  width={50} 
+                  height={50}
+                  className="object-contain bg-white/10 rounded-lg p-2"
+                />
+                <h1 className="text-4xl font-bold">
+                  Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || 'Friend'}! 
+                </h1>
+              </div>
               <p className="text-teal-50 text-lg mb-4">
-                Your journey to healing continues. Let's make today count.
+                Your journey to healing continues with Beneathy. Let's make today count.
               </p>
               <div className="flex gap-3">
                 <Link href="/coach">

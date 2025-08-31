@@ -144,6 +144,12 @@ function CoachContent() {
   }
 
   const fetchRecoveryData = async () => {
+    // Skip recovery data fetch since table doesn't exist yet
+    // This feature can be enabled once the recovery_data table is created
+    console.log('Recovery data table not yet configured')
+    return
+    
+    /* Uncomment when recovery_data table is created:
     try {
       const { data } = await supabase
         .from('recovery_data')
@@ -158,6 +164,7 @@ function CoachContent() {
     } catch (error) {
       console.error('Error fetching recovery data:', error)
     }
+    */
   }
 
   const createNewConversation = async () => {
@@ -256,7 +263,14 @@ function CoachContent() {
         })
       })
 
+      console.log('API Response status:', response.status)
+      
+      if (!response.ok) {
+        console.error('API request failed:', response.status, response.statusText)
+      }
+
       const data = await response.json()
+      console.log('API Response data:', data)
 
       if (data.content) {
         const coachMessage: Message = {

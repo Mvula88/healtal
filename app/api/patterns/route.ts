@@ -226,7 +226,8 @@ function analyzeTemporalPatterns(checkins: any[], conversations: any[]) {
   const timeOfDay = new Map<string, number>()
   const dayOfWeek = new Map<string, number>()
   
-  [...checkins, ...conversations].forEach(item => {
+  const allItems = [...checkins, ...conversations]
+  allItems.forEach(item => {
     if (item.created_at) {
       const date = new Date(item.created_at)
       const hour = date.getHours()

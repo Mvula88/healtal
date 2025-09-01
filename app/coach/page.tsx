@@ -866,6 +866,8 @@ function CoachContent() {
                         <div className={`p-2 rounded-lg ${
                           currentConversation?.id === conv.id ? 'bg-teal-100' : 'bg-gray-100'
                         }`}>
+                          <MessageCircle className={`h-4 w-4 ${
+                            currentConversation?.id === conv.id ? 'text-teal-600' : 'text-gray-500'
                           }`} />
                         </div>
                         <div className="flex-1 min-w-0">

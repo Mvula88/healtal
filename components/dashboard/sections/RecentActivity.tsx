@@ -8,58 +8,8 @@ interface RecentActivityProps {
 }
 
 export function RecentActivity({ activities }: RecentActivityProps) {
-  // Mock activities if none provided
-  const defaultActivities = [
-    {
-      id: '1',
-      type: 'session',
-      title: 'Completed AI Coaching Session',
-      description: 'Deep dive into relationship patterns',
-      icon: Brain,
-      color: 'from-purple-500 to-indigo-600',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      impact: 'breakthrough'
-    },
-    {
-      id: '2',
-      type: 'circle',
-      title: 'Joined Healing Circle',
-      description: 'Anxiety Recovery Group with Sarah M.',
-      icon: Users,
-      color: 'from-blue-500 to-indigo-600',
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000)
-    },
-    {
-      id: '3',
-      type: 'milestone',
-      title: 'Achieved 7-Day Streak',
-      description: 'Consistent daily check-ins',
-      icon: Trophy,
-      color: 'from-yellow-500 to-orange-500',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      celebration: true
-    },
-    {
-      id: '4',
-      type: 'insight',
-      title: 'New Pattern Discovered',
-      description: 'Identified stress trigger pattern',
-      icon: Zap,
-      color: 'from-teal-500 to-cyan-600',
-      timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000)
-    },
-    {
-      id: '5',
-      type: 'checkin',
-      title: 'Morning Check-in',
-      description: 'Mood: 8/10, Energy: High',
-      icon: Heart,
-      color: 'from-pink-500 to-rose-500',
-      timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000)
-    }
-  ]
-
-  const activityList = activities || defaultActivities
+  // Only show real activities, no mock data
+  const activityList = activities || []
 
   return (
     <Card className="p-6">
@@ -74,9 +24,16 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       </div>
 
       <div className="space-y-4">
-        {activityList.map((activity, index) => {
-          const Icon = activity.icon
-          return (
+        {activityList.length === 0 ? (
+          <div className="text-center py-8">
+            <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">No recent activity</p>
+            <p className="text-sm text-gray-400 mt-1">Start a session or check-in to see activity here</p>
+          </div>
+        ) : (
+          activityList.map((activity, index) => {
+            const Icon = activity.icon
+            return (
             <motion.div
               key={activity.id}
               initial={{ opacity: 0, x: -20 }}
@@ -121,15 +78,18 @@ export function RecentActivity({ activities }: RecentActivityProps) {
               </div>
             </motion.div>
           )
-        })}
+        }))
+        }
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>Showing 5 most recent activities</span>
-          <span className="text-teal-600 font-medium">23 total this week</span>
+      {activityList.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <span>Showing {Math.min(activityList.length, 5)} most recent activities</span>
+            <span className="text-teal-600 font-medium">{activityList.length} total</span>
+          </div>
         </div>
-      </div>
+      )}
     </Card>
   )
 }

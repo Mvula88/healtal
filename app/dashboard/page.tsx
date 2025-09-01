@@ -42,45 +42,112 @@ function DashboardContent() {
   }, [user, authLoading])
 
   useEffect(() => {
-    // Simulate loading dashboard data
     const loadDashboardData = async () => {
-      setLoading(true)
-      // In production, fetch from API
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      if (!user) return
       
-      setDashboardData({
-        stats: {
-          currentStreak: 7,
-          totalSessions: 42,
-          breakthroughs: 3,
-          moodAverage: 7.2,
-          weeklyProgress: 85
-        },
-        goals: [
-          {
-            id: '1',
-            title: 'Complete anxiety management program',
-            deadline: '2 weeks',
-            progress: 14,
-            target: 21
+      setLoading(true)
+      try {
+        // Fetch real data from APIs
+        const [statsRes, journeysRes, sessionsRes, checkinsRes] = await Promise.all([
+          fetch('/api/user/stats'),
+          fetch('/api/journeys'),
+          fetch('/api/sessions'),
+          fetch('/api/checkins')
+        ])
+
+        const [stats, journeys, sessions, checkins] = await Promise.all([
+          statsRes.json(),
+          journeysRes.json(),
+          sessionsRes.json(),
+          checkinsRes.json()
+        ])
+
+        // Calculate real stats from data
+        const currentStreak = calculateStreak(checkins.checkins || [])
+        const totalSessions = sessions.sessions?.length || 0
+        const moodScores = (checkins.checkins || []).map((c: any) => c.mood_score).filter(Boolean)
+        const moodAverage = moodScores.length > 0 
+          ? (moodScores.reduce((a: number, b: number) => a + b, 0) / moodScores.length).toFixed(1)
+          : 0
+
+        // Convert journeys to goals format
+        const goals = (journeys.journeys || []).filter((j: any) => j.status === 'active').map((journey: any) => ({
+          id: journey.id,
+          title: journey.title,
+          deadline: journey.estimated_completion ? 
+            formatDistanceToNow(new Date(journey.estimated_completion)) : 'No deadline',
+          progress: journey.completedSteps || 0,
+          target: journey.totalSteps || 1
+        }))
+
+        setDashboardData({
+          stats: {
+            currentStreak,
+            totalSessions,
+            breakthroughs: stats.breakthroughs || 0,
+            moodAverage,
+            weeklyProgress: stats.weeklyProgress || 0
           },
-          {
-            id: '2',
-            title: 'Daily mindfulness practice',
-            deadline: '30 days',
-            progress: 7,
-            target: 30
+          goals,
+          sessions: sessions.sessions || [],
+          checkins: checkins.checkins || [],
+          journeys: journeys.journeys || []
+        })
+      } catch (error) {
+        console.error('Error loading dashboard data:', error)
+        // Set empty data on error
+        setDashboardData({
+          stats: {
+            currentStreak: 0,
+            totalSessions: 0,
+            breakthroughs: 0,
+            moodAverage: 0,
+            weeklyProgress: 0
           },
-          {
-            id: '3',
-            title: 'Join 3 healing circles',
-            deadline: '1 month',
-            progress: 1,
-            target: 3
-          }
-        ]
-      })
-      setLoading(false)
+          goals: [],
+          sessions: [],
+          checkins: [],
+          journeys: []
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const calculateStreak = (checkins: any[]) => {
+      if (!checkins.length) return 0
+      
+      const sortedCheckins = [...checkins].sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+      
+      let streak = 0
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      for (let i = 0; i < sortedCheckins.length; i++) {
+        const checkinDate = new Date(sortedCheckins[i].created_at)
+        checkinDate.setHours(0, 0, 0, 0)
+        
+        const daysDiff = Math.floor((today.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24))
+        
+        if (daysDiff === streak) {
+          streak++
+        } else {
+          break
+        }
+      }
+      
+      return streak
+    }
+
+    const formatDistanceToNow = (date: Date) => {
+      const days = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      if (days <= 0) return 'Overdue'
+      if (days === 1) return '1 day'
+      if (days <= 7) return `${days} days`
+      if (days <= 30) return `${Math.ceil(days / 7)} weeks`
+      return `${Math.ceil(days / 30)} months`
     }
 
     if (user) {

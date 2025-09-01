@@ -165,36 +165,14 @@ function AdminDashboardContent() {
         churnRate: 5.2
       })
 
-      // Sample support tickets
-      setTickets([
-        {
-          id: '1',
-          user_name: 'John Doe',
-          subject: 'Cannot access healing circles',
-          priority: 'high',
-          status: 'open',
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          last_updated: new Date(Date.now() - 30 * 60 * 1000).toISOString()
-        },
-        {
-          id: '2',
-          user_name: 'Jane Smith',
-          subject: 'Billing question',
-          priority: 'medium',
-          status: 'in_progress',
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          last_updated: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '3',
-          user_name: 'Mike Johnson',
-          subject: 'Feature request: Export data',
-          priority: 'low',
-          status: 'open',
-          created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-          last_updated: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
-        }
-      ])
+      // Fetch real support tickets from database
+      const { data: ticketsData } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10)
+      
+      setTickets(ticketsData || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
@@ -366,26 +344,33 @@ function AdminDashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">New user registered: sarah.jones@email.com</span>
-                    <span className="text-xs text-gray-500 ml-auto">2 minutes ago</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm">User upgraded to Growth plan</span>
-                    <span className="text-xs text-gray-500 ml-auto">15 minutes ago</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm">New support ticket opened</span>
-                    <span className="text-xs text-gray-500 ml-auto">1 hour ago</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <span className="text-sm">Healing circle session completed</span>
-                    <span className="text-xs text-gray-500 ml-auto">2 hours ago</span>
-                  </div>
+                  {/* Show real recent user registrations */}
+                  {users && users.slice(0, 3).map((user: any, index: number) => {
+                    const timeAgo = new Date(user.created_at)
+                    const minutesAgo = Math.floor((Date.now() - timeAgo.getTime()) / 60000)
+                    const hoursAgo = Math.floor(minutesAgo / 60)
+                    const daysAgo = Math.floor(hoursAgo / 24)
+                    
+                    let timeString = ''
+                    if (daysAgo > 0) timeString = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`
+                    else if (hoursAgo > 0) timeString = `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`
+                    else if (minutesAgo > 0) timeString = `${minutesAgo} minute${minutesAgo > 1 ? 's' : ''} ago`
+                    else timeString = 'Just now'
+                    
+                    return (
+                      <div key={user.id} className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm">New user registered: {user.email}</span>
+                        <span className="text-xs text-gray-500 ml-auto">{timeString}</span>
+                      </div>
+                    )
+                  })}
+                  
+                  {(!users || users.length === 0) && (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">No recent activity</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -398,7 +383,13 @@ function AdminDashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {tickets.filter(t => t.status === 'open').map(ticket => (
+                  {tickets.filter(t => t.status === 'open').length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-gray-500">No open support tickets</p>
+                      <p className="text-xs text-gray-400 mt-1">All tickets have been resolved</p>
+                    </div>
+                  ) : (
+                    tickets.filter(t => t.status === 'open').map(ticket => (
                     <div key={ticket.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Badge className={getPriorityColor(ticket.priority)}>
@@ -414,7 +405,8 @@ function AdminDashboardContent() {
                         <ChevronRight className="h-3 w-3 ml-1" />
                       </Button>
                     </div>
-                  ))}
+                  )))
+                  }
                 </div>
               </CardContent>
             </Card>

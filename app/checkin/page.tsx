@@ -377,7 +377,7 @@ function CheckInContent() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => router.push('/insights')}
+                      onClick={() => router.push('/pattern-insights')}
                     >
                       View Insights
                       <ChevronRight className="h-4 w-4 ml-1" />

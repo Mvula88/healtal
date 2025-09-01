@@ -127,8 +127,7 @@ function BillingContent() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/login')
-      return
+      return // Don't redirect immediately, let AuthProvider handle it
     }
     fetchUserSubscription()
   }, [user])

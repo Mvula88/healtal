@@ -3,13 +3,24 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+// Initialize Stripe only if we have a key
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
   apiVersion: '2025-08-27.basil',
-})
+}) : null
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
 
 export async function POST(req: NextRequest) {
+  // Check if Stripe is configured
+  if (!stripe) {
+    console.error('Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables.')
+    return NextResponse.json(
+      { error: 'Payment processing not configured' },
+      { status: 503 }
+    )
+  }
+
   const body = await req.text()
   const signature = headers().get('stripe-signature') as string
 

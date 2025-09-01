@@ -31,7 +31,7 @@ export default function HomePage() {
   const [activeService, setActiveService] = useState('individual')
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [userCount, setUserCount] = useState(50000)
+  const [userCount, setUserCount] = useState(0)
   const [animatedUserCount, setAnimatedUserCount] = useState(0)
   const [animatedSatisfaction, setAnimatedSatisfaction] = useState(0)
   const [animatedConfidential, setAnimatedConfidential] = useState(0)
@@ -48,19 +48,25 @@ export default function HomePage() {
       // Fetch actual user count from database (placeholder for now)
       // This would be replaced with actual API call
       const fetchUserCount = async () => {
-        // const response = await fetch('/api/users/count')
-        // const data = await response.json()
-        // setUserCount(data.count)
-        setUserCount(50127) // Simulated real count
+        try {
+          const response = await fetch('/api/stats/users')
+          if (response.ok) {
+            const data = await response.json()
+            setUserCount(data.count || 0)
+          }
+        } catch (error) {
+          console.error('Failed to fetch user count:', error)
+          setUserCount(0)
+        }
       }
       await fetchUserCount()
     }
     loadData()
     
-    // Simulate real-time updates
+    // Refresh stats periodically
     const interval = setInterval(() => {
-      setUserCount(prev => prev + Math.floor(Math.random() * 3))
-    }, 30000) // Update every 30 seconds
+      fetchUserCount()
+    }, 60000) // Update every minute
     
     return () => clearInterval(interval)
   }, [])
@@ -174,10 +180,10 @@ export default function HomePage() {
   }, [hasAnimated])
 
   const stats = [
-    { number: hasAnimated ? `${animatedUserCount.toLocaleString()}+` : '0', label: 'Active Users', icon: Users, isAnimated: true },
-    { number: hasAnimated ? `${animatedSatisfaction}%` : '0%', label: 'Satisfaction Rate', icon: Star, isAnimated: true },
+    { number: hasAnimated && userCount > 0 ? `${animatedUserCount.toLocaleString()}+` : '-', label: 'Active Users', icon: Users, isAnimated: true },
+    { number: hasAnimated ? `${animatedSatisfaction}%` : '-', label: 'Satisfaction Rate', icon: Star, isAnimated: true },
     { number: '24/7', label: 'AI Support', icon: Clock, isAnimated: false },
-    { number: hasAnimated ? `${animatedConfidential}%` : '0%', label: 'Confidential', icon: Shield, isAnimated: true }
+    { number: hasAnimated ? `${animatedConfidential}%` : '-', label: 'Confidential', icon: Shield, isAnimated: true }
   ]
 
   const services = [

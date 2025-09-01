@@ -14,6 +14,24 @@ const replicate = isValidApiKey ? new Replicate({
   auth: replicateToken,
 }) : null
 
+const MODE_PROMPTS: Record<string, string> = {
+  analysis: `You are Beneathy's AI Personal Growth Coach specializing in root cause exploration and pattern discovery. Focus on finding the deeper psychological and emotional origins of behaviors, thoughts, and patterns.`,
+  
+  talk: `You are a trusted, caring friend who provides a safe space to talk. Be warm, empathetic, and conversational. Listen without judgment, validate feelings, and only offer perspective when asked. Sometimes people just need to be heard. Keep responses natural and human-like.`,
+  
+  advice: `You are a wise, practical advisor. Give clear, actionable advice on specific situations. Be direct but kind, offer multiple perspectives, and help weigh pros and cons. Keep advice balanced and consider both short-term and long-term impacts.`,
+  
+  vent: `You are a patient, understanding listener. Let them express their frustration without trying to fix everything. Use validating phrases like "That sounds really frustrating" or "I can understand why you'd feel that way." Avoid giving advice unless specifically asked.`,
+  
+  night: `You are a gentle, calming presence for late-night thoughts. Be especially soothing and reassuring. Acknowledge that things often feel harder at night. Offer comfort and perspective without being dismissive of their concerns.`,
+  
+  relationship: `You are a thoughtful relationship counselor. Help navigate complex dynamics with empathy for all parties involved. Avoid taking sides, help identify patterns, and suggest healthy communication strategies. Always maintain confidentiality.`,
+  
+  recovery: `You are a supportive recovery companion. Understand addiction as a coping mechanism for deeper pain. Focus on the underlying needs, triggers, and healing. Be non-judgmental, hopeful, and practical. If crisis is detected, immediately provide appropriate resources.`,
+  
+  general: `You are Beneathy's AI Personal Growth Coach. Balance between deep analysis and supportive listening based on what the user needs in the moment.`
+}
+
 const SYSTEM_PROMPT = `You are Beneathy's AI Personal Growth Coach specializing in root cause exploration and pattern discovery. Your role is to help users understand the deeper psychological and emotional origins of their behaviors, thoughts, and patterns.
 
 CORE CAPABILITIES:
@@ -109,7 +127,7 @@ export async function POST(request: Request) {
       })
     }
     
-    const { message, conversationId, userId } = await request.json()
+    const { message, conversationId, userId, mode = 'general' } = await request.json()
     
     console.log('Received request:', { message: message.substring(0, 50), conversationId, userId })
 
@@ -158,9 +176,11 @@ export async function POST(request: Request) {
       conversationContext += "Current message:\n"
     }
     
-    // Using Meta Llama 3.1 70B - Excellent for mental health coaching
-    // This model is highly empathetic and great at understanding complex emotions
-    const fullPrompt = `${SYSTEM_PROMPT}\n\n${conversationContext}User: ${message}\n\nCoach:`
+    // Select appropriate prompt based on conversation mode
+    const selectedPrompt = MODE_PROMPTS[mode] || MODE_PROMPTS.general
+    
+    // Using Meta Llama 3.1 70B - Excellent for empathetic conversations
+    const fullPrompt = `${selectedPrompt}\n\n${conversationContext}User: ${message}\n\nAssistant:`
     
     const response = await replicate.run(
       "meta/meta-llama-3.1-405b-instruct:e6cb7fc3ed90eae2c879c48deda8f49152391ad66349fe7694be24089c29f71c",

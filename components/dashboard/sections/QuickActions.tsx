@@ -12,22 +12,57 @@ import {
   MessageCircle,
   Target,
   Sparkles,
-  Activity
+  Activity,
+  Coffee,
+  Moon,
+  Lightbulb,
+  HeartHandshake
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 
 export function QuickActions() {
   const mainActions = [
     {
-      title: 'AI Coach Session',
-      description: 'Start a deep analysis session with your AI coach',
+      title: 'Root Cause Analysis',
+      description: 'Discover the deeper origins of your patterns',
       icon: Brain,
-      href: '/coach',
+      href: '/coach?mode=analysis',
       color: 'from-purple-500 to-indigo-600',
       bgColor: 'bg-gradient-to-br from-purple-50 to-indigo-50',
       borderColor: 'border-purple-200 hover:border-purple-400',
       popular: true,
-      stats: '42 sessions completed'
+      stats: '42 breakthroughs'
+    },
+    {
+      title: 'Just Need to Talk',
+      description: 'Safe space to share anything on your mind',
+      icon: Coffee,
+      href: '/coach?mode=talk',
+      color: 'from-rose-500 to-pink-600',
+      bgColor: 'bg-gradient-to-br from-rose-50 to-pink-50',
+      borderColor: 'border-rose-200 hover:border-rose-400',
+      new: true,
+      stats: 'Always available'
+    },
+    {
+      title: 'Quick Advice',
+      description: 'Get perspective on a specific situation',
+      icon: Lightbulb,
+      href: '/coach?mode=advice',
+      color: 'from-amber-500 to-yellow-600',
+      bgColor: 'bg-gradient-to-br from-amber-50 to-yellow-50',
+      borderColor: 'border-amber-200 hover:border-amber-400',
+      stats: '5 min sessions'
+    },
+    {
+      title: 'Vent & Release',
+      description: 'Let it all out without judgment',
+      icon: MessageCircle,
+      href: '/coach?mode=vent',
+      color: 'from-teal-500 to-cyan-600',
+      bgColor: 'bg-gradient-to-br from-teal-50 to-cyan-50',
+      borderColor: 'border-teal-200 hover:border-teal-400',
+      stats: 'No advice, just listening'
     },
     {
       title: 'Daily Check-in',
@@ -40,24 +75,33 @@ export function QuickActions() {
       stats: '7 day streak'
     },
     {
-      title: 'Healing Circles',
-      description: 'Join peer support groups and share experiences',
-      icon: Users,
-      href: '/healing-circles',
-      color: 'from-blue-500 to-indigo-600',
-      bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-      borderColor: 'border-blue-200 hover:border-blue-400',
-      stats: '12 members online'
+      title: 'Late Night Talk',
+      description: 'For those 3 AM thoughts you can\'t share',
+      icon: Moon,
+      href: '/coach?mode=night',
+      color: 'from-indigo-500 to-purple-600',
+      bgColor: 'bg-gradient-to-br from-indigo-50 to-purple-50',
+      borderColor: 'border-indigo-200 hover:border-indigo-400',
+      stats: '24/7 companion'
+    },
+    {
+      title: 'Relationship Help',
+      description: 'Navigate complex relationship dynamics',
+      icon: HeartHandshake,
+      href: '/coach?mode=relationship',
+      color: 'from-pink-500 to-rose-600',
+      bgColor: 'bg-gradient-to-br from-pink-50 to-rose-50',
+      borderColor: 'border-pink-200 hover:border-pink-400',
+      stats: 'Confidential advice'
     },
     {
       title: 'Pattern Insights',
-      description: 'View analytics, journeys & personalized insights',
+      description: 'View your behavioral patterns & analytics',
       icon: TrendingUp,
       href: '/insights',
-      color: 'from-amber-500 to-orange-600',
-      bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50',
-      borderColor: 'border-amber-200 hover:border-amber-400',
-      new: true,
+      color: 'from-blue-500 to-indigo-600',
+      bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
+      borderColor: 'border-blue-200 hover:border-blue-400',
       stats: '12 patterns detected'
     }
   ]

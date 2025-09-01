@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -78,6 +78,8 @@ interface RecoveryData {
 function CoachContent() {
   const { user } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const modeFromUrl = searchParams.get('mode')
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -89,7 +91,7 @@ function CoachContent() {
   const [audioURL, setAudioURL] = useState<string | null>(null)
   const [recordingTime, setRecordingTime] = useState(0)
   const [voiceMode, setVoiceMode] = useState(false)
-  const [coachMode, setCoachMode] = useState<'general' | 'recovery'>('general')
+  const [coachMode, setCoachMode] = useState<string>(modeFromUrl || 'general')
   const [selectedAddictionType, setSelectedAddictionType] = useState<string>('')
   const [recoveryData, setRecoveryData] = useState<RecoveryData | null>(null)
   const [showAddictionSelector, setShowAddictionSelector] = useState(false)
@@ -106,6 +108,13 @@ function CoachContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  // Handle mode from URL
+  useEffect(() => {
+    if (modeFromUrl) {
+      setCoachMode(modeFromUrl)
+    }
+  }, [modeFromUrl])
 
   useEffect(() => {
     scrollToBottom()
@@ -176,9 +185,18 @@ function CoachContent() {
         return
       }
 
-      const title = coachMode === 'recovery' 
-        ? `Recovery Session - ${format(new Date(), 'MMM d, yyyy')}`
-        : `Session - ${format(new Date(), 'MMM d, yyyy')}`
+      const modeLabels: Record<string, string> = {
+        'analysis': 'Root Cause Analysis',
+        'talk': 'Just Talking',
+        'advice': 'Quick Advice',
+        'vent': 'Venting Session',
+        'night': 'Late Night Talk',
+        'relationship': 'Relationship Talk',
+        'recovery': 'Recovery Support',
+        'general': 'Coaching Session'
+      }
+      
+      const title = `${modeLabels[coachMode] || 'Session'} - ${format(new Date(), 'MMM d, yyyy')}`
 
       setLoading(true)
       const { data, error } = await supabase
@@ -187,9 +205,7 @@ function CoachContent() {
           user_id: user.id,
           title,
           conversation_type: 'exploration', // Use valid enum value from schema
-          tags: coachMode === 'recovery' 
-            ? ['recovery', selectedAddictionType].filter(Boolean)
-            : ['exploration'],
+          tags: [coachMode],
           insights_generated: {
             mode: coachMode,
             addiction_type: selectedAddictionType
@@ -258,7 +274,7 @@ function CoachContent() {
           message: userMessage.content,
           conversationId: currentConversation.id,
           userId: user?.id,
-          mode: currentConversation.insights_generated?.mode || 'general',
+          mode: currentConversation.insights_generated?.mode || coachMode || 'general',
           addictionType: currentConversation.insights_generated?.addiction_type
         })
       })
@@ -559,13 +575,52 @@ function CoachContent() {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const generalConversationStarters = [
-    "Help me understand the root cause of my relationship patterns",
-    "Why do I keep repeating the same behaviors?",
-    "I want to discover what's really behind my anxiety",
-    "Help me connect my past experiences to current challenges",
-    "I'd like to explore the deeper reasons for my reactions"
-  ]
+  const conversationStartersByMode: Record<string, string[]> = {
+    analysis: [
+      "Help me understand the root cause of my relationship patterns",
+      "Why do I keep repeating the same behaviors?",
+      "I want to discover what's really behind my anxiety",
+      "Help me connect my past experiences to current challenges"
+    ],
+    talk: [
+      "I just need someone to talk to about my day",
+      "There's something on my mind I can't share with anyone",
+      "I'm feeling lonely and could use some company",
+      "Can we just chat? I don't need advice, just someone to listen"
+    ],
+    advice: [
+      "I need advice about a situation at work",
+      "Should I reach out to my ex or let it go?",
+      "How do I handle this conflict with my friend?",
+      "I have to make a decision and need perspective"
+    ],
+    vent: [
+      "I'm so frustrated and just need to let it out",
+      "Can I just vent for a minute? I'm really annoyed",
+      "I need to get something off my chest",
+      "I'm angry and need someone to hear me out"
+    ],
+    night: [
+      "I can't sleep and my mind won't stop racing",
+      "It's 3 AM and I'm overthinking everything",
+      "The anxiety is worse at night and I feel alone",
+      "I have nobody to talk to about what's keeping me up"
+    ],
+    relationship: [
+      "My partner and I keep having the same fight",
+      "I think I'm in a toxic relationship but I'm not sure",
+      "How do I know if this relationship is worth saving?",
+      "I need help understanding my relationship patterns"
+    ],
+    general: [
+      "Help me understand myself better",
+      "I want to explore what's been bothering me",
+      "Can you help me make sense of my feelings?",
+      "I need someone to talk through my thoughts with"
+    ]
+  }
+
+  const generalConversationStarters = conversationStartersByMode[coachMode] || conversationStartersByMode.general
 
   const recoveryConversationStarters = [
     "What unmet need is my addiction trying to fulfill?",
@@ -590,7 +645,7 @@ function CoachContent() {
 
   const conversationStarters = coachMode === 'recovery' 
     ? recoveryConversationStarters 
-    : generalConversationStarters
+    : conversationStartersByMode[coachMode] || conversationStartersByMode.general
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -824,14 +879,26 @@ function CoachContent() {
                             <Lightbulb className="h-5 w-5 text-teal-600" />
                           )}
                         </div>
-                        {currentConversation.mode === 'recovery' 
-                          ? "Recovery Support & Root Cause Exploration"
-                          : "Let's Discover Your Root Patterns"}
+                        {{
+                          'analysis': "Let's Discover Your Root Patterns",
+                          'talk': "I'm Here to Listen",
+                          'advice': "Let's Think This Through Together",
+                          'vent': "Let It All Out - No Judgment",
+                          'night': "You're Not Alone Tonight",
+                          'relationship': "Let's Navigate This Together",
+                          'recovery': "Recovery Support & Healing"
+                        }[coachMode] || "How Can I Support You Today?"}
                       </h3>
                       <p className="text-gray-600">
-                        {currentConversation.mode === 'recovery'
-                          ? "This is a safe space to explore your recovery journey. I'll help you understand the deeper needs and pain that your addiction has been trying to address, without judgment."
-                          : "I'm here to help you understand the deeper origins of your patterns and behaviors. Together we'll explore the 'why' behind your experiences."}
+                        {{
+                          'analysis': "I'm here to help you understand the deeper origins of your patterns and behaviors. Together we'll explore the 'why' behind your experiences.",
+                          'talk': "This is your safe space. Share whatever's on your mind - big or small. I'm here to listen without judgment, and everything stays between us.",
+                          'advice': "Tell me what's going on, and I'll help you think through your options. Sometimes an outside perspective is all we need.",
+                          'vent': "Go ahead and let it out. Sometimes we just need to express our frustration without someone trying to fix everything. I'm here to listen.",
+                          'night': "Late nights can make everything feel heavier. I'm here with you. Share what's on your mind - no thought is too small or too overwhelming.",
+                          'relationship': "Relationships are complex. Let's untangle what's happening and find a path forward that feels right for you.",
+                          'recovery': "This is a safe space to explore your recovery journey. I'll help you understand the deeper needs without judgment."
+                        }[coachMode] || "I'm here to support you in whatever way you need today."}
                       </p>
                     </div>
                     <div>

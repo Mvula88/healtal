@@ -260,7 +260,7 @@ const navigationItems = [
   }
 ]
 
-export function Navbar() {
+export function NavbarEnhanced() {
   const pathname = usePathname()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

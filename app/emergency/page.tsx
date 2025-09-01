@@ -46,7 +46,6 @@ function EmergencyContent() {
     },
     {
       name: 'Crisis Text Line',
-      number: null,
       text: 'Text "HOME" to 741741',
       website: 'https://www.crisistextline.org',
       description: 'Free 24/7 support via text message for any crisis',
@@ -57,8 +56,6 @@ function EmergencyContent() {
     {
       name: 'Emergency Services',
       number: '911',
-      text: null,
-      website: null,
       description: 'For immediate life-threatening emergencies',
       availability: '24/7',
       category: 'Emergency',
@@ -67,7 +64,6 @@ function EmergencyContent() {
     {
       name: 'SAMHSA National Helpline',
       number: '1-800-662-4357',
-      text: null,
       website: 'https://www.samhsa.gov/find-help/national-helpline',
       description: 'Treatment referral and information service for substance abuse and mental health',
       availability: '24/7',
@@ -87,7 +83,6 @@ function EmergencyContent() {
     {
       name: 'RAINN National Sexual Assault Hotline',
       number: '1-800-656-4673',
-      text: null,
       website: 'https://www.rainn.org',
       description: 'Confidential support for survivors of sexual assault',
       availability: '24/7',
@@ -267,7 +262,7 @@ function EmergencyContent() {
                           variant="outline" 
                           className="w-full"
                           onClick={() => {
-                            const [action, number] = resource.text.split(' to ')
+                            const [action, number] = resource.text!.split(' to ')
                             window.location.href = `sms:${number}?body=${action.replace('Text "', '').replace('"', '')}`
                           }}
                         >

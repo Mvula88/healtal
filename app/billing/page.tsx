@@ -24,7 +24,7 @@ import {
 interface Plan {
   id: string
   name: string
-  tier: 'free' | 'explore' | 'transform' | 'enterprise'
+  tier: 'starter' | 'growth' | 'enterprise'
   price: number
   period: string
   features: string[]
@@ -36,83 +36,73 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
-    id: 'free',
-    name: 'Free',
-    tier: 'free',
-    price: 0,
-    period: 'forever',
-    icon: Zap,
-    color: 'gray',
-    features: [
-      '5 AI coaching sessions per month',
-      'Daily mood check-ins',
-      'Basic community access',
-      'Limited pattern insights'
-    ],
-    limitations: [
-      'No growth journeys',
-      'No advanced analytics',
-      'Limited support'
-    ]
-  },
-  {
-    id: 'explore',
-    name: 'Explore',
-    tier: 'explore',
+    id: 'starter',
+    name: 'Starter',
+    tier: 'starter',
     price: 19,
     period: 'month',
-    icon: Shield,
+    icon: Zap,
     color: 'blue',
     features: [
       'Unlimited AI coaching sessions',
       'Full pattern analytics dashboard',
-      'All wellness tools',
-      'Community full access',
+      'Daily mood check-ins',
+      'Basic community access',
       'Weekly insights reports',
-      'Email support'
+      'Email support',
+      'Basic wellness tools'
     ],
     limitations: [
+      'No healing circles',
       'No growth journeys',
-      'No personalized insights'
+      'Limited personalized insights'
     ]
   },
   {
-    id: 'transform',
-    name: 'Transform',
-    tier: 'transform',
-    price: 49,
+    id: 'growth',
+    name: 'Growth',
+    tier: 'growth',
+    price: 39,
     period: 'month',
     icon: Crown,
     color: 'purple',
     recommended: true,
     features: [
-      'Everything in Explore',
+      'Everything in Starter',
+      'Healing circles access',
       'Personalized growth journeys',
       'Advanced pattern insights',
       'Priority support',
-      'Healing circles access',
       'Custom recovery programs',
       'Voice sessions',
+      'Community full access',
       'Downloadable reports'
+    ],
+    limitations: [
+      'No team features',
+      'Standard integrations'
     ]
   },
   {
     id: 'enterprise',
     name: 'Enterprise',
     tier: 'enterprise',
-    price: 0,
-    period: 'custom',
+    price: 79,
+    period: 'month',
     icon: Users,
     color: 'amber',
     features: [
-      'Everything in Transform',
+      'Complete wellness ecosystem',
+      'Everything in Growth',
       'Dedicated account manager',
       'Custom integrations',
-      'Team analytics',
+      'Team analytics & management',
       'Bulk licenses',
       'Training & onboarding',
       'SLA guarantee',
-      'Custom features'
+      'Custom features on request',
+      'API access',
+      'White-label options'
     ]
   }
 ]
@@ -120,7 +110,7 @@ const PLANS: Plan[] = [
 function BillingContent() {
   const { user } = useAuth()
   const router = useRouter()
-  const [currentPlan, setCurrentPlan] = useState<'free' | 'explore' | 'transform' | 'enterprise'>('free')
+  const [currentPlan, setCurrentPlan] = useState<'starter' | 'growth' | 'enterprise' | null>(null)
   const [loading, setLoading] = useState(false)
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
   const supabase = createClient()
@@ -213,7 +203,7 @@ function BillingContent() {
           </div>
 
           {/* Current Plan */}
-          {currentPlan !== 'free' && (
+          {currentPlan && (
             <Card className="mb-6 bg-gradient-to-r from-teal-50 to-cyan-50 border-teal-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
@@ -255,20 +245,12 @@ function BillingContent() {
                     </div>
                     <CardTitle className="text-xl">{plan.name}</CardTitle>
                     <div className="mt-4">
-                      {plan.price === 0 && plan.period === 'forever' ? (
-                        <div className="text-3xl font-bold">Free</div>
-                      ) : plan.period === 'custom' ? (
-                        <div className="text-2xl font-bold">Contact Us</div>
-                      ) : (
-                        <>
-                          <div className="text-3xl font-bold">
-                            ${billingPeriod === 'yearly' ? getYearlyPrice(plan.price) : plan.price}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            per {billingPeriod === 'yearly' ? 'year' : 'month'}
-                          </div>
-                        </>
-                      )}
+                      <div className="text-3xl font-bold">
+                        ${billingPeriod === 'yearly' ? getYearlyPrice(plan.price) : plan.price}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        per {billingPeriod === 'yearly' ? 'year' : 'month'}
+                      </div>
                     </div>
                   </CardHeader>
                   
@@ -307,10 +289,6 @@ function BillingContent() {
                           </>
                         )}
                       </Button>
-                    ) : plan.tier === 'free' ? (
-                      <Button className="w-full" variant="outline" disabled>
-                        Downgrade
-                      </Button>
                     ) : (
                       <Button className="w-full" variant="outline">
                         Contact Sales
@@ -337,8 +315,8 @@ function BillingContent() {
                 <p className="text-gray-600">We accept all major credit cards, debit cards, and PayPal.</p>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900">Is there a free trial?</h4>
-                <p className="text-gray-600">Yes! Start with our free plan and upgrade when you're ready for more features.</p>
+                <h4 className="font-semibold text-gray-900">Do you offer a trial period?</h4>
+                <p className="text-gray-600">We offer a 7-day money-back guarantee on all plans. If you're not satisfied, we'll refund your payment.</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900">Can I cancel my subscription?</h4>

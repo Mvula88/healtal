@@ -301,7 +301,7 @@ function JourneysContent() {
                         <h4 className="font-semibold mb-4">Journey Milestones</h4>
                         <div className="space-y-4">
                           {selectedJourney.template?.milestones.map((milestone, index) => {
-                            const isCompleted = selectedJourney.completedMilestones?.includes(milestone.step.toString())
+                            const isCompleted = selectedJourney.completed_milestones?.includes(milestone.step.toString())
                             const isCurrent = index === selectedJourney.completedSteps
                             
                             return (

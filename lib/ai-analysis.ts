@@ -413,7 +413,7 @@ function extractTopics(title: string, mode: string): string[] {
     })
   }
   
-  return [...new Set(topics)]
+  return Array.from(new Set(topics))
 }
 
 function getTimeSlot(hour: number): string {

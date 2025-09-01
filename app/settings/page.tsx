@@ -90,14 +90,22 @@ function SettingsContent() {
   }, [user])
 
   const fetchProfile = async () => {
+    if (!user?.id) {
+      setLoading(false)
+      return
+    }
+
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('id', user?.id as string)
+        .eq('id', user.id)
         .single()
 
-      if (data) {
+      if (error && error.code === 'PGRST116') {
+        // User doesn't exist in users table yet - this is okay for new users
+        console.log('User profile not found, will create on first save')
+      } else if (data) {
         setProfile(data as any)
         setFullName((data as any).full_name || '')
         setEmergencyContact((data as any).emergency_contacts?.[0] || { name: '', phone: '' })
@@ -113,28 +121,65 @@ function SettingsContent() {
   }
 
   const updateProfile = async () => {
+    if (!user?.id) {
+      alert('Please log in to update settings')
+      return
+    }
+
     setSaving(true)
     try {
-      const { error } = await supabase
+      // First check if user exists in users table
+      const { data: existingUser } = await supabase
         .from('users')
-        .update({
-          full_name: fullName,
-          emergency_contacts: emergencyContact.name ? [emergencyContact] : [],
-          preferences: {
-            notifications,
-            privacy,
-            dark_mode: darkMode
-          }
-        } as any)
-        .eq('id', user?.id as string)
+        .select('id')
+        .eq('id', user.id)
+        .single()
 
-      if (error) throw error
+      if (!existingUser) {
+        // Create user if doesn't exist
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            full_name: fullName,
+            emergency_contacts: emergencyContact.name ? [emergencyContact] : [],
+            preferences: {
+              notifications,
+              privacy,
+              dark_mode: darkMode
+            }
+          })
+        
+        if (insertError) {
+          console.error('Insert error:', insertError)
+          throw insertError
+        }
+      } else {
+        // Update existing user
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({
+            full_name: fullName,
+            emergency_contacts: emergencyContact.name ? [emergencyContact] : [],
+            preferences: {
+              notifications,
+              privacy,
+              dark_mode: darkMode
+            }
+          })
+          .eq('id', user.id)
+        
+        if (updateError) {
+          console.error('Update error:', updateError)
+          throw updateError
+        }
+      }
       
       alert('Settings updated successfully!')
       await fetchProfile()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error)
-      alert('Failed to update settings. Please try again.')
+      alert(`Failed to update settings: ${error.message || 'Please try again.'}`)
     } finally {
       setSaving(false)
     }

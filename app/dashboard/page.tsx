@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/auth-context'
 import { redirect } from 'next/navigation'
+import { Navbar } from '@/components/navigation/navbar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   LayoutDashboard, 
@@ -97,9 +98,7 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200" />}>
-        <DashboardHeader user={user} />
-      </Suspense>
+      <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Enhanced Welcome Section with Featured Actions and Beneathy Logo */}

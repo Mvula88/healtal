@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -1199,7 +1199,16 @@ function CoachContent() {
 export default function CoachPage() {
   return (
     <AuthProvider>
-      <CoachContent />
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-teal-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading coach...</p>
+          </div>
+        </div>
+      }>
+        <CoachContent />
+      </Suspense>
     </AuthProvider>
   )
 }

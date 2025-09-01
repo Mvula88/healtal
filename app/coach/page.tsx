@@ -36,7 +36,12 @@ import {
   Phone,
   Activity,
   CheckCircle,
-  Zap
+  Zap,
+  Edit2,
+  Trash2,
+  Check,
+  X as XIcon,
+  MoreVertical
 } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 
@@ -95,6 +100,9 @@ function CoachContent() {
   const [selectedAddictionType, setSelectedAddictionType] = useState<string>('')
   const [recoveryData, setRecoveryData] = useState<RecoveryData | null>(null)
   const [showAddictionSelector, setShowAddictionSelector] = useState(false)
+  const [editingConversationId, setEditingConversationId] = useState<string | null>(null)
+  const [editingTitle, setEditingTitle] = useState('')
+  const [showOptionsForId, setShowOptionsForId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
@@ -239,6 +247,66 @@ function CoachContent() {
   const selectConversation = async (conversation: Conversation) => {
     setCurrentConversation(conversation)
     await fetchMessages(conversation.id)
+  }
+
+  const handleUpdateTitle = async (conversationId: string) => {
+    if (!editingTitle.trim()) {
+      setEditingConversationId(null)
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .update({ title: editingTitle.trim() })
+        .eq('id', conversationId)
+
+      if (!error) {
+        // Update local state
+        setConversations(prev => 
+          prev.map(conv => 
+            conv.id === conversationId 
+              ? { ...conv, title: editingTitle.trim() }
+              : conv
+          )
+        )
+        if (currentConversation?.id === conversationId) {
+          setCurrentConversation(prev => 
+            prev ? { ...prev, title: editingTitle.trim() } : null
+          )
+        }
+      }
+    } catch (error) {
+      console.error('Error updating conversation title:', error)
+    } finally {
+      setEditingConversationId(null)
+    }
+  }
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    if (!confirm('Are you sure you want to delete this conversation? This cannot be undone.')) {
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .delete()
+        .eq('id', conversationId)
+
+      if (!error) {
+        // Remove from local state
+        setConversations(prev => prev.filter(conv => conv.id !== conversationId))
+        
+        // If this was the current conversation, clear it
+        if (currentConversation?.id === conversationId) {
+          setCurrentConversation(null)
+          setMessages([])
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting conversation:', error)
+    }
   }
 
   const sendMessage = async (message?: string) => {
@@ -750,31 +818,106 @@ function CoachContent() {
             <h3 className="text-sm font-semibold text-gray-600 mb-3">Pattern Exploration History</h3>
             <div className="space-y-2">
               {conversations.map((conv) => (
-                <button
+                <div
                   key={conv.id}
-                  onClick={() => selectConversation(conv)}
-                  className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
+                  className={`relative group w-full text-left p-3 rounded-xl transition-all duration-200 ${
                     currentConversation?.id === conv.id
                       ? 'bg-teal-50 border border-teal-200 shadow-md'
                       : 'hover:bg-gray-50 hover:shadow-sm border border-transparent'
                   }`}
                 >
-                  <div className="flex items-start space-x-3">
-                    <div className={`p-2 rounded-lg ${
-                      currentConversation?.id === conv.id ? 'bg-teal-100' : 'bg-gray-100'
-                    }`}>
-                      <MessageCircle className={`h-4 w-4 ${
-                        currentConversation?.id === conv.id ? 'text-teal-600' : 'text-gray-500'
-                      }`} />
+                  {editingConversationId === conv.id ? (
+                    // Edit mode
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleUpdateTitle(conv.id)
+                          } else if (e.key === 'Escape') {
+                            setEditingConversationId(null)
+                          }
+                        }}
+                        className="flex-1 px-2 py-1 text-sm border border-teal-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => handleUpdateTitle(conv.id)}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded"
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => setEditingConversationId(null)}
+                        className="p-1 text-gray-600 hover:bg-gray-50 rounded"
+                      >
+                        <XIcon className="h-4 w-4" />
+                      </button>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{conv.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {format(new Date(conv.created_at), 'MMM d, h:mm a')}
-                      </p>
+                  ) : (
+                    // Normal mode
+                    <div className="flex items-start">
+                      <button
+                        onClick={() => selectConversation(conv)}
+                        className="flex-1 flex items-start space-x-3"
+                      >
+                        <div className={`p-2 rounded-lg ${
+                          currentConversation?.id === conv.id ? 'bg-teal-100' : 'bg-gray-100'
+                        }`}>
+                          }`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{conv.title}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {format(new Date(conv.created_at), 'MMM d, h:mm a')}
+                          </p>
+                        </div>
+                      </button>
+                      
+                      {/* Options button */}
+                      <div className="relative">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setShowOptionsForId(showOptionsForId === conv.id ? null : conv.id)
+                          }}
+                          className="p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded"
+                        >
+                          <MoreVertical className="h-4 w-4 text-gray-500" />
+                        </button>
+                        
+                        {/* Dropdown menu */}
+                        {showOptionsForId === conv.id && (
+                          <div className="absolute right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                            <button
+                              onClick={() => {
+                                setEditingConversationId(conv.id)
+                                setEditingTitle(conv.title)
+                                setShowOptionsForId(null)
+                              }}
+                              className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            >
+                              <Edit2 className="h-3 w-3 mr-2" />
+                              Rename
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDeleteConversation(conv.id)
+                                setShowOptionsForId(null)
+                              }}
+                              className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-3 w-3 mr-2" />
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </button>
+                  )}
+                </div>
               ))}
 
               {conversations.length === 0 && (

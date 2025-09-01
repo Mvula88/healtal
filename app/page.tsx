@@ -43,25 +43,22 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true)
-    // Simulate loading time for initial data
-    const loadData = async () => {
-      // Fetch actual user count from database (placeholder for now)
-      // This would be replaced with actual API call
-      const fetchUserCount = async () => {
-        try {
-          const response = await fetch('/api/stats/users')
-          if (response.ok) {
-            const data = await response.json()
-            setUserCount(data.count || 0)
-          }
-        } catch (error) {
-          console.error('Failed to fetch user count:', error)
-          setUserCount(0)
+    
+    const fetchUserCount = async () => {
+      try {
+        const response = await fetch('/api/stats/users')
+        if (response.ok) {
+          const data = await response.json()
+          setUserCount(data.count || 0)
         }
+      } catch (error) {
+        console.error('Failed to fetch user count:', error)
+        setUserCount(0)
       }
-      await fetchUserCount()
     }
-    loadData()
+    
+    // Initial load
+    fetchUserCount()
     
     // Refresh stats periodically
     const interval = setInterval(() => {

@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
           total_points: 0,
           level: 1,
           rank: 'Beginner',
-        })
+        } as any)
         .select()
         .single();
     }

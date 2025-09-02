@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import Replicate from 'replicate'
 import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
 import { AI_MODELS, selectModel, SPECIALIZED_PROMPTS } from '@/lib/ai-config'
+import { rateLimiters, getIdentifier, rateLimitResponse } from '@/lib/rate-limit'
 
 // Initialize Replicate client
 const replicateToken = process.env.REPLICATE_API_TOKEN || process.env.ANTHROPIC_API_KEY
@@ -108,6 +109,15 @@ export async function POST(request: Request) {
   console.log('=== Coach API called ===')
   console.log('Replicate configured:', !!replicate)
   console.log('Token exists:', !!replicateToken)
+  
+  // Apply rate limiting for AI coaching (expensive operation)
+  const identifier = getIdentifier(request)
+  const { success, limit, reset, remaining } = await rateLimiters.aiCoaching.limit(identifier)
+  
+  if (!success) {
+    console.log(`Rate limit exceeded for ${identifier}`)
+    return rateLimitResponse(limit, remaining, reset)
+  }
   
   try {
     // Check if API key is configured

@@ -24,8 +24,9 @@ import {
 interface Plan {
   id: string
   name: string
-  tier: 'starter' | 'growth' | 'enterprise'
+  tier: 'starter' | 'growth' | 'premium'
   price: number
+  priceId?: string
   period: string
   features: string[]
   limitations?: string[]
@@ -40,6 +41,7 @@ const PLANS: Plan[] = [
     name: 'Starter',
     tier: 'starter',
     price: 19,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID,
     period: 'month',
     icon: Zap,
     color: 'blue',
@@ -63,6 +65,7 @@ const PLANS: Plan[] = [
     name: 'Growth',
     tier: 'growth',
     price: 39,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_GROWTH_PRICE_ID,
     period: 'month',
     icon: Crown,
     color: 'purple',
@@ -84,10 +87,11 @@ const PLANS: Plan[] = [
     ]
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    tier: 'enterprise',
+    id: 'premium',
+    name: 'Premium',
+    tier: 'premium',
     price: 79,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
     period: 'month',
     icon: Users,
     color: 'amber',
@@ -139,23 +143,62 @@ function BillingContent() {
   }
 
   const handleUpgrade = async (plan: Plan) => {
-    if (plan.tier === 'enterprise') {
+    if (plan.tier === 'premium' && !plan.priceId) {
       window.location.href = 'mailto:support@beneathy.com?subject=Enterprise Plan Inquiry'
       return
     }
 
     setLoading(true)
-    // Here you would integrate with Stripe or your payment processor
-    alert(`Upgrade to ${plan.name} plan - Payment integration coming soon!`)
-    setLoading(false)
+    try {
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: plan.priceId,
+          planName: plan.name
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('No checkout URL returned')
+        alert('Unable to process payment. Please try again.')
+      }
+    } catch (error) {
+      console.error('Payment error:', error)
+      alert('Payment processing error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCancel = async () => {
-    if (confirm('Are you sure you want to cancel your subscription?')) {
+    if (confirm('Are you sure you want to cancel your subscription? You will continue to have access until the end of your billing period.')) {
       setLoading(true)
-      // Handle cancellation
-      alert('Subscription cancellation - Coming soon')
-      setLoading(false)
+      try {
+        const response = await fetch('/api/stripe/checkout', {
+          method: 'DELETE',
+        })
+
+        const data = await response.json()
+        
+        if (data.success) {
+          alert('Your subscription has been cancelled. You will continue to have access until the end of your billing period.')
+          await fetchUserSubscription()
+        } else {
+          alert('Unable to cancel subscription. Please try again or contact support.')
+        }
+      } catch (error) {
+        console.error('Cancellation error:', error)
+        alert('Unable to cancel subscription. Please contact support.')
+      } finally {
+        setLoading(false)
+      }
     }
   }
 

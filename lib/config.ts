@@ -50,47 +50,58 @@ export const CRISIS_RESOURCES = [
 
 export const PRICING_TIERS = [
   {
-    name: "Discover",
-    price: 0,
-    priceId: null,
-    description: "Start your journey",
-    features: [
-      "5 pattern exploration sessions per month",
-      "Basic insights dashboard",
-      "Self-guided exercises",
-      "Community forum access"
-    ],
-    cta: "Start Free"
-  },
-  {
-    name: "Understand",
-    price: 24.99,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_UNDERSTAND_PRICE_ID,
-    description: "Deepen your self-understanding",
+    name: "Starter",
+    price: 19,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID,
+    description: "Essential mental wellness tools",
     features: [
       "Unlimited AI coaching sessions",
-      "Advanced pattern analysis",
-      "Personalized growth plans",
-      "Progress tracking",
-      "Email support"
+      "Full pattern analytics dashboard",
+      "Daily mood check-ins",
+      "Basic community access",
+      "Weekly insights reports",
+      "Email support",
+      "Basic wellness tools"
     ],
-    cta: "Start Understanding",
+    cta: "Start Now"
+  },
+  {
+    name: "Growth",
+    price: 39,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_GROWTH_PRICE_ID,
+    description: "Complete growth ecosystem",
+    features: [
+      "Everything in Starter",
+      "Healing circles access",
+      "Personalized growth journeys",
+      "Advanced pattern insights",
+      "Priority support",
+      "Custom recovery programs",
+      "Voice sessions",
+      "Community full access",
+      "Downloadable reports"
+    ],
+    cta: "Accelerate Growth",
     popular: true
   },
   {
-    name: "Transform",
-    price: 44.99,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_TRANSFORM_PRICE_ID,
-    description: "Complete transformation toolkit",
+    name: "Premium",
+    price: 79,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
+    description: "Premium wellness experience",
     features: [
-      "Everything in Understand",
-      "Life mapping tools",
-      "Professional referral network",
-      "Priority support",
-      "Weekly progress reviews",
-      "Advanced analytics"
+      "Complete wellness ecosystem",
+      "Everything in Growth",
+      "Dedicated account manager",
+      "Custom integrations",
+      "Team analytics & management",
+      "White-label options",
+      "24/7 priority support",
+      "Custom AI training",
+      "Unlimited team members",
+      "Advanced API access"
     ],
-    cta: "Transform Your Life"
+    cta: "Go Premium"
   }
 ]
 

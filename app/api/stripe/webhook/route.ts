@@ -6,7 +6,7 @@ import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
 // Initialize Stripe only if we have a key
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
-  apiVersion: '2025-08-27.basil',
+  apiVersion: '2025-01-27.acacia',
 }) : null
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
@@ -47,54 +47,127 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         
-        // Update user subscription in database
-        if (session.customer_email) {
-          const { data: user } = await supabase
-            .from('users')
-            .select('id')
-            .eq('email', session.customer_email)
-            .single()
-          
-          if (user) {
-            // Determine subscription tier based on price
-            let tier = 'free'
-            if (session.amount_total) {
-              if (session.amount_total >= 7900) tier = 'transform'
-              else if (session.amount_total >= 3900) tier = 'explore'
-            }
-            
-            await supabase
-              .from('users')
-              .update({ 
-                subscription_tier: tier,
-                stripe_customer_id: session.customer as string
-              })
-              .eq('id', user.id)
+        // Get subscription details
+        const subscriptionId = session.subscription as string
+        const customerId = session.customer as string
+        const userId = session.metadata?.user_id
+        const planName = session.metadata?.plan_name
+        
+        if (userId) {
+          // Determine subscription tier
+          let tier = 'starter'
+          if (planName) {
+            tier = planName.toLowerCase()
+          } else if (session.amount_total) {
+            // Fallback to amount-based detection
+            if (session.amount_total >= 7900) tier = 'premium'
+            else if (session.amount_total >= 3900) tier = 'growth'
+            else tier = 'starter'
           }
+          
+          await supabase
+            .from('users')
+            .update({ 
+              subscription_tier: tier,
+              subscription_status: 'active',
+              stripe_customer_id: customerId,
+              stripe_subscription_id: subscriptionId
+            })
+            .eq('id', userId)
         }
         break
       }
       
-      case 'customer.subscription.updated':
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as Stripe.Subscription
+        const customerId = subscription.customer as string
+        const priceId = subscription.items.data[0]?.price.id
+        
+        // Determine tier from price ID
+        let tier = 'starter'
+        if (priceId === process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID) {
+          tier = 'premium'
+        } else if (priceId === process.env.NEXT_PUBLIC_STRIPE_GROWTH_PRICE_ID) {
+          tier = 'growth'
+        } else if (priceId === process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID) {
+          tier = 'starter'
+        }
+        
+        // Update subscription in database
+        const { data: user } = await supabase
+          .from('users')
+          .select('id')
+          .eq('stripe_customer_id', customerId)
+          .single()
+        
+        if (user) {
+          await supabase
+            .from('users')
+            .update({ 
+              subscription_tier: tier,
+              subscription_status: subscription.status,
+              stripe_subscription_id: subscription.id,
+              subscription_cancel_at: subscription.cancel_at ? 
+                new Date(subscription.cancel_at * 1000).toISOString() : null
+            })
+            .eq('id', user.id)
+        }
+        break
+      }
+      
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
+        const customerId = subscription.customer as string
+        
+        // Update subscription status to cancelled
+        const { data: user } = await supabase
+          .from('users')
+          .select('id')
+          .eq('stripe_customer_id', customerId)
+          .single()
+        
+        if (user) {
+          await supabase
+            .from('users')
+            .update({ 
+              subscription_tier: null,
+              subscription_status: 'cancelled',
+              stripe_subscription_id: null
+            })
+            .eq('id', user.id)
+        }
+        break
+      }
+      
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        console.log('Payment succeeded for invoice:', invoice.id)
+        // You can add additional logic here like sending receipts
+        break
+      }
+      
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice
+        const customerId = invoice.customer as string
         
         // Update subscription status
         const { data: user } = await supabase
           .from('users')
-          .select('id')
-          .eq('stripe_customer_id', subscription.customer as string)
+          .select('id, email')
+          .eq('stripe_customer_id', customerId)
           .single()
         
         if (user) {
-          const tier = subscription.status === 'active' 
-            ? 'explore' // You'd determine this from the price
-            : 'free'
-          
           await supabase
             .from('users')
-            .update({ subscription_tier: tier })
+            .update({ 
+              subscription_status: 'past_due'
+            })
             .eq('id', user.id)
+          
+          // You could send an email notification here
+          console.log(`Payment failed for user ${user.email}`)
         }
         break
       }

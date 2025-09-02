@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all achievements with user's progress
-    const { data: achievements, error: achievementsError } = await supabase
+    const { data: achievements, error: achievementsError } = await (supabase as any)
       .from('achievements')
       .select(`
         *,
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (achievementsError) throw achievementsError;
 
     // Get user stats
-    const { data: stats, error: statsError } = await supabase
+    const { data: stats, error: statsError } = await (supabase as any)
       .from('user_stats')
       .select('*')
       .eq('user_id', user.id)
@@ -38,14 +38,14 @@ export async function GET(request: NextRequest) {
 
     // Initialize user stats if they don't exist
     if (!stats) {
-      const { data: newStats } = await supabase
+      const { data: newStats } = await (supabase as any)
         .from('user_stats')
         .insert({
           user_id: user.id,
           total_points: 0,
           level: 1,
           rank: 'Beginner',
-        } as any)
+        })
         .select()
         .single();
     }
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         
         switch (achievement.requirement_key) {
           case 'daily_checkins':
-            const { data: checkins } = await supabase
+            const { data: checkins } = await (supabase as any)
               .from('mood_entries')
               .select('id')
               .eq('user_id', user.id)
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
             break;
             
           case 'breakthroughs':
-            const { data: breakthroughs } = await supabase
+            const { data: breakthroughs } = await (supabase as any)
               .from('breakthroughs')
               .select('id')
               .eq('user_id', user.id)
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
             break;
             
           case 'voice_sessions':
-            const { data: voiceSessions } = await supabase
+            const { data: voiceSessions } = await (supabase as any)
               .from('voice_sessions')
               .select('id')
               .eq('user_id', user.id)
@@ -133,9 +133,9 @@ export async function POST(request: NextRequest) {
 
     if (action === 'claim') {
       // Mark achievement as notified
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('user_achievements')
-        .update({ notified: true } as any)
+        .update({ notified: true })
         .eq('user_id', user.id)
         .eq('achievement_id', achievementId);
 

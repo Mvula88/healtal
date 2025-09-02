@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
 import { rateLimiters, getIdentifier, rateLimitResponse } from '@/lib/rate-limit'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   }
   
   try {
-    const supabase = createClient()
+    const supabase = await createUntypedServerClient()
     
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 // Cancel subscription endpoint
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createUntypedServerClient()
     
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -168,7 +168,7 @@ export async function DELETE(request: NextRequest) {
 // Reactivate subscription endpoint
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createUntypedServerClient()
     
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()

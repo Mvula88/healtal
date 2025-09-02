@@ -19,6 +19,7 @@ import {
   Link2,
   Copy,
   Check,
+  CheckCircle,
   Download,
   Calendar,
   CreditCard,
@@ -128,6 +129,7 @@ function AffiliateDashboardContent() {
     if (user) {
       loadAffiliateData()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const loadAffiliateData = async () => {

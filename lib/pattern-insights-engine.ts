@@ -446,7 +446,7 @@ export class PatternInsightsEngine {
     }
 
     for (const patternType of aggregatedData) {
-      const communityPattern = await this.processCommuni tyPattern(patternType)
+      const communityPattern = await this.processCommunityPattern(patternType)
       if (communityPattern) {
         insights.push(communityPattern)
       }

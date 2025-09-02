@@ -26,7 +26,8 @@ import {
   Heart,
   Users,
   X,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquare
 } from 'lucide-react'
 
 interface Message {

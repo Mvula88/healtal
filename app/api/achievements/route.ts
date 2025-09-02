@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       // Mark achievement as notified
       const { error } = await supabase
         .from('user_achievements')
-        .update({ notified: true })
+        .update({ notified: true } as any)
         .eq('user_id', user.id)
         .eq('achievement_id', achievementId);
 

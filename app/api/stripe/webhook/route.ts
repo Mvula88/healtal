@@ -6,7 +6,7 @@ import { createUntypedServerClient } from '@/lib/supabase/server-untyped'
 // Initialize Stripe only if we have a key
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
-  apiVersion: '2024-10-28.acacia',
+  apiVersion: '2024-10-28.acacia' as any,
 }) : null
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''

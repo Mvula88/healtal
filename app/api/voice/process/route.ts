@@ -82,8 +82,8 @@ async function processTranscription(audioUrl: string): Promise<string | null> {
         }
       )
 
-      if (output && output.transcription) {
-        return output.transcription as string
+      if (output && (output as any).transcription) {
+        return (output as any).transcription as string
       }
     } catch (error) {
       console.error('Replicate Whisper error:', error)
@@ -108,8 +108,8 @@ async function processTranscription(audioUrl: string): Promise<string | null> {
           }
         )
         
-        if (output && output.text) {
-          return output.text as string
+        if (output && (output as any).text) {
+          return (output as any).text as string
         }
       } catch (fallbackError) {
         console.error('Fast Whisper fallback error:', fallbackError)

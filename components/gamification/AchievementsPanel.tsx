@@ -27,6 +27,7 @@ interface Achievement {
   earned_at: string;
   progress: number;
   progress_percentage: number;
+  notified?: boolean;
 }
 
 interface UserStats {

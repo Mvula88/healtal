@@ -163,7 +163,7 @@ export class PatternInsightsEngine {
     }, {} as Record<string, number>)
 
     // Find most common trigger
-    const mostCommon = Object.entries(triggerGroups).sort((a, b) => b[1] - a[1])[0]
+    const mostCommon = Object.entries(triggerGroups).sort((a, b) => (b[1] as number) - (a[1] as number))[0]
     
     // Calculate average intensity
     const avgIntensity = triggers.reduce((sum, t) => sum + t.intensity, 0) / triggers.length

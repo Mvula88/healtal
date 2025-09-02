@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
         if (output) {
           // XTTS returns audio URL
-          const audioResponse = await fetch(output as string)
+          const audioResponse = await fetch(output as unknown as string)
           const audioBuffer = await audioResponse.arrayBuffer()
           
           return new Response(audioBuffer, {
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
           )
           
           if (output) {
-            const audioResponse = await fetch(output.audio_out as string)
+            const audioResponse = await fetch((output as any).audio_out as string)
             const audioBuffer = await audioResponse.arrayBuffer()
             
             return new Response(audioBuffer, {

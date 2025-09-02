@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { ScrollArea } from '@/components/ui/scroll-area'
+// ScrollArea removed - using div with overflow-auto
 import { createClient } from '@/lib/supabase/client'
 import { format } from 'date-fns'
 import {
@@ -18,7 +18,6 @@ import {
   Video,
   MoreVertical,
   Search,
-  MessageSquare,
   Circle,
   Check,
   CheckCheck,
@@ -92,7 +91,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
 
   const loadConversations = async () => {
     // Load user's conversations
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('conversations')
       .select(`
         *,
@@ -105,7 +104,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
       .order('updated_at', { ascending: false })
 
     if (data) {
-      const formattedConversations = data.map(conv => ({
+      const formattedConversations = data.map((conv: any) => ({
         id: conv.id,
         participantId: conv.user1_id === userId ? conv.user2_id : conv.user1_id,
         participantName: conv.user1_id === userId ? conv.user2_name : conv.user1_name,
@@ -168,7 +167,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
   }
 
   const loadMessages = async (conversationId: string) => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('messages')
       .select('*')
       .eq('conversation_id', conversationId)
@@ -182,7 +181,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
   }
 
   const markMessagesAsRead = async (conversationId: string) => {
-    await supabase
+    await (supabase as any)
       .from('messages')
       .update({ is_read: true })
       .eq('conversation_id', conversationId)
@@ -204,11 +203,11 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
     }
 
     // Optimistically add message to UI
-    setMessages(prev => [...prev, message as Message])
+    setMessages(prev => [...prev, message as unknown as Message])
     setNewMessage('')
 
     // Send to database
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('messages')
       .insert(message)
 
@@ -237,7 +236,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
       created_at: new Date().toISOString()
     }
 
-    await supabase.from('messages').insert(message)
+    await (supabase as any).from('messages').insert(message)
   }
 
   const filteredConversations = conversations.filter(conv =>
@@ -261,7 +260,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
           </div>
         </div>
 
-        <ScrollArea className="h-[500px]">
+        <div className="h-[500px] overflow-auto">
           <div className="p-2">
             {filteredConversations.map(conversation => (
               <button
@@ -306,7 +305,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
               </button>
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Chat Area */}
@@ -359,7 +358,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
           </div>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4">
+          <div className="flex-1 p-4 overflow-auto">
             <div className="space-y-4">
               {/* Encryption Notice */}
               <div className="flex items-center justify-center py-4">
@@ -427,7 +426,7 @@ export function PeerMessaging({ userId, userName }: { userId: string, userName: 
               
               <div ref={messagesEndRef} />
             </div>
-          </ScrollArea>
+          </div>
 
           {/* Message Input */}
           <div className="p-4 border-t bg-gray-50">

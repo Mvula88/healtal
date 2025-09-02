@@ -351,7 +351,7 @@ export function VoiceInteraction({ userId, conversationId }: { userId: string, c
   }
 
   const saveVoiceSession = async (session: Partial<VoiceSession>) => {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('voice_sessions')
       .insert({
         user_id: userId,
@@ -362,7 +362,7 @@ export function VoiceInteraction({ userId, conversationId }: { userId: string, c
         key_insights: session.keyInsights,
         detected_patterns: session.detectedPatterns,
         duration_seconds: session.duration,
-        crisis_indicators: session.emotionalTone?.valence < -0.7
+        crisis_indicators: session.emotionalTone?.valence !== undefined && session.emotionalTone.valence < -0.7
       })
 
     if (error) {

@@ -87,7 +87,7 @@ export async function checkFeatureAccess(
 ): Promise<boolean> {
   const supabase = createClient()
   
-  const { data: user } = await supabase
+  const { data: user } = await (supabase as any)
     .from('users')
     .select('subscription_tier')
     .eq('id', userId)
@@ -95,7 +95,7 @@ export async function checkFeatureAccess(
 
   if (!user) return false
   
-  const tier = user.subscription_tier?.toLowerCase() || 'lite'
+  const tier = (user as any).subscription_tier?.toLowerCase() || 'lite'
   const limits = TIER_LIMITS[tier]
   
   if (!limits) return false
@@ -139,24 +139,24 @@ export async function getCurrentUsage(
     .gte('created_at', startDate.toISOString())
 
   // Count voice minutes
-  const { data: voiceSessions } = await supabase
+  const { data: voiceSessions } = await (supabase as any)
     .from('voice_sessions')
     .select('duration_seconds')
     .eq('user_id', userId)
     .gte('created_at', startDate.toISOString())
   
-  const voiceMinutes = voiceSessions?.reduce((sum, session) => 
+  const voiceMinutes = voiceSessions?.reduce((sum: number, session: any) => 
     sum + (session.duration_seconds / 60), 0) || 0
 
   // Count buddy matches
-  const { count: buddyMatches } = await supabase
+  const { count: buddyMatches } = await (supabase as any)
     .from('buddy_connections')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
     .gte('created_at', startDate.toISOString())
 
   // Count group sessions
-  const { count: groupSessions } = await supabase
+  const { count: groupSessions } = await (supabase as any)
     .from('group_session_participants')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
@@ -177,13 +177,13 @@ export async function checkLimits(
 ): Promise<{ allowed: boolean; limit: number; used: number; remaining: number }> {
   const supabase = createClient()
   
-  const { data: user } = await supabase
+  const { data: user } = await (supabase as any)
     .from('users')
     .select('subscription_tier')
     .eq('id', userId)
     .single()
 
-  const tier = user?.subscription_tier?.toLowerCase() || 'lite'
+  const tier = (user as any)?.subscription_tier?.toLowerCase() || 'lite'
   const limits = TIER_LIMITS[tier]
   const limit = limits[feature] as number
   

@@ -20,6 +20,13 @@ export async function POST(request: Request) {
       .eq('id', userId)
       .single()
     
+    if (!userTier || !userTier.subscription_tier) {
+      return NextResponse.json(
+        { error: 'Unable to determine your subscription tier. Please try again.' },
+        { status: 400 }
+      )
+    }
+    
     const { data: tierLimits } = await supabase
       .from('tier_limits')
       .select('can_join_circles, circle_discount_percent')
@@ -60,6 +67,13 @@ export async function POST(request: Request) {
       .select('stripe_customer_id, email, full_name')
       .eq('id', userId)
       .single()
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User data not found' },
+        { status: 404 }
+      )
+    }
     
     let customerId = user.stripe_customer_id
     

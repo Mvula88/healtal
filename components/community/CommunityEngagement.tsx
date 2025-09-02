@@ -90,7 +90,12 @@ export function CommunityEngagement({ userId }: { userId: string }) {
   const [successStories, setSuccessStories] = useState<SuccessStory[]>([])
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [buddyMatches, setBuddyMatches] = useState<BuddyMatch[]>([])
-  const [userStats, setUserStats] = useState({
+  const [userStats, setUserStats] = useState<{
+    points: number
+    rank: number
+    streak: number
+    badges: string[]
+  }>({
     points: 0,
     rank: 0,
     streak: 0,

@@ -18,6 +18,7 @@ import {
   Video,
   MoreVertical,
   Search,
+  MessageSquare,
   Circle,
   Check,
   CheckCheck,

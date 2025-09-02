@@ -55,7 +55,7 @@ export function VoiceInteraction({ userId, conversationId }: { userId: string, c
   const [voiceResponse, setVoiceResponse] = useState('')
   const [emotionalAnalysis, setEmotionalAnalysis] = useState<any>(null)
   const [voiceEnabled, setVoiceEnabled] = useState(true)
-  const [selectedVoice, setSelectedVoice] = useState('alloy') // OpenAI voice options
+  const [selectedVoice, setSelectedVoice] = useState('v2/en_speaker_0') // Replicate voice options
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
@@ -562,14 +562,25 @@ export function VoiceInteraction({ userId, conversationId }: { userId: string, c
         <div className="border-t pt-4">
           <h3 className="text-sm font-semibold mb-3">Voice Settings</h3>
           <div className="flex flex-wrap gap-2">
-            {['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'].map(voice => (
+            {[
+              { id: 'v2/en_speaker_0', name: 'Alex' },
+              { id: 'v2/en_speaker_1', name: 'Sarah' },
+              { id: 'v2/en_speaker_2', name: 'John' },
+              { id: 'v2/en_speaker_3', name: 'Emma' },
+              { id: 'v2/en_speaker_4', name: 'Michael' },
+              { id: 'v2/en_speaker_5', name: 'Sophia' },
+              { id: 'v2/en_speaker_6', name: 'James' },
+              { id: 'v2/en_speaker_7', name: 'Olivia' },
+              { id: 'v2/en_speaker_8', name: 'David' },
+              { id: 'v2/en_speaker_9', name: 'Isabella' }
+            ].map(voice => (
               <Button
-                key={voice}
+                key={voice.id}
                 size="sm"
-                variant={selectedVoice === voice ? 'default' : 'outline'}
-                onClick={() => setSelectedVoice(voice)}
+                variant={selectedVoice === voice.id ? 'default' : 'outline'}
+                onClick={() => setSelectedVoice(voice.id)}
               >
-                {voice}
+                {voice.name}
               </Button>
             ))}
           </div>

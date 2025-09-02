@@ -54,26 +54,71 @@ export async function POST(request: Request) {
 }
 
 async function processTranscription(audioUrl: string): Promise<string | null> {
-  // In production, use OpenAI Whisper API
-  // For now, return null to use browser transcription
-  try {
-    // Example OpenAI Whisper integration:
-    /*
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: formData // Contains audio file
-    })
-    const result = await response.json()
-    return result.text
-    */
-    return null
-  } catch (error) {
-    console.error('Transcription error:', error)
-    return null
+  // Use Replicate's Whisper for transcription
+  if (process.env.REPLICATE_API_TOKEN) {
+    try {
+      const Replicate = (await import('replicate')).default
+      const replicate = new Replicate({
+        auth: process.env.REPLICATE_API_TOKEN
+      })
+
+      // Using OpenAI Whisper via Replicate for speech-to-text
+      const output = await replicate.run(
+        "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
+        {
+          input: {
+            audio: audioUrl,
+            model: "large-v3",
+            language: "en",
+            temperature: 0,
+            transcription: "plain text",
+            suppress_tokens: "-1",
+            logprob_threshold: -1.0,
+            no_speech_threshold: 0.6,
+            condition_on_previous_text: true,
+            compression_ratio_threshold: 2.4,
+            temperature_increment_on_fallback: 0.2
+          }
+        }
+      )
+
+      if (output && output.transcription) {
+        return output.transcription as string
+      }
+    } catch (error) {
+      console.error('Replicate Whisper error:', error)
+      
+      // Try alternative: Incredibly Fast Whisper for faster processing
+      try {
+        const Replicate = (await import('replicate')).default
+        const replicate = new Replicate({
+          auth: process.env.REPLICATE_API_TOKEN
+        })
+        
+        const output = await replicate.run(
+          "vaibhavs10/incredibly-fast-whisper:3ab86df6c8f54c11309d4d1f930ac292bad43ace52d10c80d87eb258b3c9f79c",
+          {
+            input: {
+              audio: audioUrl,
+              task: "transcribe",
+              language: "english",
+              batch_size: 24,
+              timestamp: "chunk"
+            }
+          }
+        )
+        
+        if (output && output.text) {
+          return output.text as string
+        }
+      } catch (fallbackError) {
+        console.error('Fast Whisper fallback error:', fallbackError)
+      }
+    }
   }
+  
+  // Fallback to browser transcription
+  return null
 }
 
 async function analyzeEmotionalTone(text: string) {

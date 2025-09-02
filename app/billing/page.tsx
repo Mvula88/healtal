@@ -24,7 +24,7 @@ import {
 interface Plan {
   id: string
   name: string
-  tier: 'starter' | 'growth' | 'premium'
+  tier: 'lite' | 'starter' | 'growth' | 'premium'
   price: number
   priceId?: string
   period: string
@@ -33,9 +33,47 @@ interface Plan {
   recommended?: boolean
   icon: any
   color: string
+  limits?: {
+    ai_messages: number
+    voice_minutes: number
+    buddy_matching: number
+    group_sessions: number
+  }
 }
 
 const PLANS: Plan[] = [
+  {
+    id: 'lite',
+    name: 'Lite',
+    tier: 'lite',
+    price: 9,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_LITE_PRICE_ID,
+    period: 'month',
+    icon: Shield,
+    color: 'green',
+    features: [
+      '30 AI coach messages/month',
+      'Unlimited mood tracking',
+      'Unlimited journal entries',
+      'Weekly pattern insights',
+      'Community access (read & post)',
+      'Crisis resources',
+      'Mobile app access',
+      'Email support'
+    ],
+    limitations: [
+      'No voice features',
+      'No peer messaging',
+      'No buddy matching',
+      'Limited AI messages'
+    ],
+    limits: {
+      ai_messages: 30,
+      voice_minutes: 0,
+      buddy_matching: 0,
+      group_sessions: 0
+    }
+  },
   {
     id: 'starter',
     name: 'Starter',
@@ -45,20 +83,28 @@ const PLANS: Plan[] = [
     period: 'month',
     icon: Zap,
     color: 'blue',
+    recommended: true,
     features: [
-      'Unlimited AI coaching sessions',
-      'Full pattern analytics dashboard',
-      'Daily mood check-ins',
-      'Basic community access',
-      'Weekly insights reports',
-      'Email support',
-      'Basic wellness tools'
+      '200 AI coach messages/month',
+      '60 voice minutes/month',
+      'Daily pattern insights',
+      'Peer messaging',
+      '1 buddy match',
+      'Progress analytics',
+      'Custom exercises',
+      'Priority email support'
     ],
     limitations: [
-      'No healing circles',
-      'No growth journeys',
-      'Limited personalized insights'
-    ]
+      'No group sessions',
+      'No therapist matching',
+      'Limited voice minutes'
+    ],
+    limits: {
+      ai_messages: 200,
+      voice_minutes: 60,
+      buddy_matching: 1,
+      group_sessions: 0
+    }
   },
   {
     id: 'growth',
@@ -69,22 +115,26 @@ const PLANS: Plan[] = [
     period: 'month',
     icon: Crown,
     color: 'purple',
-    recommended: true,
     features: [
-      'Everything in Starter',
-      'Healing circles access',
-      'Personalized growth journeys',
-      'Advanced pattern insights',
-      'Priority support',
-      'Custom recovery programs',
-      'Voice sessions',
-      'Community full access',
-      'Downloadable reports'
+      'Unlimited AI coach messages',
+      '300 voice minutes/month',
+      '3 buddy matches',
+      '4 group sessions/month',
+      'Therapist matching',
+      'Custom AI personality',
+      'Export health records',
+      'Priority support'
     ],
     limitations: [
-      'No team features',
-      'Standard integrations'
-    ]
+      'Voice minutes capped at 300',
+      'Limited buddy matches'
+    ],
+    limits: {
+      ai_messages: -1,
+      voice_minutes: 300,
+      buddy_matching: 3,
+      group_sessions: 4
+    }
   },
   {
     id: 'premium',
@@ -96,25 +146,29 @@ const PLANS: Plan[] = [
     icon: Users,
     color: 'amber',
     features: [
-      'Complete wellness ecosystem',
-      'Everything in Growth',
-      'Dedicated account manager',
-      'Custom integrations',
-      'Team analytics & management',
-      'Bulk licenses',
-      'Training & onboarding',
-      'SLA guarantee',
-      'Custom features on request',
+      'Everything unlimited',
+      'Unlimited voice minutes',
+      'Unlimited buddy matches',
+      'Unlimited group sessions',
+      'Monthly therapist consultation',
+      '2 family accounts',
+      'White-label option',
       'API access',
-      'White-label options'
-    ]
+      'Dedicated success manager'
+    ],
+    limits: {
+      ai_messages: -1,
+      voice_minutes: -1,
+      buddy_matching: -1,
+      group_sessions: -1
+    }
   }
 ]
 
 function BillingContent() {
   const { user } = useAuth()
   const router = useRouter()
-  const [currentPlan, setCurrentPlan] = useState<'starter' | 'growth' | 'enterprise' | null>(null)
+  const [currentPlan, setCurrentPlan] = useState<'lite' | 'starter' | 'growth' | 'premium' | null>(null)
   const [loading, setLoading] = useState(false)
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
   const supabase = createClient()

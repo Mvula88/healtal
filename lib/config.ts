@@ -50,20 +50,66 @@ export const CRISIS_RESOURCES = [
 
 export const PRICING_TIERS = [
   {
+    name: "Lite",
+    price: 9,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_LITE_PRICE_ID,
+    description: "Start your wellness journey",
+    features: [
+      "30 AI coach messages/month",
+      "Unlimited mood tracking",
+      "Unlimited journal entries",
+      "Basic Vent & Release mode",
+      "Weekly pattern insights",
+      "3 basic habits",
+      "Browse recovery programs",
+      "View achievements",
+      "Community access",
+      "Crisis resources",
+      "Mobile app access",
+      "Email support"
+    ],
+    limits: {
+      ai_messages: 30,
+      voice_minutes: 0,
+      buddy_matching: 0,
+      group_sessions: 0,
+      habits: 3,
+      recovery_programs: 0,
+      vent_sessions_daily: 1
+    },
+    cta: "Get Started"
+  },
+  {
     name: "Starter",
     price: 19,
     priceId: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID,
-    description: "Essential mental wellness tools",
+    description: "Core wellness features with voice",
     features: [
-      "Unlimited AI coaching sessions",
-      "Full pattern analytics dashboard",
-      "Daily mood check-ins",
-      "Basic community access",
-      "Weekly insights reports",
-      "Email support",
-      "Basic wellness tools"
+      "200 AI coach messages/month",
+      "60 voice minutes/month",
+      "Voice journaling",
+      "Full Vent & Release (all modes)",
+      "Daily pattern insights",
+      "10 habits with reminders",
+      "Start 1 recovery program",
+      "Peer messaging",
+      "1 buddy match",
+      "Progress analytics",
+      "Emotional analysis",
+      "Achievement tracking",
+      "Priority email support"
     ],
-    cta: "Start Now"
+    limits: {
+      ai_messages: 200,
+      voice_minutes: 60,
+      buddy_matching: 1,
+      group_sessions: 0,
+      habits: 10,
+      recovery_programs: 1,
+      vent_sessions_daily: 3
+    },
+    cta: "Unlock Voice",
+    popular: true
   },
   {
     name: "Growth",
@@ -71,18 +117,30 @@ export const PRICING_TIERS = [
     priceId: process.env.NEXT_PUBLIC_STRIPE_GROWTH_PRICE_ID,
     description: "Complete growth ecosystem",
     features: [
-      "Everything in Starter",
-      "Healing circles access",
-      "Personalized growth journeys",
-      "Advanced pattern insights",
+      "Unlimited AI coach messages",
+      "300 voice minutes/month",
+      "Real-time pattern insights",
+      "Unlimited habits",
+      "All recovery programs",
+      "JOIN healing circles (10% discount)",
+      "3 buddy matches",
+      "Advanced gamification",
+      "Breakthrough tracking",
+      "Export data (CSV/PDF)",
+      "Custom AI coaching style",
       "Priority support",
-      "Custom recovery programs",
-      "Voice sessions",
-      "Community full access",
-      "Downloadable reports"
+      "Affiliate program access"
     ],
-    cta: "Accelerate Growth",
-    popular: true
+    limits: {
+      ai_messages: -1, // unlimited
+      voice_minutes: 300,
+      buddy_matching: 3,
+      group_sessions: 4,
+      habits: -1,
+      recovery_programs: -1,
+      vent_sessions_daily: -1
+    },
+    cta: "Remove Limits"
   },
   {
     name: "Premium",
@@ -90,17 +148,29 @@ export const PRICING_TIERS = [
     priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
     description: "Premium wellness experience",
     features: [
-      "Complete wellness ecosystem",
-      "Everything in Growth",
-      "Dedicated account manager",
-      "Custom integrations",
-      "Team analytics & management",
-      "White-label options",
-      "24/7 priority support",
-      "Custom AI training",
-      "Unlimited team members",
-      "Advanced API access"
+      "Everything unlimited",
+      "Unlimited voice minutes",
+      "JOIN & LEAD healing circles",
+      "20% circle discount + earn 80% as guide",
+      "2 family accounts included",
+      "Unlimited buddy matches",
+      "All recovery programs",
+      "Priority gamification rewards",
+      "Early access to features",
+      "Monthly progress reports",
+      "Dedicated support",
+      "Business/team features"
     ],
+    limits: {
+      ai_messages: -1,
+      voice_minutes: -1,
+      buddy_matching: -1,
+      group_sessions: -1,
+      habits: -1,
+      recovery_programs: -1,
+      vent_sessions_daily: -1,
+      family_accounts: 2
+    },
     cta: "Go Premium"
   }
 ]

@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const tierOrder = ['lite', 'starter', 'growth', 'premium'];
     const userTierIndex = tierOrder.indexOf(userData?.subscription_tier || 'lite');
     
-    const availablePrograms = programs?.map(program => {
+    const availablePrograms = programs?.map((program: any) => {
       const minTierIndex = tierOrder.indexOf(program.min_tier);
       const isAvailable = userTierIndex >= minTierIndex;
       

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const aiResponse = Array.isArray(output) ? output.join('') : String(output);
 
     // Save vent session to database
-    const { data: session, error: sessionError } = await supabase
+    const { data: session, error: sessionError } = await (supabase as any)
       .from('vent_sessions')
       .insert({
         user_id: user.id,
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const { data: sessions, error } = await supabase
+    const { data: sessions, error } = await (supabase as any)
       .from('vent_sessions')
       .select('*')
       .eq('user_id', user.id)

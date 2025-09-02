@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's active habits with streaks
-    const { data: habits, error } = await supabase
+    const { data: habits, error } = await (supabase as any)
       .from('habits')
       .select(`
         *,
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     // Process habits to include today's completion status
     const today = new Date().toISOString().split('T')[0];
-    const processedHabits = habits?.map(habit => {
+    const processedHabits = habits?.map((habit: any) => {
       const todayCompleted = habit.habit_logs?.some(
         (log: any) => log.completed_at?.startsWith(today)
       );
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     const validatedData = habitSchema.parse(body);
 
     // Create the habit
-    const { data: habit, error: habitError } = await supabase
+    const { data: habit, error: habitError } = await (supabase as any)
       .from('habits')
       .insert({
         user_id: user.id,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     if (habitError) throw habitError;
 
     // Initialize streak tracking
-    const { error: streakError } = await supabase
+    const { error: streakError } = await (supabase as any)
       .from('habit_streaks')
       .insert({
         habit_id: habit.id,
@@ -145,7 +145,7 @@ export async function PUT(request: NextRequest) {
       const today = new Date().toISOString().split('T')[0];
       
       // Check if already completed today
-      const { data: existingLog } = await supabase
+      const { data: existingLog } = await (supabase as any)
         .from('habit_logs')
         .select('id')
         .eq('habit_id', habitId)
@@ -162,7 +162,7 @@ export async function PUT(request: NextRequest) {
       }
 
       // Create completion log
-      const { data: log, error: logError } = await supabase
+      const { data: log, error: logError } = await (supabase as any)
         .from('habit_logs')
         .insert({
           habit_id: habitId,
@@ -178,7 +178,7 @@ export async function PUT(request: NextRequest) {
       if (logError) throw logError;
 
       // Update streak
-      const { data: streak } = await supabase
+      const { data: streak } = await (supabase as any)
         .from('habit_streaks')
         .select('*')
         .eq('habit_id', habitId)
@@ -199,7 +199,7 @@ export async function PUT(request: NextRequest) {
         streak?.longest_streak || 0
       );
 
-      const { error: streakError } = await supabase
+      const { error: streakError } = await (supabase as any)
         .from('habit_streaks')
         .update({
           current_streak: newCurrentStreak,
@@ -214,13 +214,13 @@ export async function PUT(request: NextRequest) {
 
       // Check for streak achievements
       if (newCurrentStreak === 7) {
-        await supabase.rpc('award_achievement', {
+        await (supabase as any).rpc('award_achievement', {
           p_user_id: user.id,
           p_achievement_key: 'daily_checkins',
         });
       }
       if (newCurrentStreak === 30) {
-        await supabase.rpc('award_achievement', {
+        await (supabase as any).rpc('award_achievement', {
           p_user_id: user.id,
           p_achievement_key: 'daily_checkins',
         });
@@ -230,7 +230,7 @@ export async function PUT(request: NextRequest) {
 
     } else if (action === 'archive') {
       // Archive a habit
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('habits')
         .update({ 
           is_active: false,
@@ -245,7 +245,7 @@ export async function PUT(request: NextRequest) {
 
     } else if (action === 'update') {
       // Update habit details
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('habits')
         .update(data)
         .eq('id', habitId)

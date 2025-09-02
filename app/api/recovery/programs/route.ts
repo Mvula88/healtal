@@ -11,14 +11,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's tier to filter available programs
-    const { data: userData } = await supabase
+    const { data: userData } = await (supabase as any)
       .from('users')
       .select('subscription_tier')
       .eq('id', user.id)
       .single();
 
     // Get all active recovery programs
-    const { data: programs, error } = await supabase
+    const { data: programs, error } = await (supabase as any)
       .from('recovery_programs')
       .select(`
         *,
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     if (action === 'start') {
       // Start a new recovery program
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_recovery_progress')
         .insert({
           user_id: user.id,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     } else if (action === 'pause') {
       // Pause an active program
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_recovery_progress')
         .update({ status: 'paused' })
         .eq('user_id', user.id)
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     } else if (action === 'resume') {
       // Resume a paused program
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_recovery_progress')
         .update({ status: 'active' })
         .eq('user_id', user.id)
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       const { moduleNumber } = await request.json();
 
       // Get current progress
-      const { data: currentProgress } = await supabase
+      const { data: currentProgress } = await (supabase as any)
         .from('user_recovery_progress')
         .select('*')
         .eq('user_id', user.id)
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Get program details to calculate progress
-      const { data: program } = await supabase
+      const { data: program } = await (supabase as any)
         .from('recovery_programs')
         .select('modules')
         .eq('id', programId)
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
       const progressPercentage = Math.round((moduleNumber / totalModules) * 100);
 
       // Update progress
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_recovery_progress')
         .update({
           current_module: newModule,
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
 
       // Check for achievement if completed
       if (progressPercentage === 100) {
-        await supabase.rpc('award_achievement', {
+        await (supabase as any).rpc('award_achievement', {
           p_user_id: user.id,
           p_achievement_key: 'programs_completed',
         });

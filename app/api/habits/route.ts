@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerComponentClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 const habitSchema = z.object({
@@ -15,7 +15,7 @@ const habitSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerComponentClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerComponentClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerComponentClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

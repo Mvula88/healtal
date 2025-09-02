@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerComponentClient } from '@/lib/supabase/server';
 import Replicate from 'replicate';
 import { z } from 'zod';
 
@@ -17,7 +17,7 @@ const ventSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerComponentClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 // Get user's vent history
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerComponentClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

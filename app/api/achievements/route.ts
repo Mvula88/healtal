@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Process achievements to show earned status
-    const processedAchievements = achievements?.map(achievement => ({
+    const processedAchievements = achievements?.map((achievement: any) => ({
       ...achievement,
       earned: achievement.user_achievements?.length > 0,
       earned_at: achievement.user_achievements?.[0]?.earned_at,
